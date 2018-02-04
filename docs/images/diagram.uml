@@ -1,0 +1,12 @@
+@startuml
+[Management API] <.. HTTP : use
+[Mock API] <.. HTTP : use
+[Mock API] <..> WS : use
+[Mock API] <-> [Management API]
+[Management API] <-> [Server Core]
+[Server Core] <-> [Injectors]
+[Injectors] ..> js : injector
+[Injectors] ..> har : injector
+[Injectors] ..> json : injector
+[Injectors] ..> http : injector
+@enduml
