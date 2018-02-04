@@ -8,7 +8,7 @@ import { readConfiguration, buildConfiguration } from './core/config';
 
 const cwdDir = process.cwd();
 const rootDir = resolve(__dirname, '../..');
-const packageInfo = readConfiguration(rootDir, 'package.json');
+const packageInfo = require(resolve(rootDir, 'package.json'));
 const krasrc = '.krasrc';
 const argv = require('yargs')
   .usage('Usage: $0 [options]')
