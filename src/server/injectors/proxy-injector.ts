@@ -8,7 +8,7 @@ export interface ProxyInjectorConfig {
 }
 
 export interface DynamicProxyInjectorConfig {
-
+  [target: string]: string;
 }
 
 interface WebSocketSessions {
@@ -47,10 +47,24 @@ export default class ProxyInjector implements KrasInjector {
   }
 
   getOptions(): KrasInjectorOptions {
-    return {};
+    const options: KrasInjectorOptions = {};
+
+    for (const target of Object.keys(this.map)) {
+      options[target] = {
+        description: `Determines where to proxy to if local URL starts with ${target}.`,
+        title: `Target: ${target}`,
+        type: 'text',
+        value: this.map[target],
+      };
+    }
+
+    return options;
   }
 
   setOptions(options: DynamicProxyInjectorConfig): void {
+    for (const target of Object.keys(options)) {
+      this.map[target] = options[target];
+    }
   }
 
   get name() {

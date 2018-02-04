@@ -1,4 +1,5 @@
 import { asJson, watch } from '../helpers/io';
+import { basename } from 'path';
 import { fromJson } from '../helpers/build-response';
 import { compareRequests } from '../helpers/compare-requests';
 import { KrasInjectorConfig, KrasResponse, KrasAnswer, KrasInjector, KrasConfiguration, KrasRequest, Headers, StoredFileEntry, KrasInjectorOptions } from '../types';
@@ -27,7 +28,7 @@ export interface JsonInjectorConfig {
 }
 
 export interface DynamicJsonInjectorConfig {
-
+  [id: string]: boolean;
 }
 
 export default class JsonInjector implements KrasInjector {
@@ -51,10 +52,30 @@ export default class JsonInjector implements KrasInjector {
   }
 
   getOptions(): KrasInjectorOptions {
-    return {};
+    const entries = this.getAllEntries();
+    const options: KrasInjectorOptions = {};
+
+    for (const entry of entries) {
+      const id = `${entry.file}#${entry.id}`;
+      options[id] = {
+        description: `#${entry.id + 1} of ${entry.file} - ${entry.method} ${entry.url}. ${entry.error ? 'Error: ' + entry.error : ''}`,
+        title: basename(entry.file),
+        type: 'checkbox',
+        value: entry.active,
+      };
+    }
+
+    return options;
   }
 
   setOptions(options: DynamicJsonInjectorConfig): void {
+    const entries = Object.keys(options).map(option => ({
+      file: option.substr(0, option.indexOf('#')),
+      id: +option.substr(option.indexOf('#') + 1),
+      active: options[option],
+    }));
+
+    this.setAllEntries(entries);
   }
 
   get name() {

@@ -1,4 +1,5 @@
 import { asScript, watch } from '../helpers/io';
+import { basename } from 'path';
 import { fromJson } from '../helpers/build-response';
 import { KrasRequest, KrasConfiguration, Headers, StoredFileEntry, KrasInjectorConfig, KrasInjector, KrasAnswer, KrasInjectorOptions } from '../types';
 
@@ -16,7 +17,7 @@ export interface ScriptInjectorConfig {
 }
 
 export interface DynamicScriptInjectorConfig {
-
+  [file: string]: boolean;
 }
 
 interface ScriptResponseBuilderData {
@@ -33,7 +34,7 @@ interface ScriptResponseBuilder {
 interface ScriptFileEntry {
   active: boolean;
   file?: string;
-  error?: Error;
+  error?: string;
   handler?(ctx: ScriptContextData, req: KrasRequest, builder: ScriptResponseBuilder): KrasAnswer | Promise<KrasAnswer> | undefined;
 }
 
@@ -62,10 +63,28 @@ export default class ScriptInjector implements KrasInjector {
   }
 
   getOptions(): KrasInjectorOptions {
-    return {};
+    const entries = this.getAllEntries();
+    const options: KrasInjectorOptions = {};
+
+    for (const entry of entries) {
+      options[entry.file] = {
+        description: `Status of ${entry.file}. ${entry.error ? 'Error: ' + entry.error : ''}`,
+        title: basename(entry.file),
+        type: 'checkbox',
+        value: entry.active,
+      };
+    }
+
+    return options;
   }
 
   setOptions(options: DynamicScriptInjectorConfig): void {
+    const entries = Object.keys(options).map(option => ({
+      file: option,
+      active: options[option],
+    }));
+
+    this.setAllEntries(entries);
   }
 
   get name() {
@@ -98,7 +117,7 @@ export default class ScriptInjector implements KrasInjector {
     this.db[file] = script;
   }
 
-  private setAllEntries(entries: Array<StoredFileEntry>) {
+  private setAllEntries(entries: Array<{ file: string, active: boolean }>) {
     for (const entry of entries) {
       const script = this.db[entry.file];
 

@@ -1,4 +1,5 @@
 import { asJson, watch } from '../helpers/io';
+import { basename } from 'path';
 import { fromHar, HarResponse, HarRequest, HarHeaders } from '../helpers/build-response';
 import { compareRequests } from '../helpers/compare-requests';
 import { KrasInjector, KrasInjectorConfig, KrasConfiguration, KrasRequest, KrasAnswer, Headers, StoredFileEntry, KrasInjectorOptions } from '../types';
@@ -76,7 +77,7 @@ export interface HarInjectorConfig {
 }
 
 export interface DynamicHarInjectorConfig {
-
+  [id: string]: boolean;
 }
 
 export default class HarInjector implements KrasInjector {
@@ -104,10 +105,30 @@ export default class HarInjector implements KrasInjector {
   }
 
   getOptions(): KrasInjectorOptions {
-    return {};
+    const entries = this.getAllEntries();
+    const options: KrasInjectorOptions = {};
+
+    for (const entry of entries) {
+      const id = `${entry.file}#${entry.id}`;
+      options[id] = {
+        description: `#${entry.id + 1} of ${entry.file} - ${entry.method} ${entry.url}. ${entry.error ? 'Error: ' + entry.error : ''}`,
+        title: basename(entry.file),
+        type: 'checkbox',
+        value: entry.active,
+      };
+    }
+
+    return options;
   }
 
   setOptions(options: DynamicHarInjectorConfig): void {
+    const entries = Object.keys(options).map(option => ({
+      file: option.substr(0, option.indexOf('#')),
+      id: +option.substr(option.indexOf('#') + 1),
+      active: options[option],
+    }));
+
+    this.setAllEntries(entries);
   }
 
   get name() {
@@ -181,7 +202,7 @@ export default class HarInjector implements KrasInjector {
     return entries;
   }
 
-  private setAllEntries(entries: Array<StoredFileEntry>) {
+  private setAllEntries(entries: Array<{ file: string, id: number, active: boolean }>) {
     for (const entry of entries) {
       const items = this.db[entry.file];
 
