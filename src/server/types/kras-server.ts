@@ -12,7 +12,7 @@ export interface KrasServerHandler {
   (req: Request, res: Response): void;
 }
 
-type KrasWebSocket = EventEmitter & {
+export type KrasWebSocket = EventEmitter & {
   send(msg: string): void;
 };
 
