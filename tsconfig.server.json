@@ -1,0 +1,11 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "jsx": "preserve",
+    "sourceMap": true,
+    "outDir": "dist/server"
+  },
+  "include": [
+    "src/server/**/*"
+  ]
+}

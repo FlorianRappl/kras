@@ -1,0 +1,16 @@
+language: node_js
+node_js:
+  - "8"
+cache:
+  directories:
+  - node_modules
+script:
+  - npm test
+  - npm run build
+deploy:
+  provider: npm
+  email: $auth_email
+  api_key: $auth_token
+  skip_cleanup: true
+  on:
+    branch: master

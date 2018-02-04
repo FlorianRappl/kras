@@ -1,0 +1,12 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "jsx": "react",
+    "target": "es5",
+    "sourceMap": true,
+    "outDir": "dist/client"
+  },
+  "include": [
+    "src/client/**/*"
+  ]
+}
