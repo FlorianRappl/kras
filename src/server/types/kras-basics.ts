@@ -13,7 +13,7 @@ export interface StoredFileEntry {
   file: string;
   method?: string;
   url?: string;
-  error?: Error;
+  error?: string;
 }
 
 export type Headers = Dict<string>;

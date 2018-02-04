@@ -12,11 +12,20 @@ export interface KrasServerHandler {
   (req: Request, res: Response): void;
 }
 
+type KrasWebSocket = EventEmitter & {
+  send(msg: string): void;
+};
+
+export interface KrasServerConnector {
+  (ws: KrasWebSocket, req: Request): void;
+}
+
 export interface KrasServerMethods {
   get(handler: KrasServerHandler): KrasServerMethods;
   put(handler: KrasServerHandler): KrasServerMethods;
   post(handler: KrasServerHandler): KrasServerMethods;
   delete(handler: KrasServerHandler): KrasServerMethods;
+  feed(handler: KrasServerConnector): KrasServerMethods;
 }
 
 export interface BaseKrasServer extends EventEmitter {
