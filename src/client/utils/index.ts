@@ -1,1 +1,1 @@
-export { request, RequestData, RequestMethod } from './request';
+export { request, fullUrl, RequestData, RequestMethod } from './request';

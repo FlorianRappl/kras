@@ -48,7 +48,7 @@ export const Details = ({ fields }: DetailsProps) => (
   <div>
     {
       fields.map((field, i) => (
-        <Field key={i} label={field.label} value={field.value} />
+        field.label && field.value && <Field key={i} label={field.label} value={field.value} />
       ))
     }
   </div>

@@ -94,7 +94,13 @@ export class Injector extends React.Component<InjectorProps, InjectorState> {
 
     switch (option.type) {
       case 'checkbox':
-        input = <Input type="checkbox" checked={option.value} onChange={(e) => this.changeOption(e, name)} />;
+        input = (
+          <FormGroup check>
+            <Label check>
+              <Input type="checkbox" checked={option.value} onChange={(e) => this.changeOption(e, name)} /> Enabled
+            </Label>
+          </FormGroup>
+        );
         break;
       case 'text':
         input = <Input type="text" value={option.value} onChange={(e) => this.changeOption(e, name)} />;
