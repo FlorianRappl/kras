@@ -1,2 +1,12 @@
 src/
 docs/
+test/
+.editorconfig
+.gitignore
+.travis.yml
+jest.config.js
+tsconfig.client.json
+tsconfig.server.json
+tsconfig.json
+webpack.config.js
+*.tgz

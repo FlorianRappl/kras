@@ -3,7 +3,8 @@
   "compilerOptions": {
     "jsx": "preserve",
     "sourceMap": true,
-    "outDir": "dist/server"
+    "outDir": "dist/server",
+    "declaration": true
   },
   "include": [
     "src/server/**/*"

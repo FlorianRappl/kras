@@ -1,7 +1,7 @@
 import { asJson, watch } from '../helpers/io';
 import { fromHar, HarResponse, HarRequest, HarHeaders } from '../helpers/build-response';
 import { compareRequests } from '../helpers/compare-requests';
-import { KrasInjector, KrasInjectorConfig, KrasConfiguration, KrasRequest , Headers, StoredFileEntry, KrasInjectorOptions } from '../types';
+import { KrasInjector, KrasInjectorConfig, KrasConfiguration, KrasRequest, KrasAnswer, Headers, StoredFileEntry, KrasInjectorOptions } from '../types';
 
 function delay<T>(value: T, time: number) {
   if (time) {

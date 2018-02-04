@@ -1,15 +1,21 @@
 {
   "name": "kras",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Efficient server proxying and mocking in Node.js.",
-  "main": "./dist/server/kras.js",
-  "bin": "./dist/server/kras-cli.js",
+  "main": "dist/server/kras.js",
+  "types": "dist/server/kras.d.ts",
+  "bin": {
+    "kras": "dist/server/kras-cli.js"
+  },
   "engines": {
     "node": ">=8.0.0"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/FlorianRappl/kras.git"
+  },
+  "bugs": {
+    "url": "https://github.com/FlorianRappl/kras/issues"
   },
   "scripts": {
     "test:unit": "cross-env NODE_ENV=test jest src",

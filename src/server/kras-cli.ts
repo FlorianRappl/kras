@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import chalk from 'chalk';
 import { MockServer } from './kras';
 import { homedir } from 'os';

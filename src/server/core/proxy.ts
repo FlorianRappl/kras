@@ -41,36 +41,3 @@ export function corsHandler(req: Request, res: Response) {
   res.setHeader('Access-Control-Allow-Credentials', 'true');
   return res.end();
 }
-
-export function httpHandler(req: Request, res: Response) {
-  proxyRequest(req, (err, ans) => {
-    if (err) {
-      console.error(err);
-    } else {
-      sendResponse(req, ans, res);
-    }
-  });
-}
-
-export function createWsConnector(target: string) {
-  const wsProxy = createProxyServer({});
-  const options = {
-    target: `wss://${target}`,
-    secure: false,
-  };
-  return {
-    open(req: IncomingMessage, socket: any, head: any) {
-      wsProxy.ws(req, socket, head, options);
-      return wsProxy;
-    },
-    close() {
-      wsProxy.close();
-      return wsProxy;
-    },
-    at(proxy: EventEmitter) {
-      proxy.on('close', () => wsProxy.close());
-      wsProxy.on('error', err => proxy.emit('error', err));
-      return this;
-    },
-  };
-}
