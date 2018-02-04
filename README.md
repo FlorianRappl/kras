@@ -2,6 +2,8 @@
 
 Efficient server proxying and mocking in Node.js. :muscle:
 
+![kras logo](logo.png)
+
 ## FAQ
 
 *What does kras mean?*
