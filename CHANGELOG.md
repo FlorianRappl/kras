@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.2
+
+- Improved file path handling
+- Connect manage app to live feed
+- Extended options of injectors
+
 ## 0.1.1
 
 - Improved release automation
