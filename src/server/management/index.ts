@@ -2,7 +2,7 @@ import { resolve } from 'path';
 import { Request, Response } from 'express';
 import { KrasConfiguration, KrasServer } from '../types';
 import { broadcastAt } from './broadcast';
-import { errorDetails, messageDetails, overview, requestDetails } from './overview';
+import { errorDetails, messageDetails, overview, requestDetails, liveFeed } from './overview';
 import { readSettings, saveSettings } from './settings';
 import { readInjectorsSettings, saveInjectorSettings } from './injectors';
 import { configOf } from './basics';
@@ -32,7 +32,8 @@ export function withManagement(server: KrasServer, config: KrasConfiguration) {
     .post(broadcastAt(server));
 
   server.at(api, 'data')
-    .get(overview(server));
+    .get(overview(server))
+    .feed(liveFeed(server));
 
   server.at(api, 'data', 'request', ':id')
     .get(requestDetails(server));

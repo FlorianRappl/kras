@@ -7,7 +7,7 @@ import { text } from 'body-parser';
 import { EventEmitter } from 'events';
 import { readSsl } from './readSsl';
 import { corsHandler } from './proxy';
-import { WebServerConfiguration, KrasServerHook, BaseKrasServer, KrasServerMethods, KrasServerHandler } from '../types';
+import { WebServerConfiguration, KrasServerHook, BaseKrasServer, KrasServerMethods, KrasServerHandler, KrasServerConnector } from '../types';
 
 type Server = HttpServer | HttpsServer;
 
@@ -41,7 +41,7 @@ interface WebSocketConnection {
 
 export class WebServer extends EventEmitter implements BaseKrasServer {
   private readonly app: Application & {
-    ws?(target: string, connect: (ws: EventEmitter, req: Request) => void): void;
+    ws?(target: string, connect: KrasServerConnector): void;
   };
   private readonly hooks: Array<KrasServerHook> = [];
   private readonly port: number;
@@ -118,6 +118,10 @@ export class WebServer extends EventEmitter implements BaseKrasServer {
       },
       post(handler: KrasServerHandler) {
         app.post(endpoint, handler);
+        return api;
+      },
+      feed(handler: KrasServerConnector) {
+        app.ws(endpoint, handler);
         return api;
       },
     };

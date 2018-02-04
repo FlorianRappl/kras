@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { KrasServer } from '../types';
+import { KrasServer, KrasWebSocket, RecordedRequest, RecordedMessage, RecordedError } from '../types';
 
 interface Item {
   id: string;
@@ -32,30 +32,75 @@ function mapReverse<T, U>(items: Array<T>, select: (item: T, index: number) => U
   return dest;
 }
 
+function convertRequest(item: RecordedRequest) {
+  return {
+    id: item.id,
+    time: item.start,
+    from: item.request.target,
+    to: item.request.url,
+    status: item.response.status.code,
+    type: item.response.headers['content-type'],
+    injector: item.response.injector.name,
+  };
+}
+
+function convertMessage(item: RecordedMessage) {
+  return {
+    id: item.id,
+    time: item.time,
+    type: getType(item.content),
+    size: item.content.length,
+  };
+}
+
+function convertMiss(item: RecordedError) {
+  return {
+    id: item.id,
+    time: item.start,
+    from: item.request.target,
+    to: item.request.url,
+    type: item.request.headers.accept,
+  };
+}
+
 export function overview(server: KrasServer) {
   return (req: Request, res: Response) => {
     const id = req.params.id;
     res.json({
-      requests: mapReverse(server.recorder.requests, item => ({
-        id: item.id,
-        time: item.start,
-        from: item.request.target,
-        status: item.response.status.code,
-        type: item.request.headers['content-type'],
-        injector: item.response.injector.name,
-      })),
-      errors: mapReverse(server.recorder.errors, item => ({
-        id: item.id,
-        time: item.start,
-        from: item.request.target,
-        type: item.request.headers['content-type'],
-      })),
-      messages: mapReverse(server.recorder.messages, item => ({
-        id: item.id,
-        time: item.time,
-        type: getType(item.content),
-        size: item.content.length,
-      })),
+      requests: mapReverse(server.recorder.requests, convertRequest),
+      errors: mapReverse(server.recorder.errors, convertMiss),
+      messages: mapReverse(server.recorder.messages, convertMessage),
+    });
+  };
+}
+
+export function liveFeed(server: KrasServer) {
+  const clients: Array<KrasWebSocket> = [];
+  const broadcast = (type: string, data: any) => {
+    for (const client of clients) {
+      client.send(JSON.stringify({
+        type,
+        data,
+      }));
+    }
+  };
+
+  server.recorder.on('recorded-request', item => {
+    broadcast('request', convertRequest(item))
+  });
+
+  server.recorder.on('recorded-message', item => {
+    broadcast('message', convertMessage(item));
+  });
+
+  server.recorder.on('recorded-miss', item => {
+    broadcast('error', convertMiss(item))
+  });
+
+  return (ws: KrasWebSocket) => {
+    clients.push(ws);
+    ws.on('close', () => {
+      clients.splice(clients.indexOf(ws), 1);
     });
   };
 }
