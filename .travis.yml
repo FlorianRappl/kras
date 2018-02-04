@@ -7,10 +7,19 @@ cache:
 script:
   - npm test
   - npm run build
+before_deploy:
+  - git config --local user.name "$git_user"
+  - git config --local user.email "$git_email"
+  - git tag "$(node ./dist/server/kras-cli.js --version)"
 deploy:
-  provider: npm
-  email: $auth_email
-  api_key: $auth_token
-  skip_cleanup: true
-  on:
-    branch: master
+  - provider: npm
+    email: $auth_email
+    api_key: $auth_token
+    skip_cleanup: true
+    on:
+      branch: master
+  - provider: releases
+    api_key: $git_token
+    skip_cleanup: true
+    on:
+      branch: master

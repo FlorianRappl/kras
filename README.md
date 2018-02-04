@@ -1,8 +1,13 @@
 # kras
 
+[![Build Status](https://travis-ci.org/FlorianRappl/kras.svg?branch=master)](https://travis-ci.org/FlorianRappl/kras)
+[![node](https://img.shields.io/node/v/kras.svg)]()
+[![GitHub tag](https://img.shields.io/github/tag/FlorianRappl/kras.svg)]()
+[![GitHub issues](https://img.shields.io/github/issues/FlorianRappl/kras.svg)]()
+
 Efficient server proxying and mocking in Node.js. :muscle:
 
-![kras logo](logo.png)
+![kras logo](https://github.com/FlorianRappl/kras/raw/master/logo.png)
 
 ## FAQ
 
