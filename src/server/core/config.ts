@@ -1,12 +1,12 @@
 import { resolve } from 'path';
-import { existsSync } from 'fs';
+import { existsSync, readFileSync } from 'fs';
 import { KrasConfiguration } from '../types';
+import { rootDir, name, version, currentDir } from './info';
 
 export interface ConfigurationOptions {
   name: string;
   port: number;
   dir: string;
-  client: string;
   cert: string;
   key: string;
 }
@@ -42,11 +42,16 @@ export function readConfiguration(dir: string, file: string): ConfigurationFile 
     const p = resolve(dir, file);
 
     if (existsSync(p)) {
-      const config = require(p);
+      try {
+        const content = readFileSync(p, 'utf8');
+        const config = JSON.parse(content);
 
-      if (config) {
-        makePathsAbsolute(dir, config);
-        return config;
+        if (config) {
+          makePathsAbsolute(dir, config);
+          return config;
+        }
+      } catch (e) {
+        console.error(`Error reading configuration from ${file} in ${dir}: ${e}`);
       }
     }
   }
@@ -54,46 +59,70 @@ export function readConfiguration(dir: string, file: string): ConfigurationFile 
   return {};
 }
 
-export function buildConfiguration(options: ConfigurationOptions, ...configs: Array<ConfigurationFile>): KrasConfiguration {
-  const defaultConfig = {
-    name: options.name,
-    port: options.port,
-    directory: options.dir,
-    client: options.client,
-    ssl: {
-      cert: options.cert,
-      key: options.key,
-    },
-    api: '/manage',
-    map: {
-      '/': 'https://httpbin.org',
-      '/api': 'https://jsonplaceholder.typicode.com',
-      '/events': 'ws://demos.kaazing.com/echo',
-    },
-    injectors: {
-      'script': {
-        active: true,
-        directory: './db/',
-      },
-      'har': {
-        active: true,
-        directory: './db/',
-        delay: false,
-      },
-      'json': {
-        active: true,
-        directory: './db/',
-      },
-      'proxy': {
-        active: true,
-      },
-      'store': {
-        active: false,
-        directory: './db/',
-      }
-    }
-  };
+export function mergeConfiguration(options: ConfigurationOptions, ...configs: Array<ConfigurationFile>): KrasConfiguration {
+  const config: KrasConfiguration = Object.assign({}, ...configs);
 
-  makePathsAbsolute(options.dir, defaultConfig);
-  return Object.assign(defaultConfig, ...configs);
+  if (options.cert !== undefined || options.key !== undefined) {
+    config.ssl = {
+      cert: options.cert || (config.ssl && config.ssl.cert),
+      key: options.key || (config.ssl && config.ssl.key),
+    };
+  }
+
+  if (options.dir) {
+    config.directory = options.dir;
+  }
+
+  if (options.name) {
+    config.name = options.name;
+  }
+
+  if (options.port) {
+    config.port = options.port;
+  }
+
+  return config;
+}
+
+export const defaultConfig = {
+  name: `${name} v${version}`,
+  port: 9000,
+  directory: currentDir,
+  client: resolve(rootDir, 'dist', 'client', 'index.html'),
+  ssl: {
+    cert: resolve(rootDir, 'cert', 'server.crt'),
+    key: resolve(rootDir, 'cert', 'server.key'),
+  },
+  api: '/manage',
+  map: {
+    '/': 'https://httpbin.org',
+    '/api': 'https://jsonplaceholder.typicode.com',
+    '/events': 'ws://demos.kaazing.com/echo',
+  },
+  injectors: {
+    'script': {
+      active: true,
+      directory: resolve(currentDir, './db/'),
+    },
+    'har': {
+      active: true,
+      directory: resolve(currentDir, './db/'),
+      delay: false,
+    },
+    'json': {
+      active: true,
+      directory: resolve(currentDir, './db/'),
+    },
+    'proxy': {
+      active: true,
+    },
+    'store': {
+      active: false,
+      directory: resolve(currentDir, './db/'),
+    }
+  }
+} as KrasConfiguration;
+
+export function buildConfiguration(config: Partial<ConfigurationFile> = {}): KrasConfiguration {
+  return Object.assign(defaultConfig, config);
 }

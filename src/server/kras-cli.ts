@@ -1,67 +1,58 @@
 #!/usr/bin/env node
 
 import chalk from 'chalk';
-import { MockServer } from './kras';
+import { buildKras } from './kras';
 import { homedir } from 'os';
 import { resolve } from 'path';
-import { readConfiguration, buildConfiguration } from './core/config';
+import { readConfiguration, mergeConfiguration, defaultConfig } from './core/config';
+import { author, currentDir } from './core/info';
 
-const cwdDir = process.cwd();
-const rootDir = resolve(__dirname, '../..');
-const packageInfo = require(resolve(rootDir, 'package.json'));
 const krasrc = '.krasrc';
 const argv = require('yargs')
   .usage('Usage: $0 [options]')
   .alias('c', 'config')
-  .default('c', krasrc)
-  .describe('c', 'Sets the configuration file to use')
+  .describe('c', `Sets the configuration file to use, by default ${krasrc}`)
   .number('p')
   .alias('p', 'port')
-  .default('p', 9000)
-  .describe('p', 'Sets the port of the server')
+  .describe('p', `Sets the port of the server, by default ${defaultConfig.port}`)
   .string('n')
   .alias('n', 'name')
-  .default('n', `${packageInfo.name} v${packageInfo.version}`)
-  .describe('n', 'Sets the name of the server')
+  .describe('n', `Sets the name of the server, by default ${defaultConfig.name}`)
   .string('d')
   .alias('d', 'dir')
-  .default('d', cwdDir)
-  .describe('d', 'Sets the base directory of the server')
+  .describe('d', `Sets the base directory of the server, by default ${defaultConfig.directory}`)
   .string('cert')
-  .default('cert', resolve(rootDir, 'cert', 'server.crt'))
-  .describe('cert', 'Sets the certificate of the server')
+  .describe('cert', `Sets the certificate of the server, by default ${defaultConfig.ssl.cert}`)
   .string('key')
-  .default('key', resolve(rootDir, 'cert', 'server.key'))
-  .describe('key', 'Sets the key of the server')
+  .describe('key', `Sets the key of the server, by default ${defaultConfig.ssl.key}`)
   .version()
   .help('h')
   .alias('h', 'help')
   .describe('h', 'Shows the argument descriptions')
-  .epilog(`Copyright (c) 2018 ${packageInfo.author}`)
+  .epilog(`Copyright (c) 2018 ${author}`)
   .argv;
 
 function info(message: string) {
   return message && message.length > 50 ? (message.substr(0, 47) + ' ...') : message;
 }
 
-const dir = resolve(cwdDir, argv.d);
+const dir = argv.d ? resolve(currentDir, argv.d) : currentDir;
 const options = {
   port: argv.p,
   name: argv.n,
   cert: argv.cert,
   key: argv.key,
-  dir,
-  client: resolve(rootDir, 'dist', 'client', 'index.html'),
+  dir: argv.d,
 };
 
-const config = buildConfiguration(
+const config = mergeConfiguration(
   options,
   readConfiguration(homedir(), krasrc),
   readConfiguration(dir, krasrc),
   readConfiguration(dir, argv.c !== krasrc && argv.c),
 );
 
-const server = new MockServer(config);
+const server = buildKras(config);
 
 server.on('message', msg => {
   console.log(`${chalk.green('WS')} << ${chalk.white(info(msg.data))}`);
