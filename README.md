@@ -1,6 +1,7 @@
 # kras
 
 [![Build Status](https://travis-ci.org/FlorianRappl/kras.svg?branch=master)](https://travis-ci.org/FlorianRappl/kras)
+[![npm](https://img.shields.io/npm/v/kras.svg)]()
 [![node](https://img.shields.io/node/v/kras.svg)]()
 [![GitHub tag](https://img.shields.io/github/tag/FlorianRappl/kras.svg)]()
 [![GitHub issues](https://img.shields.io/github/issues/FlorianRappl/kras.svg)]()
@@ -141,7 +142,7 @@ function buildApiServer(host) {
 
 where `host` can be the actual host in one particular environment (e.g., production or stage), but could also be replaced by, e.g., `localhost:9000/foo`. Long story short, it seemed like a sound choice.
 
-*The default certificate is not trusted - what can I do about it?
+*The default certificate is not trusted - what can I do about it?*
 
 Well, you could add the certificate to your trusted roots and therefore get rid of the message. However, if you (understandably) don't want to trust third-party generated certificates you can also generate your own certificate and use that one instead. Finally, you could either switch off HTTPS (disable SSL), or use a special browser instance with SSL checking disabled (for Chrome starting with the command line flag `--ignore-certificate-errors` does the trick; don't use this for browsing the public web).
 
