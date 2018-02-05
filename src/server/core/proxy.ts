@@ -1,5 +1,4 @@
 import { Request, Response } from 'express';
-import { createProxyServer } from 'http-proxy';
 import { proxyRequest } from '../helpers/proxy-request';
 import { IncomingMessage } from 'http';
 import { EventEmitter } from 'events';
