@@ -36,6 +36,7 @@ export class Loader<T> extends React.Component<LoaderProps<T>, LoaderState<T>> {
 
   private resolve = (data: T) => {
     if (this.mounted) {
+      console.log(data);
       this.setState({
         status: 'loaded',
         data,
@@ -43,11 +44,11 @@ export class Loader<T> extends React.Component<LoaderProps<T>, LoaderState<T>> {
     }
   };
 
-  private revoke = (error: string) => {
+  private revoke = (err: Error) => {
     if (this.mounted) {
       this.setState({
         status: 'loaded',
-        error,
+        error: err && (err.message || err.toString()),
       });
     }
   };
@@ -80,7 +81,7 @@ export class Loader<T> extends React.Component<LoaderProps<T>, LoaderState<T>> {
       case 'loaded':
         return data && !error ? <Component data={data} /> : (
           <Alert color="danger">
-            {error}
+            {error || 'Error while loading the data. Is the server still running?'}
           </Alert>
         );
     }
