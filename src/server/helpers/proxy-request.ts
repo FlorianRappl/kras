@@ -13,6 +13,8 @@ export interface ProxyRequestOptions {
   method: string;
   headers: Headers;
   body: string;
+  agentOptions?: any;
+  proxy?: any;
 }
 
 export function proxyRequest(req: ProxyRequestOptions, callback: ProxyCallback, injector?: KrasInjectorInfo) {
@@ -21,6 +23,8 @@ export function proxyRequest(req: ProxyRequestOptions, callback: ProxyCallback, 
     rejectUnauthorized: false,
     method: req.method,
     encoding: null,
+    proxy: req.proxy,
+    agentOptions: req.agentOptions,
     headers: {
       ['authorization']: req.headers['authorization'],
       ['accept']: req.headers['accept'],

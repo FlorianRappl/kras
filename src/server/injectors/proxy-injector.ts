@@ -5,6 +5,8 @@ import { proxyRequest } from '../helpers/proxy-request';
 import { KrasInjector, KrasAnswer, KrasInjectorConfig, KrasConfiguration, KrasRequest, KrasInjectorOptions } from '../types';
 
 export interface ProxyInjectorConfig {
+  agentOptions?: any;
+  proxy?: any;
 }
 
 export interface DynamicProxyInjectorConfig {
@@ -94,7 +96,15 @@ export default class ProxyInjector implements KrasInjector {
         url: target + req.url,
         method: req.method,
         body: req.content,
-      }, (err, ans) => resolve(ans), label);
+        agentOptions: this.options.agentOptions,
+        proxy: this.options.proxy,
+      }, (err, ans) => {
+        if (err) {
+          console.error(err);
+        }
+
+        resolve(ans);
+      }, label);
     });
   }
 }
