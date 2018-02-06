@@ -46,15 +46,19 @@ Now that we know roughly how it works it is time to look at some of the ordinary
 
 The JSON injector is really simple. It assumes that each request/response pattern is an object with two properties: "request" and "response" respectively. JSON files may either contain an array of such objects or a single such object. There is one more interesting possibility here. While the objects stored in the request and response properties are usually one to one manifestations of the DTOs mentioned earlier, the response property may also contain am array of such DTOs. If an array is provided the selected response is randomly determined. If desired unknown requests are also stored in a format that is readable by the JSON injector. These requests will be added to a file called unknown-requests.json in the configured directory.
 
+More detailed information can be found in the [JSON injector documentation](json-injector.md).
+
 ### HAR Injector
 
 The HAR injector is quite similar to the JSON injector. It also deals with static content in form of JSON files. Here, however, the JSON schema is set to the standardized HAR (HTTP Archive) schema in version 1.3. The advantage of HAR is that all evergreen browsers know how to export it. That way it is very easy to consume a previous user flow, derive a unit test followed by a conclusion, and fix the bug. The barrier to reproduce the bug should be minimal (minus local database content). This injector does not have a randomized answer. It's only ability is to delay the responses to the original time. Otherwise, the response is generated nearly instantaneous.
+
+More detailed information can be found in the [JSON injector documentation](har-injector.md).
 
 ### Script Injector
 
 Finally, the script injector. This is certainly the most powerful and flexible injector. It is, however, also the most complicated one. Theoretically, this injector could be used to build a fully dynamic model of the BE to really mock everything. It could therefore be also used to replicate more complicated user flows or represent an immutable backend for demo purposes.
 
-For the script injector we have a dedicated documentation. Details of creating a new script using the script injector can be seen there.
+More detailed information can be found in the [script injector documentation](script-injector.md).
 
 ### Proxy Injector
 
@@ -63,3 +67,5 @@ Let's now understand the proxy injector. The proxy injector essentially just for
 There is no handling of CORS in this injector. CORS is handled already from the server directly (i.e., the server is great to avoid any security problems related to CORS or other mechanisms). However, what is handled by this injector is the web socket connection to the other side. This cannot be separated from the HTTP part.
 
 The web socket handler will create a new connection per connected user. Thus, if we share the mock server between different users then every user will get its own connection to some backend via the proxy injector. However, as an important distinction it is worth noting that a broadcast triggered from the core will reach all connected clients. So we have `n` forwarded connections for `n` users, with a shared part in the middle.
+
+More detailed information can be found in the [proxy injector documentation](proxy-injector.md).

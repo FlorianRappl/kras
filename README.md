@@ -10,6 +10,8 @@ Efficient server proxying and mocking in Node.js. :muscle:
 
 ![kras logo](https://github.com/FlorianRappl/kras/raw/master/logo.png)
 
+The README is supposed to only give you a basic idea what kras *is*. To *truly find out* about all the possibilities and details the [getting started](docs/getting-started.md) document will give you the right pointers and pieces of information.
+
 ## Mission Statement
 
 kras is meant to be a swiss army knife for server mocking. It is meant for the development of large web applications that consist of a (decoupled) frontend and backend part (e.g., frontend MVC heavy, like a SPA, backend a (micro) service landscape, potentially behind a gateway).
@@ -46,7 +48,7 @@ npm i kras -D
 
 While the former may be good in general to play around, the latter should be preferred to actually share / configure kras for the particular project.
 
-Running kras can then be done, e.g., via specifying the `kras` command (global usage) or referring to `kras` via the npm scripts in the *package.json*.
+Running kras can then be done, e.g., via specifying the `kras` command (global usage) or referring to `kras` via the npm scripts in the *package.json*. kras can also be used programmatically, e.g., in a webpack configuration. The library exports several classes and functions that help you establish a mock server for your project in no time.
 
 ## Configuration
 
@@ -55,15 +57,12 @@ kras uses configuration files and command line options to be properly configred.
 If specified the command line options have higher precendence. The following options exist.
 
 ```plain
-Options:
-  -c, --config  Sets the configuration file to use, by default .krasrc
+  -c, --config  Sets the configuration file to use, by default .krasrc  [string]
   -p, --port    Sets the port of the server, by default 9000            [number]
   -n, --name    Sets the name of the server, by default kras v0.1.3     [string]
   -d, --dir     Sets the base directory of the server, by default ...   [string]
   --cert        Sets the certificate of the server, by default ...      [string]
   --key         Sets the key of the server, by default ...              [string]
-  --version     Show version number                                    [boolean]
-  -h, --help    Shows the argument descriptions                        [boolean]
 ```
 
 The `.krasrc` is a simple JSON format. An example is the following configuration:
@@ -108,7 +107,7 @@ The `.krasrc` is a simple JSON format. An example is the following configuration
 }
 ```
 
-Directory paths are always resolved to an absolute with respect to the location of the containing configuration file.
+Directory paths are always resolved to an absolute with respect to the location of the containing configuration file. The injector sections are actually dynamic settings that are transported as-is to the respective injector. An injector is just a request handler, which may know how to get an answer to the current request.
 
 The configuration of kras can also be (partially) changed during runtime using the management endpoint. By default this endpoint can be accessed at `https://localhost:9000/manage`. Please note that the HTTPS could be changed to HTTP (if the ssl option was disabled), the port could be changed, and the endpoint itself could be changed.
 
