@@ -1,13 +1,8 @@
 import * as React from 'react';
 import { Nav, NavItem, NavLink, Navbar, NavbarBrand, NavbarToggler, Container, Row, Col, Collapse } from 'reactstrap';
-
-export interface BasicConfig {
-  name: string;
-  version: string;
-}
+import { config } from './data';
 
 export interface LayoutProps {
-  config: BasicConfig;
   children?: React.ReactNode;
 }
 
@@ -24,7 +19,7 @@ export class Layout extends React.Component<LayoutProps, LayoutState> {
   }
 
   componentDidMount() {
-    document.title = this.props.config.name;
+    document.title = config.name;
   }
 
   private toggle = () => {
@@ -35,7 +30,7 @@ export class Layout extends React.Component<LayoutProps, LayoutState> {
   };
 
   render() {
-    const { config, children } = this.props;
+    const { children } = this.props;
     const { name } = config;
     return (
       <div>
@@ -45,7 +40,10 @@ export class Layout extends React.Component<LayoutProps, LayoutState> {
           <Collapse isOpen={this.state.isOpen} navbar>
             <Nav className="ml-auto" navbar>
               <NavItem>
-                <NavLink href="#/">Requests</NavLink>
+                <NavLink href="#/">Overview</NavLink>
+              </NavItem>
+              <NavItem>
+                <NavLink href="#/requests">Requests</NavLink>
               </NavItem>
               <NavItem>
                 <NavLink href="#/broadcast">Broadcast</NavLink>
