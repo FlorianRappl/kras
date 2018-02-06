@@ -39,7 +39,7 @@ export default class JsonInjector implements KrasInjector {
     const directory = options.directory || config.directory;
     this.options = options;
 
-    watch(options.directory, '**/*.json', (ev, file) => {
+    watch(directory, '**/*.json', (ev, file) => {
       switch (ev) {
         case 'create':
         case 'update':
