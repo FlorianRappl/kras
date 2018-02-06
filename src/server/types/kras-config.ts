@@ -6,6 +6,7 @@ export interface WebServerConfiguration {
     [target: string]: string;
   };
   ssl: SslConfiguration;
+  ws: boolean;
   port: number;
 }
 

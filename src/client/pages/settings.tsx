@@ -9,6 +9,7 @@ export interface SettingsProps extends RouteComponentProps<{}> {
 }
 
 interface KrasSettings {
+  ws: boolean;
   injectors: Array<{
     name: string;
     active: boolean;
@@ -34,8 +35,8 @@ class SettingsView extends React.Component<SettingsViewProps, SettingsViewState>
   constructor(props: SettingsViewProps) {
     super(props);
     this.state = {
-      ws: false,
-      wsOriginal: false,
+      ws: props.data.ws,
+      wsOriginal: props.data.ws,
       injectors: props.data.injectors.map(injector => ({
         ...injector,
         activeOriginal: injector.active,
@@ -73,6 +74,7 @@ class SettingsView extends React.Component<SettingsViewProps, SettingsViewState>
     request({
       url: 'settings',
       body: JSON.stringify({
+        ws,
         injectors: injectors.map(injector => ({
           name: injector.name,
           active: injector.active,

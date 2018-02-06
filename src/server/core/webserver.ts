@@ -32,10 +32,11 @@ function findHook(hooks: Array<KrasServerHook>, req: Request) {
 }
 
 interface WebSocketConnection {
-  getWss(target: Array<string>): {
+  getWss(target?: Array<string>): {
     clients: Array<{
       send(data: string): void;
     }>;
+    close(): void;
   };
 }
 
@@ -47,7 +48,7 @@ export class WebServer extends EventEmitter implements BaseKrasServer {
   private readonly port: number;
   private readonly targets: Array<string>;
   private readonly server: Server;
-  private readonly sockets: WebSocketConnection;
+  private sockets: WebSocketConnection;
 
   constructor(config: Partial<WebServerConfiguration> = {}) {
     super();
@@ -58,7 +59,7 @@ export class WebServer extends EventEmitter implements BaseKrasServer {
     this.port = config.port || 9000;
     this.app = express();
     this.server = ssl ? createHttpsServer(ssl, this.app) : createHttpServer(this.app);
-    this.sockets = expressWs(this.app, this.server);
+    this.ws = config.ws;
     this.app.use(text({ type: '*/*' }));
     this.targets.forEach(target => this.app.ws(target, (ws, req) => {
       const url = req.url.replace('/.websocket', '').substr(target.length);
@@ -82,6 +83,22 @@ export class WebServer extends EventEmitter implements BaseKrasServer {
         data,
       }));
     }));
+  }
+
+  get ws() {
+    const ws = this.sockets && this.sockets.getWss();
+    return !!ws;
+  }
+
+  set ws(value: boolean) {
+    const ws = this.sockets && this.sockets.getWss();
+
+    if (!value && ws) {
+      ws.close();
+      this.sockets = undefined;
+    } else if (!ws && value) {
+      this.sockets = expressWs(this.app, this.server);
+    }
   }
 
   add(hook: KrasServerHook) {
@@ -157,11 +174,18 @@ export class WebServer extends EventEmitter implements BaseKrasServer {
   }
 
   broadcast<T>(msg: T) {
-    const isObject = typeof msg === 'object';
-    const data = isObject ? JSON.stringify(msg) : (msg || '').toString();
-    this.emit('broadcast', { data });
-    const socket = this.sockets.getWss(this.targets);
-    const clients = socket.clients;
-    clients.forEach(client => client.send(data));
+    const sockets = this.sockets;
+
+    if (sockets) {
+      const isObject = typeof msg === 'object';
+      const data = isObject ? JSON.stringify(msg) : (msg || '').toString();
+      this.emit('broadcast', { data });
+      const socket = sockets.getWss(this.targets);
+
+      if (socket) {
+        const clients = socket.clients;
+        clients.forEach(client => client.send(data));
+      }
+    }
   }
 }

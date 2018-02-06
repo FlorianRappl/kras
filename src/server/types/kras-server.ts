@@ -33,6 +33,7 @@ export interface BaseKrasServer extends EventEmitter {
   remove(hook: KrasServerHook): void;
   at(...segments: Array<string>): KrasServerMethods;
   broadcast<T>(msg: T): void;
+  ws: boolean;
 }
 
 export interface KrasServer extends BaseKrasServer {

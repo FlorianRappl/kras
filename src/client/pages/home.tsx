@@ -100,30 +100,37 @@ class HomeView extends React.Component<HomeViewProps, HomeViewState> {
     };
   }
 
+  private dispatch(msg: KrasFeedMessage) {
+    switch (msg.type) {
+      case 'request':
+        this.setState({
+          requests: [msg.data, ...this.state.requests],
+        });
+        break;
+      case 'error':
+        this.setState({
+          errors: [msg.data, ...this.state.errors],
+        });
+        break;
+      case 'message':
+        this.setState({
+          messages: [msg.data, ...this.state.messages],
+        });
+        break;
+    }
+  }
+
   componentWillMount() {
     const url = `ws${fullUrl('data').substr(4)}`;
-    this.ws = new WebSocket(url);
-    this.ws.onmessage = (ev) => {
-      const msg: KrasFeedMessage = JSON.parse(ev.data);
 
-      switch (msg.type) {
-        case 'request':
-          this.setState({
-            requests: [msg.data, ...this.state.requests],
-          });
-          break;
-        case 'error':
-          this.setState({
-            errors: [msg.data, ...this.state.errors],
-          });
-          break;
-        case 'message':
-          this.setState({
-            messages: [msg.data, ...this.state.messages],
-          });
-          break;
-      }
-    };
+    try {
+      this.ws = new WebSocket(url);
+      this.ws.onmessage = (ev) => {
+        this.dispatch(JSON.parse(ev.data));
+      };
+    } catch (e) {
+      console.error(`WebSocket connection cannot be established - make sure to activate WebSockets for receiving live updates.`);
+    }
   }
 
   componentWillUnmount() {

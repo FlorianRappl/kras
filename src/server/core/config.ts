@@ -94,6 +94,7 @@ export const defaultConfig = {
     key: resolve(rootDir, 'cert', 'server.key'),
   },
   api: '/manage',
+  ws: true,
   map: {
     '/': 'https://httpbin.org',
     '/api': 'https://jsonplaceholder.typicode.com',
