@@ -36,7 +36,6 @@ export class Loader<T> extends React.Component<LoaderProps<T>, LoaderState<T>> {
 
   private resolve = (data: T) => {
     if (this.mounted) {
-      console.log(data);
       this.setState({
         status: 'loaded',
         data,

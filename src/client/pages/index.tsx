@@ -1,4 +1,5 @@
 export { Broadcast } from './broadcast';
+export { Requests } from './requests';
 export { Error } from './error';
 export { Home } from './home';
 export { Injector } from './injector';
