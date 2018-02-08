@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import { Table, Nav, NavItem, NavLink, TabContent, TabPane } from 'reactstrap';
-import { Page, Loader } from '../components';
-import { fullUrl } from '../utils';
+import { Page, Loader, Feed } from '../components';
+import { toTime } from '../utils';
 
 export interface RequestsProps extends RouteComponentProps<{}> {
   children?: React.ReactNode;
@@ -84,11 +84,6 @@ const TabNavItem = ({ activeTab, onToggle, name }: TabNavItemProps) => (
   </NavItem>
 );
 
-function toTime(time: string) {
-  const value = new Date(time);
-  return value.toLocaleTimeString();
-}
-
 class RequestsView extends React.Component<RequestsViewProps, RequestsViewState> {
   private ws: WebSocket;
 
@@ -100,7 +95,7 @@ class RequestsView extends React.Component<RequestsViewProps, RequestsViewState>
     };
   }
 
-  private dispatch(msg: KrasFeedMessage) {
+  private dispatch = (msg: KrasFeedMessage) => {
     switch (msg.type) {
       case 'request':
         this.setState({
@@ -120,23 +115,6 @@ class RequestsView extends React.Component<RequestsViewProps, RequestsViewState>
     }
   }
 
-  componentWillMount() {
-    const url = `ws${fullUrl('data').substr(4)}`;
-
-    try {
-      this.ws = new WebSocket(url);
-      this.ws.onmessage = (ev) => {
-        this.dispatch(JSON.parse(ev.data));
-      };
-    } catch (e) {
-      console.error(`WebSocket connection cannot be established - make sure to activate WebSockets for receiving live updates.`);
-    }
-  }
-
-  componentWillUnmount() {
-    this.ws.close();
-  }
-
   private toggle = (tab: string) => {
     this.setState({
       activeTab: tab,
@@ -147,7 +125,7 @@ class RequestsView extends React.Component<RequestsViewProps, RequestsViewState>
     const { activeTab, errors, messages, requests } = this.state;
 
     return (
-      <div>
+      <Feed feed="data" onMessage={this.dispatch}>
         <Nav tabs pills>
           <TabNavItem activeTab={activeTab} name="Requests" onToggle={this.toggle} />
           <TabNavItem activeTab={activeTab} name="Messages" onToggle={this.toggle} />
@@ -241,7 +219,7 @@ class RequestsView extends React.Component<RequestsViewProps, RequestsViewState>
             </Table>
           </TabPane>
         </TabContent>
-      </div>
+      </Feed>
     );
   }
 }
