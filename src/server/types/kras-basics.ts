@@ -16,4 +16,12 @@ export interface StoredFileEntry {
   error?: string;
 }
 
+export type LogEntryType = 'error';
+
+export interface LogEntry {
+  type: LogEntryType;
+  time: Date;
+  data: any;
+}
+
 export type Headers = Dict<string>;

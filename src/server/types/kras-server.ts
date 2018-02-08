@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { EventEmitter } from 'events';
 import { KrasInjector } from './kras-injector';
 import { KrasRecorder } from './kras-recorder';
+import { LogEntry } from './kras-basics';
 
 export interface KrasServerHook {
   handle(req: Request, res: Response): void;
@@ -39,4 +40,5 @@ export interface BaseKrasServer extends EventEmitter {
 export interface KrasServer extends BaseKrasServer {
   readonly injectors: Array<KrasInjector>;
   readonly recorder: KrasRecorder;
+  readonly logs: Array<LogEntry>;
 }
