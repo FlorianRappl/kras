@@ -58,7 +58,7 @@ export default class JsonInjector implements KrasInjector {
     for (const entry of entries) {
       const id = `${entry.file}#${entry.id}`;
       options[id] = {
-        description: `#${entry.id + 1} of ${entry.file} - ${entry.method} ${entry.url}. ${entry.error ? 'Error: ' + entry.error : ''}`,
+        description: `#${entry.id + 1} of ${entry.file} - ${entry.method} ${entry.url}. ${entry.error ? ' ' + entry.error : ''}`,
         title: basename(entry.file),
         type: 'checkbox',
         value: entry.active,

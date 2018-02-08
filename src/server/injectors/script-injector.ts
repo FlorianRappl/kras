@@ -43,6 +43,22 @@ interface ScriptFiles {
   [file: string]: ScriptFileEntry;
 }
 
+export function tryEvaluate(script: ScriptFileEntry) {
+  try {
+    const handler = asScript(script.file);
+
+    if (typeof handler !== 'function') {
+      throw new Error('Does not export a function - it will be ignored.');
+    }
+
+    script.error = undefined;
+    script.handler = handler;
+  } catch (e) {
+    script.error = e;
+    script.handler = errorHandler;
+  }
+}
+
 export default class ScriptInjector implements KrasInjector {
   private readonly db: ScriptFiles = {};
   private readonly options: KrasInjectorConfig & ScriptInjectorConfig;
@@ -71,7 +87,7 @@ export default class ScriptInjector implements KrasInjector {
 
     for (const entry of entries) {
       options[entry.file] = {
-        description: `Status of ${entry.file}. ${entry.error ? 'Error: ' + entry.error : ''}`,
+        description: `Status of ${entry.file}. ${entry.error ? ' ' + entry.error : ''}`,
         title: basename(entry.file),
         type: 'checkbox',
         value: entry.active,
@@ -107,19 +123,11 @@ export default class ScriptInjector implements KrasInjector {
       active: true,
     };
 
-    try {
-      const handler = asScript(file);
+    script.file = file;
+    tryEvaluate(script);
 
-      if (typeof handler === 'function') {
-        throw new Error('Does not export a function - it will be ignored.');
-      }
-
-      script.error = undefined;
-      script.handler = handler;
-    } catch (e) {
-      this.core.emit('error', e);
-      script.error = e;
-      script.handler = errorHandler;
+    if (script.error) {
+      this.core.emit('error', script.error);
     }
 
     this.db[file] = script;
