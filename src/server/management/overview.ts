@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { KrasServer, KrasWebSocket, RecordedRequest, RecordedMessage, RecordedError } from '../types';
+import { mapReverse } from '../helpers';
 
 interface Item {
   id: string;
@@ -20,16 +21,6 @@ function getType(content: string) {
   } catch (e) {
     return typeof content;
   }
-}
-
-function mapReverse<T, U>(items: Array<T>, select: (item: T, index: number) => U): Array<U> {
-  const dest: Array<U> = [];
-
-  for (let i = items.length; i--; ) {
-    dest.push(select(items[i], i));
-  }
-
-  return dest;
 }
 
 function convertRequest(item: RecordedRequest) {
@@ -65,7 +56,6 @@ function convertMiss(item: RecordedError) {
 
 export function overview(server: KrasServer) {
   return (req: Request, res: Response) => {
-    const id = req.params.id;
     res.json({
       requests: mapReverse(server.recorder.requests, convertRequest),
       errors: mapReverse(server.recorder.errors, convertMiss),
@@ -74,7 +64,7 @@ export function overview(server: KrasServer) {
   };
 }
 
-export function liveFeed(server: KrasServer) {
+export function liveData(server: KrasServer) {
   const clients: Array<KrasWebSocket> = [];
   const broadcast = (type: string, data: any) => {
     for (const client of clients) {

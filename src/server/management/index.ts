@@ -2,10 +2,11 @@ import { resolve } from 'path';
 import { Request, Response } from 'express';
 import { KrasConfiguration, KrasServer } from '../types';
 import { broadcastAt } from './broadcast';
-import { errorDetails, messageDetails, overview, requestDetails, liveFeed } from './overview';
+import { errorDetails, messageDetails, overview, requestDetails, liveData } from './overview';
 import { readSettings, saveSettings } from './settings';
 import { readInjectorsSettings, saveInjectorSettings } from './injectors';
 import { configOf } from './basics';
+import { recentLogsOf, allLogsOf, liveLogs } from './logs';
 
 function clientOf(server: KrasServer, config: KrasConfiguration) {
   const index = resolve(config.directory, config.client);
@@ -28,12 +29,17 @@ export function withManagement(server: KrasServer, config: KrasConfiguration) {
   server.at(api, 'config')
     .get(configOf(server, config));
 
+  server.at(api, 'logs')
+    .get(recentLogsOf(server))
+    .delete(allLogsOf(server))
+    .feed(liveLogs(server));
+
   server.at(api, 'broadcast')
     .post(broadcastAt(server));
 
   server.at(api, 'data')
     .get(overview(server))
-    .feed(liveFeed(server));
+    .feed(liveData(server));
 
   server.at(api, 'data', 'request', ':id')
     .get(requestDetails(server));
