@@ -52,7 +52,7 @@ More detailed information can be found in the [JSON injector documentation](json
 
 The HAR injector is quite similar to the JSON injector. It also deals with static content in form of JSON files. Here, however, the JSON schema is set to the standardized HAR (HTTP Archive) schema in version 1.3. The advantage of HAR is that all evergreen browsers know how to export it. That way it is very easy to consume a previous user flow, derive a unit test followed by a conclusion, and fix the bug. The barrier to reproduce the bug should be minimal (minus local database content). This injector does not have a randomized answer. It's only ability is to delay the responses to the original time. Otherwise, the response is generated nearly instantaneous.
 
-More detailed information can be found in the [JSON injector documentation](har-injector.md).
+More detailed information can be found in the [HAR injector documentation](har-injector.md).
 
 ### Script Injector
 
