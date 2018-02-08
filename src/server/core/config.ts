@@ -59,26 +59,28 @@ export function readConfiguration(dir: string, file: string): ConfigurationFile 
   return {};
 }
 
-export function mergeConfiguration(options: ConfigurationOptions, ...configs: Array<ConfigurationFile>): KrasConfiguration {
+export function mergeConfiguration(options?: ConfigurationOptions, ...configs: Array<ConfigurationFile>): KrasConfiguration {
   const config: KrasConfiguration = Object.assign({}, ...configs);
 
-  if (options.cert !== undefined || options.key !== undefined) {
-    config.ssl = {
-      cert: options.cert || (config.ssl && config.ssl.cert),
-      key: options.key || (config.ssl && config.ssl.key),
-    };
-  }
+  if (options) {
+    if (options.cert !== undefined || options.key !== undefined) {
+      config.ssl = {
+        cert: options.cert || (config.ssl && config.ssl.cert),
+        key: options.key || (config.ssl && config.ssl.key),
+      };
+    }
 
-  if (options.dir) {
-    config.directory = options.dir;
-  }
+    if (options.dir) {
+      config.directory = options.dir;
+    }
 
-  if (options.name) {
-    config.name = options.name;
-  }
+    if (options.name) {
+      config.name = options.name;
+    }
 
-  if (options.port) {
-    config.port = options.port;
+    if (options.port) {
+      config.port = options.port;
+    }
   }
 
   return config;

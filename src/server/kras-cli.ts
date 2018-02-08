@@ -1,13 +1,11 @@
 #!/usr/bin/env node
 
 import chalk from 'chalk';
-import { buildKras } from './kras';
-import { homedir } from 'os';
+import { buildKras, readKrasConfig, krasrc } from './kras';
 import { resolve } from 'path';
-import { readConfiguration, mergeConfiguration, defaultConfig } from './core/config';
+import { defaultConfig } from './core/config';
 import { author, currentDir } from './core/info';
 
-const krasrc = '.krasrc';
 const argv = require('yargs')
   .usage('Usage: $0 [options]')
   .alias('c', 'config')
@@ -36,7 +34,6 @@ function info(message: string) {
   return message && message.length > 50 ? (message.substr(0, 47) + ' ...') : message;
 }
 
-const dir = argv.d ? resolve(currentDir, argv.d) : currentDir;
 const options = {
   port: argv.p,
   name: argv.n,
@@ -45,13 +42,7 @@ const options = {
   dir: argv.d,
 };
 
-const config = mergeConfiguration(
-  options,
-  readConfiguration(homedir(), krasrc),
-  readConfiguration(dir, krasrc),
-  readConfiguration(dir, argv.c !== krasrc && argv.c),
-);
-
+const config = readKrasConfig(options, argv.c !== krasrc && argv.c);
 const server = buildKras(config);
 
 server.on('message', msg => {
