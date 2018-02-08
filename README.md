@@ -1,10 +1,10 @@
 # kras
 
 [![Build Status](https://travis-ci.org/FlorianRappl/kras.svg?branch=master)](https://travis-ci.org/FlorianRappl/kras)
-[![npm](https://img.shields.io/npm/v/kras.svg)]()
-[![node](https://img.shields.io/node/v/kras.svg)]()
-[![GitHub tag](https://img.shields.io/github/tag/FlorianRappl/kras.svg)]()
-[![GitHub issues](https://img.shields.io/github/issues/FlorianRappl/kras.svg)]()
+[![npm](https://img.shields.io/npm/v/kras.svg)](https://www.npmjs.com/package/kras)
+[![node](https://img.shields.io/node/v/kras.svg)](https://www.npmjs.com/package/kras)
+[![GitHub tag](https://img.shields.io/github/tag/FlorianRappl/kras.svg)](https://github.com/FlorianRappl/kras/releases)
+[![GitHub issues](https://img.shields.io/github/issues/FlorianRappl/kras.svg)](https://github.com/FlorianRappl/kras/issues)
 
 Efficient server proxying and mocking in Node.js. :muscle:
 
