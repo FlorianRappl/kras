@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.2.1
+
+- Script injector now ignores modules that do not export a function
+- Fixed the badge links in README
+- Fixed the double execution of build
+- Expose `readKrasConfig` and default `krasrc` name
+- Show available logs in the overview of the management client
+- Allow resetting logs via the management API
+
 ## 0.2.0
 
 - Implemented the deactivate WS setting
