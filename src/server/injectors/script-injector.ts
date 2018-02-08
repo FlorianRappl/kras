@@ -2,6 +2,7 @@ import { asScript, watch } from '../helpers/io';
 import { basename } from 'path';
 import { fromJson } from '../helpers/build-response';
 import { KrasRequest, KrasConfiguration, Headers, StoredFileEntry, KrasInjectorConfig, KrasInjector, KrasAnswer, KrasInjectorOptions } from '../types';
+import { EventEmitter } from 'events';
 
 function errorHandler(): undefined {
   return undefined;
@@ -45,10 +46,12 @@ interface ScriptFiles {
 export default class ScriptInjector implements KrasInjector {
   private readonly db: ScriptFiles = {};
   private readonly options: KrasInjectorConfig & ScriptInjectorConfig;
+  private readonly core: EventEmitter;
 
-  constructor(options: KrasInjectorConfig & ScriptInjectorConfig, config: KrasConfiguration) {
+  constructor(options: KrasInjectorConfig & ScriptInjectorConfig, config: KrasConfiguration, core: EventEmitter) {
     const directory = options.directory || config.directory;
     this.options = options;
+    this.core = core;
 
     watch(directory, '**/*.js', (ev, file) => {
       switch (ev) {
@@ -106,10 +109,15 @@ export default class ScriptInjector implements KrasInjector {
 
     try {
       const handler = asScript(file);
+
+      if (typeof handler === 'function') {
+        throw new Error('Does not export a function - it will be ignored.');
+      }
+
       script.error = undefined;
       script.handler = handler;
     } catch (e) {
-      console.error(e);
+      this.core.emit('error', e);
       script.error = e;
       script.handler = errorHandler;
     }

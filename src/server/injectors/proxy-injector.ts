@@ -20,6 +20,7 @@ interface WebSocketSessions {
 export default class ProxyInjector implements KrasInjector {
   private readonly sessions: WebSocketSessions = {};
   private readonly options: KrasInjectorConfig & ProxyInjectorConfig;
+  private readonly core: EventEmitter;
   private readonly map: {
     [target: string]: string;
   };
@@ -27,21 +28,22 @@ export default class ProxyInjector implements KrasInjector {
   constructor(options: KrasInjectorConfig & ProxyInjectorConfig, config: KrasConfiguration, core: EventEmitter) {
     this.options = options;
     this.map = config.map;
+    this.core = core;
 
-    core.on('user-connected', (e) => {
+    core.on('user-connected', e => {
       const url = this.map[e.target] + e.url;
       const ws = new WebSocket(url, {
         rejectUnauthorized: false,
       });
-      ws.on('message', (data) => {
+      ws.on('message', data => {
         core.emit('message', { data });
         e.ws.send(data);
       });
-      ws.on('error', (err) => core.emit('error', err));
+      ws.on('error', err => core.emit('error', err.error));
       this.sessions[e.id] = ws;
     });
 
-    core.on('user-disconnected', (e) => {
+    core.on('user-disconnected', e => {
       const ws = this.sessions[e.id];
       ws.close();
       delete this.sessions[e.id];
@@ -100,7 +102,7 @@ export default class ProxyInjector implements KrasInjector {
         proxy: this.options.proxy,
       }, (err, ans) => {
         if (err) {
-          console.error(err);
+          this.core.emit('error', err);
         }
 
         resolve(ans);
