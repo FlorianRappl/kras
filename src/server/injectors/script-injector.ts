@@ -21,18 +21,18 @@ export interface DynamicScriptInjectorConfig {
   [file: string]: boolean;
 }
 
-interface ScriptResponseBuilderData {
+export interface ScriptResponseBuilderData {
   statusCode: number;
   statusText: string;
   headers: Headers;
   content: string;
 }
 
-interface ScriptResponseBuilder {
+export interface ScriptResponseBuilder {
   (data: ScriptResponseBuilderData): KrasAnswer;
 }
 
-interface ScriptFileEntry {
+export interface ScriptFileEntry {
   active: boolean;
   file?: string;
   error?: string;
