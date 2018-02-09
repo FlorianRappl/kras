@@ -1,7 +1,11 @@
-import { SslConfiguration } from './kras-basics';
+import { SslConfiguration, LogLevel } from './kras-basics';
 import { KrasInjectorConfig } from './kras-injector';
 
-export interface WebServerConfiguration {
+export interface AppConfiguration {
+  logLevel: LogLevel;
+}
+
+export interface WebServerConfiguration extends AppConfiguration {
   map: {
     [target: string]: string;
   };
