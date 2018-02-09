@@ -1,14 +1,15 @@
 import { resolve } from 'path';
 import { existsSync, readFileSync } from 'fs';
-import { KrasConfiguration } from '../types';
+import { KrasConfiguration, LogLevel } from '../types';
 import { rootDir, name, version, currentDir } from './info';
 
 export interface ConfigurationOptions {
-  name: string;
-  port: number;
-  dir: string;
-  cert: string;
-  key: string;
+  name?: string;
+  port?: number;
+  logs?: LogLevel;
+  dir?: string;
+  cert?: string;
+  key?: string;
 }
 
 export interface ConfigurationFile {
@@ -70,6 +71,10 @@ export function mergeConfiguration(options?: ConfigurationOptions, ...configs: A
       };
     }
 
+    if (options.logs) {
+      config.logLevel = options.logs;
+    }
+
     if (options.dir) {
       config.directory = options.dir;
     }
@@ -95,6 +100,7 @@ export const defaultConfig = {
     cert: resolve(rootDir, 'cert', 'server.crt'),
     key: resolve(rootDir, 'cert', 'server.key'),
   },
+  logLevel: 'error',
   api: '/manage',
   ws: true,
   map: {
@@ -127,5 +133,5 @@ export const defaultConfig = {
 } as KrasConfiguration;
 
 export function buildConfiguration(config: Partial<ConfigurationFile> = {}): KrasConfiguration {
-  return Object.assign(defaultConfig, config);
+  return Object.assign({}, defaultConfig, config);
 }
