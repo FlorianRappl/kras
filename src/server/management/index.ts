@@ -2,6 +2,7 @@ import { resolve } from 'path';
 import { Request, Response } from 'express';
 import { KrasConfiguration, KrasServer } from '../types';
 import { broadcastAt } from './broadcast';
+import { readFile, saveFile } from './files';
 import { errorDetails, messageDetails, overview, requestDetails, liveData } from './overview';
 import { readSettings, saveSettings } from './settings';
 import { readInjectorsSettings, saveInjectorSettings } from './injectors';
@@ -49,6 +50,10 @@ export function withManagement(server: KrasServer, config: KrasConfiguration) {
 
   server.at(api, 'data', 'error', ':id')
     .get(errorDetails(server));
+
+  server.at(api, 'file', ':name')
+    .get(readFile(server))
+    .put(saveFile(server));
 
   server.at(api, 'settings')
     .get(readSettings(server))
