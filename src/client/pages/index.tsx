@@ -6,4 +6,5 @@ export { Injector } from './injector';
 export { Injectors } from './injectors';
 export { Message } from './message';
 export { Request } from './request';
+export { Editor } from './editor';
 export { Settings } from './settings';

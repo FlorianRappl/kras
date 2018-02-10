@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { Row, Col, Label, Badge, Button, Input, FormGroup, FormText } from 'reactstrap';
 import { Page } from '../components';
+import { Editor } from './editor';
 
 export interface InjectorProps {
   active: boolean;
@@ -27,7 +28,12 @@ export interface KrasInjectorCheckboxOption {
   value: boolean;
 }
 
-export type KrasInjectorOption = KrasInjectorStringOption | KrasInjectorCheckboxOption;
+export interface KrasInjectorFileOption {
+  type: 'file';
+  value: string;
+}
+
+export type KrasInjectorOption = KrasInjectorStringOption | KrasInjectorCheckboxOption | KrasInjectorFileOption;
 
 export interface KrasInjectorOptions {
   [name: string]: {
@@ -104,6 +110,13 @@ export class Injector extends React.Component<InjectorProps, InjectorState> {
         break;
       case 'text':
         input = <Input type="text" value={option.value} onChange={(e) => this.changeOption(e, name)} />;
+        break;
+      case 'file':
+        input = (
+          <FormGroup>
+            <Button color="info" size="sm" href={`#/editor/${option.value}`}>Open File in Editor</Button>
+          </FormGroup>
+        );
         break;
     }
 
