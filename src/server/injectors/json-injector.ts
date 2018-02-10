@@ -25,7 +25,7 @@ interface JsonFiles {
 }
 
 export interface JsonInjectorConfig {
-  directory?: string;
+  directory?: string | Array<string>;
 }
 
 export interface DynamicJsonInjectorConfig {

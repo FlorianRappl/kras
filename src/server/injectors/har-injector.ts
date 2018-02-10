@@ -73,7 +73,7 @@ interface HarFiles {
 }
 
 export interface HarInjectorConfig {
-  directory?: string;
+  directory?: string | Array<string>;
   delay?: boolean;
 }
 

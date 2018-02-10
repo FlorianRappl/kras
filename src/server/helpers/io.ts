@@ -60,17 +60,27 @@ interface GazeWatcher extends EventEmitter {
   };
 }
 
-export function watch(directory: string, pattern: string, callback: (type: string, file: string) => void) {
-  const opt = { cwd: directory };
-  gaze(pattern, opt, (err: Error, watcher: GazeWatcher) => {
-    const watched = watcher.watched();
-    const updateFile = (file: string) => callback('update', file);
-    const deleteFile = (file: string) => callback('delete', file);
-    const loadFile = (file: string) => callback('create', file);
-    const loadDir = (dir: string) => watched[dir].forEach(loadFile);
-    Object.keys(watched).forEach(loadDir);
-    watcher.on('changed', updateFile);
-    watcher.on('added', loadFile);
-    watcher.on('deleted', deleteFile);
-  });
+interface GazeUnwatcher {
+  (): void;
+}
+
+export function watch(directory: string | Array<string>, pattern: string, callback: (type: string, file: string) => void): GazeUnwatcher {
+  if (typeof directory === 'string') {
+    const opt = { cwd: directory };
+    const w = gaze(pattern, opt, (err: Error, watcher: GazeWatcher) => {
+      const watched = watcher.watched();
+      const updateFile = (file: string) => callback('update', file);
+      const deleteFile = (file: string) => callback('delete', file);
+      const loadFile = (file: string) => callback('create', file);
+      const loadDir = (dir: string) => watched[dir].forEach(loadFile);
+      Object.keys(watched).forEach(loadDir);
+      watcher.on('changed', updateFile);
+      watcher.on('added', loadFile);
+      watcher.on('deleted', deleteFile);
+    });
+    return () => w.close();
+  } else if (Array.isArray(directory)) {
+    const ws = directory.map(dir => watch(dir, pattern, callback));
+    return () => ws.forEach(w => w());
+  }
 }

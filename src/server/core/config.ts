@@ -29,9 +29,12 @@ export function makePathsAbsolute(baseDir: string, config: ConfigurationFile) {
     if (config.injectors) {
       for (const name of Object.keys(config.injectors)) {
         const injector = config.injectors[name];
+        const directory = injector.directory;
 
-        if (injector.directory) {
-          injector.directory = resolve(baseDir, injector.directory);
+        if (typeof directory === 'string') {
+          injector.directory = resolve(baseDir, directory);
+        } else if (Array.isArray(directory)) {
+          injector.directory = directory.map(dir => resolve(baseDir, dir));
         }
       }
     }

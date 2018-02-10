@@ -14,7 +14,7 @@ export interface ScriptContextData {
 }
 
 export interface ScriptInjectorConfig {
-  directory?: string;
+  directory?: string | Array<string>;
   extended?: ScriptContextData;
 }
 
