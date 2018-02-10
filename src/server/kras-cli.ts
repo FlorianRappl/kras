@@ -38,14 +38,17 @@ function info(message: string) {
 }
 
 function isDebug(logLevel: string) {
-  return logLevel !== 'error';
+  // level is debug, i.e., strongest level already
+  return logLevel === 'debug';
 }
 
 function isInfo(logLevel: string) {
-  return server.logLevel === 'info';
+  // level is not error, i.e., at least info is given
+  return server.logLevel !== 'error';
 }
 
 function isError(logLevel: string) {
+  // no matter what the level is, the minimum level is always error
   return true;
 }
 

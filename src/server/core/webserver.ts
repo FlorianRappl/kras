@@ -94,9 +94,11 @@ export class WebServer extends EventEmitter implements BaseKrasServer {
     const ws = this.sockets && this.sockets.getWss();
 
     if (!value && ws) {
+      this.emit('info', 'Turned off WebSocket support');
       ws.close();
       this.sockets = undefined;
     } else if (!ws && value) {
+      this.emit('info', 'Turned on WebSocket support');
       this.sockets = expressWs(this.app, this.server);
     }
   }
@@ -158,6 +160,7 @@ export class WebServer extends EventEmitter implements BaseKrasServer {
         return hook.handle(req, res);
       }
 
+      this.emit('debug', `Handled CORS request to ${req.url}`);
       return corsHandler(req, res);
     });
 
@@ -184,6 +187,7 @@ export class WebServer extends EventEmitter implements BaseKrasServer {
 
       if (socket) {
         const clients = socket.clients;
+        this.emit('debug', `Broadcasting to ${clients.length} client(s)`);
         clients.forEach(client => client.send(data));
       }
     }
