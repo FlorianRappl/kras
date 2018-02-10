@@ -1,11 +1,15 @@
 import * as React from 'react';
 import { TabContent, TabPane, Nav, NavItem, NavLink, Alert } from 'reactstrap';
-import { RouteComponentProps } from 'react-router';
+import { Link, RouteComponentProps } from 'react-router-dom';
 import { Page, Loader } from '../components';
 import { Injector, KrasInjectorOptions } from './injector';
 import { request } from '../utils';
 
-export interface InjectorsProps extends RouteComponentProps<{}> {
+export interface InjectorsParams {
+  injector: string;
+}
+
+export interface InjectorsProps extends RouteComponentProps<InjectorsParams> {
   children?: React.ReactNode;
 }
 
@@ -21,6 +25,7 @@ interface KrasInjectors {
 
 interface InjectorsViewProps {
   data: KrasInjectors;
+  injector?: string;
   children?: React.ReactNode;
 }
 
@@ -35,26 +40,26 @@ class InjectorsView extends React.Component<InjectorsViewProps, InjectorsViewSta
 
     this.state = {
       injectors: props.data.injectors,
-      activeTab: props.data.injectors.map(inj => inj.name)[0],
+      activeTab: props.injector || props.data.injectors.map(inj => inj.name)[0],
     };
   }
 
-  private toggle(e: React.MouseEvent<any>, activeTab: string) {
-    if (this.state.activeTab !== activeTab) {
+  componentWillReceiveProps(nextProps: InjectorsViewProps) {
+    if (nextProps.injector && nextProps.injector !== this.state.activeTab) {
       this.setState({
-        activeTab,
+        activeTab: nextProps.injector,
       });
     }
-
-    e.preventDefault();
-  };
+  }
 
   private saveChanges(injector: KrasInjector, options: KrasInjectorOptions) {
     const { injectors } = this.state;
     const data: { [x: string]: any; } = {};
 
     for (const option of Object.keys(options)) {
-      data[option] = options[option].value;
+      if (option && option[0] !== '_') {
+        data[option] = options[option].value;
+      }
     }
 
     request({
@@ -90,9 +95,9 @@ class InjectorsView extends React.Component<InjectorsViewProps, InjectorsViewSta
               <NavItem key={injector.name}>
                 <NavLink
                   style={{ cursor: 'pointer' }}
-                  href="#"
+                  tag={Link}
                   className={activeTab === injector.name ? 'active' : '' }
-                  onClick={(e) => this.toggle(e, injector.name)}>
+                  {...{ to: `/injectors/${injector.name}` }}>
                   {injector.name}
                 </NavLink>
               </NavItem>
@@ -113,8 +118,8 @@ class InjectorsView extends React.Component<InjectorsViewProps, InjectorsViewSta
   }
 }
 
-export const Injectors = ({}: InjectorsProps) => (
+export const Injectors = ({ match }: InjectorsProps) => (
   <Page title="Injectors" description="Injector specific settings and options to play around with.">
-    <Loader component={InjectorsView} url="injector" />
+    <Loader component={InjectorsView} url="injector" forward={match.params} />
   </Page>
 );

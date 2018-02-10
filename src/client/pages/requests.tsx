@@ -1,10 +1,14 @@
 import * as React from 'react';
-import { RouteComponentProps } from 'react-router-dom';
+import { Link, RouteComponentProps } from 'react-router-dom';
 import { Table, Nav, NavItem, NavLink, TabContent, TabPane } from 'reactstrap';
 import { Page, Loader, Feed } from '../components';
 import { toTime } from '../utils';
 
-export interface RequestsProps extends RouteComponentProps<{}> {
+export interface RequestsParams {
+  tab: string;
+}
+
+export interface RequestsProps extends RouteComponentProps<RequestsParams> {
   children?: React.ReactNode;
 }
 
@@ -56,6 +60,7 @@ interface RequestsViewProps {
     errors: Array<KrasErrorData>;
     messages: Array<KrasMessageData>;
   };
+  tab?: string;
   children?: React.ReactNode;
 }
 
@@ -69,30 +74,35 @@ interface RequestsViewState {
 interface TabNavItemProps {
   activeTab: string;
   name: string;
-  onToggle(name: string): void;
 }
 
-const TabNavItem = ({ activeTab, onToggle, name }: TabNavItemProps) => (
+const TabNavItem = ({ activeTab, name }: TabNavItemProps) => (
   <NavItem>
     <NavLink
       style={{ cursor: 'pointer' }}
-      href="#"
+      tag={Link}
       className={activeTab === name ? 'active' : ''}
-      onClick={(e) => { e.preventDefault(); onToggle(name); }}>
+      {...{ to: `/requests/${name}` }}>
       {name}
     </NavLink>
   </NavItem>
 );
 
 class RequestsView extends React.Component<RequestsViewProps, RequestsViewState> {
-  private ws: WebSocket;
-
   constructor(props: RequestsViewProps) {
     super(props);
     this.state = {
-      activeTab: 'Requests',
+      activeTab: props.tab || 'Requests',
       ...props.data,
     };
+  }
+
+  componentWillReceiveProps(nextProps: RequestsViewProps) {
+    if (nextProps.tab && nextProps.tab !== this.state.activeTab) {
+      this.setState({
+        activeTab: nextProps.tab,
+      });
+    }
   }
 
   private dispatch = (msg: KrasFeedMessage) => {
@@ -115,21 +125,15 @@ class RequestsView extends React.Component<RequestsViewProps, RequestsViewState>
     }
   }
 
-  private toggle = (tab: string) => {
-    this.setState({
-      activeTab: tab,
-    });
-  };
-
   render() {
     const { activeTab, errors, messages, requests } = this.state;
 
     return (
       <Feed feed="data" onMessage={this.dispatch}>
         <Nav tabs pills>
-          <TabNavItem activeTab={activeTab} name="Requests" onToggle={this.toggle} />
-          <TabNavItem activeTab={activeTab} name="Messages" onToggle={this.toggle} />
-          <TabNavItem activeTab={activeTab} name="Errors" onToggle={this.toggle} />
+          <TabNavItem activeTab={activeTab} name="Requests" />
+          <TabNavItem activeTab={activeTab} name="Messages" />
+          <TabNavItem activeTab={activeTab} name="Errors" />
         </Nav>
         <TabContent activeTab={activeTab}>
           <TabPane tabId="Requests">
@@ -224,8 +228,8 @@ class RequestsView extends React.Component<RequestsViewProps, RequestsViewState>
   }
 }
 
-export const Requests = ({}: RequestsProps) => (
+export const Requests = ({ match }: RequestsProps) => (
   <Page title="Requests" description="Overview of the messages, succeeded and failed requests.">
-    <Loader url="data" component={RequestsView} />
+    <Loader url="data" component={RequestsView} forward={match.params} />
   </Page>
 );
