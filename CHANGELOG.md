@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.3.0
+
+- Included log levels, `error`, `debug`, and `info`
+- Introduced more log messages (if wanted)
+- Go back: store current tab in route
+- Provide ability to edit files in the client
+- Added support for multi directories in the HAR, JSON, and Script injector
+
 ## 0.2.1
 
 - Script injector now ignores modules that do not export a function

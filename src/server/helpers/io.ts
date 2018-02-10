@@ -60,11 +60,11 @@ interface GazeWatcher extends EventEmitter {
   };
 }
 
-interface GazeUnwatcher {
+export interface Unwatcher {
   (): void;
 }
 
-export function watch(directory: string | Array<string>, pattern: string, callback: (type: string, file: string) => void): GazeUnwatcher {
+export function watch(directory: string | Array<string>, pattern: string, callback: (type: string, file: string) => void): Unwatcher {
   if (typeof directory === 'string') {
     const opt = { cwd: directory };
     const w = gaze(pattern, opt, (err: Error, watcher: GazeWatcher) => {
