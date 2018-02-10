@@ -16,7 +16,7 @@ export interface StoredFileEntry {
   error?: string;
 }
 
-export type LogLevel = 'info' | 'debug' | 'error';
+export type LogLevel = 'debug' | 'info' | 'error';
 
 export type LogEntryType = 'error';
 

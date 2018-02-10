@@ -1,4 +1,5 @@
 import { asJson, watch } from '../helpers/io';
+import { editFileOption } from '../helpers/build-options';
 import { basename } from 'path';
 import { fromJson } from '../helpers/build-response';
 import { compareRequests } from '../helpers/compare-requests';
@@ -52,17 +53,23 @@ export default class JsonInjector implements KrasInjector {
   }
 
   getOptions(): KrasInjectorOptions {
-    const entries = this.getAllEntries();
     const options: KrasInjectorOptions = {};
+    const fileNames = Object.keys(this.db);
 
-    for (const entry of entries) {
-      const id = `${entry.file}#${entry.id}`;
-      options[id] = {
-        description: `#${entry.id + 1} of ${entry.file} - ${entry.method} ${entry.url}. ${entry.error ? ' ' + entry.error : ''}`,
-        title: basename(entry.file),
-        type: 'checkbox',
-        value: entry.active,
-      };
+    for (const fileName of fileNames) {
+      const items = this.db[fileName];
+      options[`_${fileName}`] = editFileOption(fileName);
+
+      for (let i = 0; i < items.length; i++) {
+        const item = items[i];
+        const id = `${fileName}#${i}`;
+        options[id] = {
+          description: `#${i + 1} of ${fileName} - ${item.request.method} ${item.request.url}.`,
+          title: basename(fileName),
+          type: 'checkbox',
+          value: item.active,
+        };
+      }
     }
 
     return options;
@@ -121,26 +128,6 @@ export default class JsonInjector implements KrasInjector {
         }
       }
     }
-  }
-
-  private getAllEntries() {
-    const fileNames = Object.keys(this.db);
-    const entries: Array<StoredFileEntry> = [];
-
-    for (const fileName of fileNames) {
-      const items = this.db[fileName];
-
-      for (const item of items) {
-        entries.push({
-          active: item.active,
-          file: fileName,
-          method: item.request.method,
-          url: item.request.url,
-        });
-      }
-    }
-
-    return entries;
   }
 
   handle(req: KrasRequest) {

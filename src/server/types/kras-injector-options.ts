@@ -10,7 +10,12 @@ export interface KrasInjectorCheckboxOption {
   value: boolean;
 }
 
-export type KrasInjectorValueOption = KrasInjectorStringOption | KrasInjectorCheckboxOption;
+export interface KrasInjectorFileOption {
+  type: 'file';
+  value: string;
+}
+
+export type KrasInjectorValueOption = KrasInjectorStringOption | KrasInjectorCheckboxOption | KrasInjectorFileOption;
 
 export type KrasInjectorOption = {
   title: string;

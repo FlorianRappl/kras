@@ -1,5 +1,6 @@
 import { asScript, watch } from '../helpers/io';
 import { basename } from 'path';
+import { editFileOption } from '../helpers/build-options';
 import { fromJson } from '../helpers/build-response';
 import { KrasRequest, KrasConfiguration, Headers, StoredFileEntry, KrasInjectorConfig, KrasInjector, KrasAnswer, KrasInjectorOptions } from '../types';
 import { EventEmitter } from 'events';
@@ -82,15 +83,18 @@ export default class ScriptInjector implements KrasInjector {
   }
 
   getOptions(): KrasInjectorOptions {
-    const entries = this.getAllEntries();
     const options: KrasInjectorOptions = {};
+    const fileNames = Object.keys(this.db);
+    const entries: Array<StoredFileEntry> = [];
 
-    for (const entry of entries) {
-      options[entry.file] = {
-        description: `Status of ${entry.file}. ${entry.error ? ' ' + entry.error : ''}`,
-        title: basename(entry.file),
+    for (const fileName of fileNames) {
+      const item = this.db[fileName];
+      options[`_${fileName}`] = editFileOption(fileName);
+      options[fileName] = {
+        description: `Status of ${fileName}. ${item.error ? ' ' + item.error : ''}`,
+        title: basename(fileName),
         type: 'checkbox',
-        value: entry.active,
+        value: item.active,
       };
     }
 
@@ -141,22 +145,6 @@ export default class ScriptInjector implements KrasInjector {
         script.active = entry.active;
       }
     }
-  }
-
-  private getAllEntries() {
-    const fileNames = Object.keys(this.db);
-    const entries: Array<StoredFileEntry> = [];
-
-    for (const fileName of fileNames) {
-      const item = this.db[fileName];
-      entries.push({
-        active: item.active,
-        file: fileName,
-        error: item.error,
-      });
-    }
-
-    return entries;
   }
 
   handle(req: KrasRequest) {

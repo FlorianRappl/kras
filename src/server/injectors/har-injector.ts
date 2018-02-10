@@ -1,5 +1,6 @@
 import { asJson, watch } from '../helpers/io';
 import { basename } from 'path';
+import { editFileOption } from '../helpers/build-options';
 import { fromHar, HarResponse, HarRequest, HarHeaders } from '../helpers/build-response';
 import { compareRequests } from '../helpers/compare-requests';
 import { KrasInjector, KrasInjectorConfig, KrasConfiguration, KrasRequest, KrasAnswer, Headers, StoredFileEntry, KrasInjectorOptions } from '../types';
@@ -105,17 +106,23 @@ export default class HarInjector implements KrasInjector {
   }
 
   getOptions(): KrasInjectorOptions {
-    const entries = this.getAllEntries();
     const options: KrasInjectorOptions = {};
+    const fileNames = Object.keys(this.db);
 
-    for (const entry of entries) {
-      const id = `${entry.file}#${entry.id}`;
-      options[id] = {
-        description: `#${entry.id + 1} of ${entry.file} - ${entry.method} ${entry.url}. ${entry.error ? 'Error: ' + entry.error : ''}`,
-        title: basename(entry.file),
-        type: 'checkbox',
-        value: entry.active,
-      };
+    for (const fileName of fileNames) {
+      const items = this.db[fileName];
+      options[`_${fileName}`] = editFileOption(fileName);
+
+      for (let i = 0; i < items.length; i++) {
+        const item = items[i];
+        const id = `${fileName}#${i}`;
+        options[id] = {
+          description: `#${i + 1} of ${fileName} - ${item.request.method} ${item.request.url}.`,
+          title: basename(fileName),
+          type: 'checkbox',
+          value: item.active,
+        };
+      }
     }
 
     return options;
@@ -178,28 +185,6 @@ export default class HarInjector implements KrasInjector {
       request,
       response,
     };
-  }
-
-  private getAllEntries() {
-    const fileNames = Object.keys(this.db);
-    const entries: Array<StoredFileEntry> = [];
-
-    for (const fileName of fileNames) {
-      const items = this.db[fileName];
-
-      for (let i = 0; i < items.length; i++) {
-        const item = items[i];
-        entries.push({
-          id: i,
-          active: item.active,
-          file: fileName,
-          method: item.request.method,
-          url: item.request.url
-        });
-      }
-    }
-
-    return entries;
   }
 
   private setAllEntries(entries: Array<{ file: string, id: number, active: boolean }>) {
