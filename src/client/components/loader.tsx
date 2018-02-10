@@ -19,6 +19,7 @@ export interface LoaderProps<T> {
   method?: RequestMethod;
   query?: string;
   component: React.ComponentType<LoadedProps<T>>;
+  forward?: any;
   children?: void;
 }
 
@@ -70,7 +71,7 @@ export class Loader<T> extends React.Component<LoaderProps<T>, LoaderState<T>> {
 
   render() {
     const { data, status, error } = this.state;
-    const { component: Component } = this.props;
+    const { component: Component, forward = {} } = this.props;
 
     switch (status) {
       case 'none':
@@ -78,7 +79,7 @@ export class Loader<T> extends React.Component<LoaderProps<T>, LoaderState<T>> {
       case 'loading':
         return <Spinner />;
       case 'loaded':
-        return data && !error ? <Component data={data} /> : (
+        return data && !error ? <Component {...forward} data={data} /> : (
           <Alert color="danger">
             {error || 'Error while loading the data. Is the server still running?'}
           </Alert>
