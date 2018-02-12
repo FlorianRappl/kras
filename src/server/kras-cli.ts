@@ -86,13 +86,13 @@ server.on('user-disconnected', msg => {
 
 server.on('message', msg => {
   if (isDebug(server.logLevel)) {
-    console.log(`${chalk.green('WS')} << ${chalk.white(info(msg.data))}`);
+    console.log(`${chalk.green('WS')} << ${chalk.white(info(msg.content))}`);
   }
 });
 
 server.on('broadcast', msg => {
   if (isInfo(server.logLevel)) {
-    console.log(`${chalk.green('WS')} >> ${chalk.white(info(msg.data))}`);
+    console.log(`${chalk.green('WS')} >> ${chalk.white(info(msg.content))}`);
   }
 });
 

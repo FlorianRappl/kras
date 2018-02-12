@@ -123,7 +123,10 @@ export function withInjectors(server: KrasServer, config: KrasConfiguration) {
 
   for (const name of names) {
     const options = config.injectors[name];
-    const Injector = findInjector(`${name}-injector`) || findInjector(`./${name}-injector`);
+    const Injector = findInjector(resolve(config.directory, `${name}-injector`)) ||
+      findInjector(`kras-${name}-injector`) ||
+      findInjector(resolve(process.cwd(), `${name}-injector`)) ||
+      findInjector(resolve(__dirname, `${name}-injector`));
 
     if (Injector) {
       server.injectors.push(new Injector(options, config, server));

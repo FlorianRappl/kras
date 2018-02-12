@@ -3,7 +3,9 @@ import { Recorder } from './recorder';
 import { WebServerConfiguration, KrasRequest, KrasAnswer } from '../types';
 
 export interface WebSocketMessage {
-  data: string;
+  content: string;
+  from: string;
+  to: string;
 }
 
 export class MockServerCore extends WebServer {
@@ -15,7 +17,7 @@ export class MockServerCore extends WebServer {
     for (const evt of ['message', 'broadcast']) {
       this.on(evt, (msg: WebSocketMessage) => {
         const time = new Date();
-        this.recorder.message(time, msg.data);
+        this.recorder.message(time, msg);
       });
     }
 

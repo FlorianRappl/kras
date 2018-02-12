@@ -1,5 +1,5 @@
-import { asJson, watch } from '../helpers/io';
-import { editFileOption } from '../helpers/build-options';
+import { asJson, watch, Watcher } from '../helpers/io';
+import { appendFileOption, appendDirectoryOptions } from '../helpers/build-options';
 import { basename } from 'path';
 import { fromJson } from '../helpers/build-response';
 import { compareRequests } from '../helpers/compare-requests';
@@ -35,12 +35,13 @@ export interface DynamicJsonInjectorConfig {
 export default class JsonInjector implements KrasInjector {
   private readonly db: JsonFiles = {};
   private readonly options: KrasInjectorConfig & JsonInjectorConfig;
+  private readonly watcher: Watcher;
 
   constructor(options: KrasInjectorConfig & JsonInjectorConfig, config: KrasConfiguration) {
     const directory = options.directory || config.directory;
     this.options = options;
 
-    watch(directory, '**/*.json', (ev, file) => {
+    this.watcher = watch(directory, '**/*.json', (ev, file) => {
       switch (ev) {
         case 'create':
         case 'update':
@@ -55,10 +56,11 @@ export default class JsonInjector implements KrasInjector {
   getOptions(): KrasInjectorOptions {
     const options: KrasInjectorOptions = {};
     const fileNames = Object.keys(this.db);
+    appendDirectoryOptions(options, this.watcher.directories);
 
     for (const fileName of fileNames) {
       const items = this.db[fileName];
-      options[`_${fileName}`] = editFileOption(fileName);
+      appendFileOption(options, fileName);
 
       for (let i = 0; i < items.length; i++) {
         const item = items[i];
@@ -76,13 +78,34 @@ export default class JsonInjector implements KrasInjector {
   }
 
   setOptions(options: DynamicJsonInjectorConfig): void {
-    const entries = Object.keys(options).map(option => ({
-      file: option.substr(0, option.indexOf('#')),
-      id: +option.substr(option.indexOf('#') + 1),
-      active: options[option],
-    }));
+    const directories = [...this.watcher.directories];
 
-    this.setAllEntries(entries);
+    for (const option of Object.keys(options)) {
+      const script = this.db[option];
+      const value = options[option];
+
+      if (option.indexOf('#') > 0 && typeof value === 'boolean') {
+        const file = option.substr(0, option.indexOf('#'));
+        const items = this.db[file];
+
+        if (items) {
+          const id = +option.substr(option.indexOf('#') + 1);
+          const item = items[id];
+
+          if (item) {
+            item.active = value;
+          }
+        }
+      } else if (typeof value === 'string') {
+        const index = directories.indexOf(option);
+
+        if (index !== -1) {
+          directories[index] = value;
+        }
+      }
+    }
+
+    this.watcher.directories = directories;
   }
 
   get name() {
@@ -114,20 +137,6 @@ export default class JsonInjector implements KrasInjector {
     }
 
     this.db[file] = items;
-  }
-
-  private setAllEntries(entries: Array<StoredFileEntry>) {
-    for (const entry of entries) {
-      const items = this.db[entry.file];
-
-      if (items) {
-        const item = items[entry.id];
-
-        if (item) {
-          item.active = entry.active;
-        }
-      }
-    }
   }
 
   handle(req: KrasRequest) {

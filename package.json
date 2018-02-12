@@ -1,6 +1,6 @@
 {
   "name": "kras",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Efficient server proxying and mocking in Node.js.",
   "main": "dist/server/kras.js",
   "types": "dist/server/kras.d.ts",
@@ -38,7 +38,6 @@
     "gaze": "^1.1.2",
     "request": "^2.79.0",
     "send": "^0.15.1",
-    "ts-node": "^4.1.0",
     "uuid": "^3.0.1",
     "ws": "^1.1.4",
     "yargs": "^6.6.0"
@@ -79,6 +78,7 @@
     "source-map-loader": "^0.2.3",
     "style-loader": "^0.20.1",
     "ts-jest": "^22.0.3",
+    "ts-node": "^4.1.0",
     "typescript": "^2.7.1",
     "webpack": "^3.10.0",
     "webpack-dev-server": "^2.11.1"

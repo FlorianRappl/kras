@@ -36,8 +36,12 @@ export default class ProxyInjector implements KrasInjector {
         rejectUnauthorized: false,
       });
       ws.on('message', data => {
-        core.emit('message', { data });
+        core.emit('message', { content: data, from: url, to: e.id });
         e.ws.send(data);
+      });
+      e.ws.on('message', (data: WebSocket.Data) => {
+        core.emit('message', { content: data, to: url, from: e.id });
+        ws.send(data);
       });
       ws.on('error', err => core.emit('error', err.error));
       this.sessions[e.id] = ws;

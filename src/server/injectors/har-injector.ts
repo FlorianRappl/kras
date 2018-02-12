@@ -1,6 +1,6 @@
-import { asJson, watch } from '../helpers/io';
+import { asJson, watch, Watcher } from '../helpers/io';
 import { basename } from 'path';
-import { editFileOption } from '../helpers/build-options';
+import { appendFileOption, appendDirectoryOptions } from '../helpers/build-options';
 import { fromHar, HarResponse, HarRequest, HarHeaders } from '../helpers/build-response';
 import { compareRequests } from '../helpers/compare-requests';
 import { KrasInjector, KrasInjectorConfig, KrasConfiguration, KrasRequest, KrasAnswer, Headers, StoredFileEntry, KrasInjectorOptions } from '../types';
@@ -87,13 +87,14 @@ export default class HarInjector implements KrasInjector {
   private readonly map: {
     [target: string]: string;
   };
+  private readonly watcher: Watcher;
 
   constructor(options: KrasInjectorConfig & HarInjectorConfig, config: KrasConfiguration) {
     const directory = options.directory || config.directory;
     this.options = options;
     this.map = config.map;
 
-    watch(directory, '**/*.har', (ev, file) => {
+    this.watcher = watch(directory, '**/*.har', (ev, file) => {
       switch (ev) {
         case 'create':
         case 'update':
@@ -108,10 +109,11 @@ export default class HarInjector implements KrasInjector {
   getOptions(): KrasInjectorOptions {
     const options: KrasInjectorOptions = {};
     const fileNames = Object.keys(this.db);
+    appendDirectoryOptions(options, this.watcher.directories);
 
     for (const fileName of fileNames) {
       const items = this.db[fileName];
-      options[`_${fileName}`] = editFileOption(fileName);
+      appendFileOption(options, fileName);
 
       for (let i = 0; i < items.length; i++) {
         const item = items[i];
@@ -129,13 +131,34 @@ export default class HarInjector implements KrasInjector {
   }
 
   setOptions(options: DynamicHarInjectorConfig): void {
-    const entries = Object.keys(options).map(option => ({
-      file: option.substr(0, option.indexOf('#')),
-      id: +option.substr(option.indexOf('#') + 1),
-      active: options[option],
-    }));
+    const directories = [...this.watcher.directories];
 
-    this.setAllEntries(entries);
+    for (const option of Object.keys(options)) {
+      const script = this.db[option];
+      const value = options[option];
+
+      if (option.indexOf('#') > 0 && typeof value === 'boolean') {
+        const file = option.substr(0, option.indexOf('#'));
+        const items = this.db[file];
+
+        if (items) {
+          const id = +option.substr(option.indexOf('#') + 1);
+          const item = items[id];
+
+          if (item) {
+            item.active = value;
+          }
+        }
+      } else if (typeof value === 'string') {
+        const index = directories.indexOf(option);
+
+        if (index !== -1) {
+          directories[index] = value;
+        }
+      }
+    }
+
+    this.watcher.directories = directories;
   }
 
   get name() {
@@ -185,20 +208,6 @@ export default class HarInjector implements KrasInjector {
       request,
       response,
     };
-  }
-
-  private setAllEntries(entries: Array<{ file: string, id: number, active: boolean }>) {
-    for (const entry of entries) {
-      const items = this.db[entry.file];
-
-      if (items) {
-        const item = items[entry.id];
-
-        if (item) {
-          item.active = entry.active;
-        }
-      }
-    }
   }
 
   handle(req: KrasRequest) {

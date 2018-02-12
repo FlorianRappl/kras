@@ -21,6 +21,8 @@ export interface RecordedMessage {
   id: string;
   time: Date;
   content: string;
+  from: string;
+  to: string;
 }
 
 export interface KrasRecorder extends EventEmitter {

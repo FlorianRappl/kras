@@ -66,7 +66,11 @@ class InjectorsView extends React.Component<InjectorsViewProps, InjectorsViewSta
       method: 'PUT',
       url: `injector/${injector.name}`,
       body: JSON.stringify(data),
-    });
+    }).then(() => request({
+      url: 'injector'
+    })).then(({ injectors }) => this.setState({
+      injectors,
+    }));
 
     this.setState({
       injectors: injectors.map(inj => inj !== injector ? inj : ({

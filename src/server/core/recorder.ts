@@ -32,12 +32,12 @@ export class Recorder extends EventEmitter implements KrasRecorder {
     this.emit('recorded-request', item);
   }
 
-  message(time: Date, content: string) {
+  message(time: Date, data: { content: string, from: string, to: string }) {
     const id = uuid();
     const item = {
       id,
       time,
-      content,
+      ...data,
     };
 
     this.messages.push(item);

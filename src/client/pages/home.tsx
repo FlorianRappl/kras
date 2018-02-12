@@ -57,7 +57,8 @@ class HomeView extends React.Component<HomeViewProps, HomeViewState> {
       <Feed feed="logs" onMessage={this.dispatch}>
         <Details fields={[
           { label: 'Name', value: config.name },
-          { label: 'Version', value: config.version }
+          { label: 'Version', value: config.version },
+          { label: 'Base Directory', value: config.directory }
         ]} />
         {
           !!items.length && (

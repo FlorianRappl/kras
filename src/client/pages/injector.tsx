@@ -2,6 +2,7 @@ import * as React from 'react';
 import { Row, Col, Label, Badge, Button, Input, FormGroup, FormText } from 'reactstrap';
 import { Page } from '../components';
 import { Editor } from './editor';
+import { areDifferent } from '../utils';
 
 export interface InjectorProps {
   active: boolean;
@@ -44,7 +45,7 @@ export interface KrasInjectorOptions {
 
 function compareOptions(original: KrasInjectorOptions, options: KrasInjectorOptions) {
   for (const option of Object.keys(original)) {
-    if (options[option].value !== original[option].value) {
+    if (!options[option] || options[option].value !== original[option].value) {
       return false;
     }
   }
@@ -61,6 +62,20 @@ export class Injector extends React.Component<InjectorProps, InjectorState> {
         ...props.options,
       },
     };
+  }
+
+  componentWillReceiveProps(nextProps: InjectorProps) {
+    const currentKeys = Object.keys(this.state.options);
+    const nextKeys = Object.keys(nextProps.options);
+
+    if (areDifferent(currentKeys, nextKeys)) {
+      this.setState({
+        hasChanges: false,
+        options: {
+          ...nextProps.options
+        },
+      });
+    }
   }
 
   private changeOption(e: React.ChangeEvent<HTMLInputElement>, name: string) {

@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.3.1
+
+- Edit directories during runtime in the client
+- Extended injector resolution algorithm
+- Allow transmitting WebSocket send
+
 ## 0.3.0
 
 - Included log levels, `error`, `debug`, and `info`

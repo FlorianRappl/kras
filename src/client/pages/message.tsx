@@ -15,6 +15,8 @@ interface MessageViewProps {
     id: string;
     time: string;
     content: string;
+    from: string;
+    to: string;
   };
   children?: React.ReactNode;
 }
@@ -25,6 +27,8 @@ const MessageView = ({ data }: MessageViewProps) => (
       !!data.id && <Details fields={[
         { label: 'Message sent (date)', value: new Date(data.time).toDateString() },
         { label: 'Message sent (time)', value: new Date(data.time).toTimeString() },
+        { label: 'Message sender', value: data.from },
+        { label: 'Message receiver', value: data.to },
         { label: 'Raw message content', value: data.content },
       ]} />
     }

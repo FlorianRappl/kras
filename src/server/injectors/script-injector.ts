@@ -1,6 +1,6 @@
-import { asScript, watch } from '../helpers/io';
+import { asScript, watch, Watcher } from '../helpers/io';
 import { basename } from 'path';
-import { editFileOption } from '../helpers/build-options';
+import { appendFileOption, appendDirectoryOptions } from '../helpers/build-options';
 import { fromJson } from '../helpers/build-response';
 import { KrasRequest, KrasConfiguration, Headers, StoredFileEntry, KrasInjectorConfig, KrasInjector, KrasAnswer, KrasInjectorOptions } from '../types';
 import { EventEmitter } from 'events';
@@ -19,7 +19,7 @@ export interface ScriptInjectorConfig {
 }
 
 export interface DynamicScriptInjectorConfig {
-  [file: string]: boolean;
+  [file: string]: boolean | string;
 }
 
 export interface ScriptResponseBuilderData {
@@ -64,13 +64,14 @@ export default class ScriptInjector implements KrasInjector {
   private readonly db: ScriptFiles = {};
   private readonly options: KrasInjectorConfig & ScriptInjectorConfig;
   private readonly core: EventEmitter;
+  private readonly watcher: Watcher;
 
   constructor(options: KrasInjectorConfig & ScriptInjectorConfig, config: KrasConfiguration, core: EventEmitter) {
     const directory = options.directory || config.directory;
     this.options = options;
     this.core = core;
 
-    watch(directory, '**/*.js', (ev, file) => {
+    this.watcher = watch(directory, '**/*.js', (ev, file) => {
       switch (ev) {
         case 'create':
         case 'update':
@@ -86,10 +87,11 @@ export default class ScriptInjector implements KrasInjector {
     const options: KrasInjectorOptions = {};
     const fileNames = Object.keys(this.db);
     const entries: Array<StoredFileEntry> = [];
+    appendDirectoryOptions(options, this.watcher.directories);
 
     for (const fileName of fileNames) {
       const item = this.db[fileName];
-      options[`_${fileName}`] = editFileOption(fileName);
+      appendFileOption(options, fileName);
       options[fileName] = {
         description: `Status of ${fileName}. ${item.error ? ' ' + item.error : ''}`,
         title: basename(fileName),
@@ -102,12 +104,24 @@ export default class ScriptInjector implements KrasInjector {
   }
 
   setOptions(options: DynamicScriptInjectorConfig): void {
-    const entries = Object.keys(options).map(option => ({
-      file: option,
-      active: options[option],
-    }));
+    const directories = [...this.watcher.directories];
 
-    this.setAllEntries(entries);
+    for (const option of Object.keys(options)) {
+      const script = this.db[option];
+      const value = options[option];
+
+      if (script && typeof value === 'boolean') {
+        script.active = value;
+      } else if (typeof value === 'string') {
+        const index = directories.indexOf(option);
+
+        if (index !== -1) {
+          directories[index] = value;
+        }
+      }
+    }
+
+    this.watcher.directories = directories;
   }
 
   get name() {
@@ -135,16 +149,6 @@ export default class ScriptInjector implements KrasInjector {
     }
 
     this.db[file] = script;
-  }
-
-  private setAllEntries(entries: Array<{ file: string, active: boolean }>) {
-    for (const entry of entries) {
-      const script = this.db[entry.file];
-
-      if (script) {
-        script.active = entry.active;
-      }
-    }
   }
 
   handle(req: KrasRequest) {
