@@ -56,12 +56,12 @@ describe('Recorder', () => {
 
   it('should emit an event when storing the message', () => {
     const recorder = new Recorder(2);
-    const A: any = {};
+    const A: any = { content: {} };
     let count = 0;
 
     recorder.addListener('recorded-message', item => {
       count = recorder.messages.length;
-      expect(item.content).toBe(A);
+      expect(item.content).toBe(A.content);
     });
     recorder.message(new Date(), A);
     expect(count).toBe(1);
