@@ -1,6 +1,6 @@
-import * as gaze from 'gaze';
+import * as chokidar from 'chokidar';
 import { statSync, existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'fs';
-import { dirname, join } from 'path';
+import { dirname, join, resolve, sep, relative, isAbsolute } from 'path';
 import { EventEmitter } from 'events';
 
 export function isFile(file: string) {
@@ -8,8 +8,17 @@ export function isFile(file: string) {
 }
 
 export function mk(directory: string) {
-  if (!existsSync(directory)){
-    mkdirSync(directory);
+  if (!existsSync(directory)) {
+    directory.split(sep).reduce((parentDir, childDir) => {
+      const curDir = resolve(parentDir, childDir);
+
+      if (!existsSync(curDir)) {
+        mkdirSync(curDir);
+      }
+
+      return curDir;
+    }, sep);
+
     return true;
   }
 
@@ -54,15 +63,13 @@ export function toFile<T>(file: string, obj: T) {
   return file;
 }
 
-interface GazeWatcher extends EventEmitter {
-  watched(): {
-    [dir: string]: Array<string>;
-  };
-}
-
 interface SingleWatcher {
   directory: string;
   close(): void;
+}
+
+interface WatchEvent {
+  (file: string): void;
 }
 
 export interface Watcher {
@@ -70,23 +77,42 @@ export interface Watcher {
   close(): void;
 }
 
+export function isInDirectory(fn: string, dir: string) {
+  const rel = relative(dir, fn);
+  return !!rel && !rel.startsWith('..') && !isAbsolute(rel);
+}
+
+function installWatcher(directory: string, pattern: string, loadFile: WatchEvent, updateFile: WatchEvent, deleteFile: WatchEvent) {
+  mk(directory);
+  const watcher = chokidar.watch(pattern, {
+    cwd: directory,
+  });
+  const dirs = watcher.getWatched();
+
+  watcher.on('change', updateFile);
+  watcher.on('add', loadFile);
+  watcher.on('unlink', deleteFile);
+
+  for (const dir in Object.keys(dirs)) {
+    const files = dirs[dir];
+
+    for (const file of files) {
+      loadFile(file);
+    }
+  }
+
+  return watcher;
+}
+
 function watchSingle(directory: string, pattern: string, callback: (type: string, file: string) => void): SingleWatcher {
   const updateFile = (file: string) => callback('update', file);
   const deleteFile = (file: string) => callback('delete', file);
   const loadFile = (file: string) => callback('create', file);
-  const opt = { cwd: directory };
-  const w = gaze(pattern, opt, (err: Error, watcher: GazeWatcher) => {
-    const watched = watcher.watched();
-    const loadDir = (dir: string) => watched[dir].forEach(loadFile);
-    Object.keys(watched).forEach(loadDir);
-    watcher.on('changed', updateFile);
-    watcher.on('added', loadFile);
-    watcher.on('deleted', deleteFile);
-  });
+  const w = installWatcher(directory, pattern, loadFile, updateFile, deleteFile);
   return {
     directory,
     close() {
-      const dirs = w.watched();
+      const dirs = w.getWatched();
 
       for (const dir of Object.keys(dirs)) {
         for (const file of dirs[dir]) {
