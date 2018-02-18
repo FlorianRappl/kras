@@ -54,6 +54,9 @@ export class Layout extends React.Component<LayoutProps, LayoutState> {
               <NavItem>
                 <NavLink href="#/injectors">Injectors</NavLink>
               </NavItem>
+              <NavItem>
+                <NavLink href="#/logs">Logs</NavLink>
+              </NavItem>
             </Nav>
           </Collapse>
         </Navbar>

@@ -8,3 +8,4 @@ export { Message } from './message';
 export { Request } from './request';
 export { Editor } from './editor';
 export { Settings } from './settings';
+export { Logs } from './logs';
