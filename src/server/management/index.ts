@@ -6,7 +6,7 @@ import { readFile, saveFile } from './files';
 import { errorDetails, messageDetails, overview, requestDetails, liveData } from './overview';
 import { readSettings, saveSettings } from './settings';
 import { readInjectorsSettings, saveInjectorSettings } from './injectors';
-import { configOf } from './basics';
+import { configOf, updateClient } from './basics';
 import { recentLogsOf, allLogsOf, liveLogs } from './logs';
 
 function clientOf(server: KrasServer, config: KrasConfiguration) {
@@ -28,7 +28,8 @@ export function withManagement(server: KrasServer, config: KrasConfiguration) {
     .get(clientOf(server, config));
 
   server.at(api, 'config')
-    .get(configOf(server, config));
+    .get(configOf(server, config))
+    .put(updateClient(server, config));
 
   server.at(api, 'logs')
     .get(recentLogsOf(server))
