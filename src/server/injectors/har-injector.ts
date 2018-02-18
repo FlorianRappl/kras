@@ -3,7 +3,7 @@ import { basename } from 'path';
 import { appendFileOption, appendDirectoryOptions } from '../helpers/build-options';
 import { fromHar, HarResponse, HarRequest, HarHeaders } from '../helpers/build-response';
 import { compareRequests } from '../helpers/compare-requests';
-import { KrasInjector, KrasInjectorConfig, KrasConfiguration, KrasRequest, KrasAnswer, Headers, StoredFileEntry, KrasInjectorOptions } from '../types';
+import { KrasInjector, KrasInjectorConfig, KrasConfiguration, KrasRequest, KrasAnswer, Headers, StoredFileEntry, KrasInjectorOptions, Dict } from '../types';
 
 function delay<T>(value: T, time: number) {
   if (time) {
@@ -89,7 +89,7 @@ export default class HarInjector implements KrasInjector {
   };
   private readonly watcher: Watcher;
 
-  constructor(options: KrasInjectorConfig & HarInjectorConfig, config: KrasConfiguration) {
+  constructor(options: KrasInjectorConfig & HarInjectorConfig, config: { directory: string, map: Dict<string> }) {
     const directory = options.directory || config.directory;
     this.options = options;
     this.map = config.map;

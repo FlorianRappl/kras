@@ -37,7 +37,7 @@ export default class JsonInjector implements KrasInjector {
   private readonly options: KrasInjectorConfig & JsonInjectorConfig;
   private readonly watcher: Watcher;
 
-  constructor(options: KrasInjectorConfig & JsonInjectorConfig, config: KrasConfiguration) {
+  constructor(options: KrasInjectorConfig & JsonInjectorConfig, config: { directory: string }) {
     const directory = options.directory || config.directory;
     this.options = options;
 

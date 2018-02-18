@@ -66,7 +66,7 @@ export default class ScriptInjector implements KrasInjector {
   private readonly core: EventEmitter;
   private readonly watcher: Watcher;
 
-  constructor(options: KrasInjectorConfig & ScriptInjectorConfig, config: KrasConfiguration, core: EventEmitter) {
+  constructor(options: KrasInjectorConfig & ScriptInjectorConfig, config: { directory: string }, core: EventEmitter) {
     const directory = options.directory || config.directory;
     this.options = options;
     this.core = core;
