@@ -145,6 +145,10 @@ where `host` can be the actual host in one particular environment (e.g., product
 
 Well, you could add the certificate to your trusted roots and therefore get rid of the message. However, if you (understandably) don't want to trust third-party generated certificates you can also generate your own certificate and use that one instead. Finally, you could either switch off HTTPS (disable SSL), or use a special browser instance with SSL checking disabled (for Chrome starting with the command line flag `--ignore-certificate-errors` does the trick; don't use this for browsing the public web).
 
+*How can I use kras with webpack?*
+
+There are several ways on how to use kras with webpack. The two most common ways are [documented in detail here](docs/webpack.md). In general, the idea is to run kras side by side to the webpack dev server. This can be archieved by modifying the used *webpack.config.js* or by concurrently running two processes. Of course, programmatically, it can be also achieved to run the webpack dev server and kras on the same port, however, the gain is potentially not worth the effort (at least for most users).
+
 ## License
 
 kras is released using the MIT license. For more information see the [LICENSE file](LICENSE).
