@@ -143,7 +143,7 @@ where `host` can be the actual host in one particular environment (e.g., product
 
 *The default certificate is not trusted - what can I do about it?*
 
-Well, you could add the certificate to your trusted roots and therefore get rid of the message. However, if you (understandably) don't want to trust third-party generated certificates you can also generate your own certificate and use that one instead. Finally, you could either switch off HTTPS (disable SSL), or use a special browser instance with SSL checking disabled (for Chrome starting with the command line flag `--ignore-certificate-errors` does the trick; don't use this for browsing the public web).
+Well, you could add the certificate to your trusted roots and therefore get rid of the message. However, if you (understandably) don't want to trust third-party generated certificates you can also [generate your own certificate](docs/generate-certificate.md) and use that one instead. Finally, you could either switch off HTTPS (disable SSL), or use a special browser instance with SSL checking disabled (for Chrome starting with the command line flag `--ignore-certificate-errors` does the trick; don't use this for browsing the public web).
 
 *How can I use kras with webpack?*
 

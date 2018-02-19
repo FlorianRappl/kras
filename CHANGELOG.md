@@ -5,6 +5,7 @@
 - Added restart and stop functionality
 - Introduced dedicated logs page
 - Documentation on usage with webpack
+- Non-existing directory is created and watched
 
 ## 0.3.1
 
