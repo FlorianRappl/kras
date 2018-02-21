@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.4.0
+
+- Changed default base directory from `db` to `mocks`
+- By default all injectors also use the base directory
+- Fixed bug where files have been present, but not evaluated
+
 ## 0.3.2
 
 - Added restart and stop functionality
