@@ -84,30 +84,17 @@ export function isInDirectory(fn: string, dir: string) {
 
 function installWatcher(directory: string, pattern: string, loadFile: WatchEvent, updateFile: WatchEvent, deleteFile: WatchEvent) {
   mk(directory);
-  const watcher = chokidar.watch(pattern, {
-    cwd: directory,
-  });
-  const dirs = watcher.getWatched();
-
-  watcher.on('change', updateFile);
-  watcher.on('add', loadFile);
-  watcher.on('unlink', deleteFile);
-
-  for (const dir in Object.keys(dirs)) {
-    const files = dirs[dir];
-
-    for (const file of files) {
-      loadFile(file);
-    }
-  }
-
-  return watcher;
+  return chokidar
+    .watch(pattern, { cwd: directory })
+    .on('change', updateFile)
+    .on('add', loadFile)
+    .on('unlink', deleteFile);
 }
 
 function watchSingle(directory: string, pattern: string, callback: (type: string, file: string) => void): SingleWatcher {
-  const updateFile = (file: string) => callback('update', file);
-  const deleteFile = (file: string) => callback('delete', file);
-  const loadFile = (file: string) => callback('create', file);
+  const updateFile = (file: string) => callback('update', resolve(directory, file));
+  const deleteFile = (file: string) => callback('delete', resolve(directory, file));
+  const loadFile = (file: string) => callback('create', resolve(directory, file));
   const w = installWatcher(directory, pattern, loadFile, updateFile, deleteFile);
   return {
     directory,
@@ -116,7 +103,7 @@ function watchSingle(directory: string, pattern: string, callback: (type: string
 
       for (const dir of Object.keys(dirs)) {
         for (const file of dirs[dir]) {
-          deleteFile(file);
+          callback('delete', resolve(directory, dir, file));
         }
       }
 
