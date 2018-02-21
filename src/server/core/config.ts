@@ -97,7 +97,7 @@ export function mergeConfiguration(options?: ConfigurationOptions, ...configs: A
 export const defaultConfig = {
   name: `${name} v${version}`,
   port: 9000,
-  directory: currentDir,
+  directory: resolve(currentDir, 'mocks'),
   client: resolve(rootDir, 'dist', 'client', 'index.html'),
   ssl: {
     cert: resolve(rootDir, 'cert', 'server.crt'),
@@ -114,23 +114,19 @@ export const defaultConfig = {
   injectors: {
     'script': {
       active: true,
-      directory: resolve(currentDir, './db/'),
     },
     'har': {
       active: true,
-      directory: resolve(currentDir, './db/'),
       delay: false,
     },
     'json': {
       active: true,
-      directory: resolve(currentDir, './db/'),
     },
     'proxy': {
       active: true,
     },
     'store': {
       active: false,
-      directory: resolve(currentDir, './db/'),
     }
   }
 } as KrasConfiguration;
