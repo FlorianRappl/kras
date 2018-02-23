@@ -4,9 +4,11 @@ import { MockServerCore } from './core';
 import { withManagement } from './management';
 import { withInjectors } from './injectors';
 import { withFiles } from './helpers/files';
+import { currentDir } from './core/info';
 import { KrasConfiguration, KrasServer, LogEntry, LogEntryType, LogLevel, KrasInjector } from './types';
 import { buildConfiguration, mergeConfiguration, readConfiguration, ConfigurationOptions } from './core/config';
-import { currentDir } from './core/info';
+export { KrasRequestHandler, KrasInjectorOptions, KrasInjectorOption, KrasRequest, KrasResponse, KrasAnswer } from './types';
+export { KrasInjector };
 
 export const krasrc = '.krasrc';
 
