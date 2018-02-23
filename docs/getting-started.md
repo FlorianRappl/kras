@@ -69,3 +69,7 @@ There is no handling of CORS in this injector. CORS is handled already from the 
 The web socket handler will create a new connection per connected user. Thus, if we share the mock server between different users then every user will get its own connection to some backend via the proxy injector. However, as an important distinction it is worth noting that a broadcast triggered from the core will reach all connected clients. So we have `n` forwarded connections for `n` users, with a shared part in the middle.
 
 More detailed information can be found in the [proxy injector documentation](proxy-injector.md).
+
+### Custom Injectors
+
+It is also possible to write custom injectors - or get new injectors from NPM. Details on writing and publishing injectors can be found in [the injector documentation](injectors.md).
