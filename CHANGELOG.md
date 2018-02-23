@@ -5,6 +5,9 @@
 - Changed default base directory from `db` to `mocks`
 - By default all injectors also use the base directory
 - Fixed bug where files have been present, but not evaluated
+- Also allow variations of injector names
+- Enable local debugging of injectors
+- Added information on creating injectors
 
 ## 0.3.2
 
