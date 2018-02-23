@@ -7,6 +7,12 @@ jest.mock('./io', () => ({
   mk: jest.fn(),
 }));
 
+jest.mock('fs', () => ({
+  readdirSync: jest.fn(() => []),
+  existsSync: jest.fn(() => true),
+  mkdirSync: jest.fn(),
+}));
+
 jest.mock('chokidar', () => ({
   watch: jest.fn(),
 }))
