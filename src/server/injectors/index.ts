@@ -3,7 +3,8 @@ import { fromMissing } from '../helpers/build-response';
 import { open } from '../helpers/json-store';
 import { Request, Response } from 'express';
 import { parse } from 'url';
-import { KrasConfiguration, KrasServer, KrasAnswer, KrasRequestHandler, KrasInjectorInfo, KrasInjector, KrasResponse, KrasInjectorConfig, KrasRequest } from '../types';
+import { KrasConfiguration, KrasServer, KrasAnswer, KrasRequestHandler, KrasInjectorInfo, KrasInjector, KrasResponse, KrasInjectorConfig, KrasRequest, KrasInjectorOptions } from '../types';
+import { injectorDebug, injectorConfig, injectorMain } from '../core/info';
 import { EventEmitter } from 'events';
 
 const specialHeaders = [
@@ -117,20 +118,29 @@ function findInjector(modulePath: string): KrasInjectorClass {
   }
 }
 
+function addInjectorInstance(Injector: KrasInjectorClass, options: KrasInjectorConfig, config: KrasConfiguration, server: KrasServer) {
+  if (Injector) {
+    server.injectors.push(new Injector(options, config, server));
+  }
+}
+
 export function withInjectors(server: KrasServer, config: KrasConfiguration) {
   const names = Object.keys(config.injectors);
   const heads = Object.keys(config.map).sort((a, b) => b.length - a.length);
 
+  if (injectorDebug) {
+    const Injector = findInjector(injectorMain);
+    addInjectorInstance(Injector, injectorConfig, config, server);
+  }
+
   for (const name of names) {
-    const options = config.injectors[name];
     const Injector = findInjector(resolve(config.directory, `${name}-injector`)) ||
       findInjector(`kras-${name}-injector`) ||
+      findInjector(`${name}-kras-injector`) ||
+      findInjector(`${name}-injector`) ||
       findInjector(resolve(process.cwd(), `${name}-injector`)) ||
       findInjector(resolve(__dirname, `${name}-injector`));
-
-    if (Injector) {
-      server.injectors.push(new Injector(options, config, server));
-    }
+    addInjectorInstance(Injector, config.injectors[name], config, server);
   }
 
   server.add({
