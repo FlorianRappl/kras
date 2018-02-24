@@ -1,6 +1,7 @@
 src/
 docs/
 test/
+utils/*.ts
 .editorconfig
 .gitignore
 .travis.yml

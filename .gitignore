@@ -3,6 +3,9 @@ logs
 *.log
 npm-debug.log*
 dist/
+utils/*.js
+utils/*.js.map
+utils/*.d.ts
 
 .DS_STORE
 

@@ -94,6 +94,6 @@ Make sure to also follow the checklist before publishing a kras injector:
 
 - Do not have a dependency to kras
 - A dev dependency to kras is allowed
-- Peer dependencies are not necessary
-- Include the kras tag
+- A peer dependency to kras should be introduced if `kras/utils` is imported (use `>=0.4.1` or similar as condition)
+- Include the "kras" tag (in keywords section); potentially, also "injector" makes sense
 - Make sure to allow other injectors to follow up
