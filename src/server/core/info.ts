@@ -1,7 +1,18 @@
 import { resolve } from 'path';
+import { existsSync } from 'fs';
 
 export const rootDir = resolve(__dirname, '..', '..', '..');
-const packageInfo = require(resolve(rootDir, 'package.json'));
+export const currentDir = process.cwd();
+
+function optional(p: string) {
+  try {
+    if (existsSync(projectFile)) {
+      return require(p);
+    }
+  } catch (e) { }
+
+  return undefined;
+}
 
 function isInjectorDebug(name: string) {
   return /^kras\-[A-Za-z0-9\-]+\-injector$/.test(name) ||
@@ -9,10 +20,13 @@ function isInjectorDebug(name: string) {
     /^[A-Za-z0-9\-]+\-injector$/.test(name);
 }
 
-export const currentDir = process.cwd();
+const packageInfo = require(resolve(rootDir, 'package.json'));
+const projectFile = resolve(currentDir, 'package.json');
+const projectInfo = optional(projectFile) || {};
+
 export const author: string = packageInfo.author;
 export const name: string = packageInfo.name;
 export const version: string = packageInfo.version;
-export const injectorDebug: boolean = isInjectorDebug(packageInfo.name);
-export const injectorConfig = packageInfo.krasOptions || {};
-export const injectorMain: string = resolve(rootDir, packageInfo.main || 'index.js');
+export const injectorDebug = isInjectorDebug(projectInfo.name);
+export const injectorConfig = Object.assign({ active: true }, projectInfo.krasOptions || {});
+export const injectorMain = resolve(currentDir, projectInfo.main || 'index.js');

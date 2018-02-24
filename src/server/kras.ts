@@ -7,8 +7,8 @@ import { withFiles } from './helpers/files';
 import { currentDir } from './core/info';
 import { KrasConfiguration, KrasServer, LogEntry, LogEntryType, LogLevel, KrasInjector } from './types';
 import { buildConfiguration, mergeConfiguration, readConfiguration, ConfigurationOptions } from './core/config';
-export { KrasRequestHandler, KrasInjectorOptions, KrasInjectorOption, KrasRequest, KrasResponse, KrasAnswer } from './types';
-export { KrasInjector };
+export { KrasRequestHandler, KrasInjectorOptions, KrasInjectorOption, KrasInjectorConfig, KrasRequest, KrasResponse, KrasAnswer } from './types';
+export { KrasInjector, KrasConfiguration };
 
 export const krasrc = '.krasrc';
 
