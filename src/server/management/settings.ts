@@ -1,14 +1,24 @@
 import { Request, Response } from 'express';
 import { KrasServer } from '../types';
 
+function tryRead<T>(fn: () => T) {
+  try {
+    return fn();
+  } catch (e) {
+    return undefined;
+  }
+}
+
 export function readSettings(server: KrasServer) {
   return (req: Request, res: Response) => {
     res.json({
       ws: server.ws,
-      injectors: server.injectors.map(injector => ({
-        active: injector.active,
-        name: injector.name,
-      })),
+      injectors: server.injectors
+        .map(injector => tryRead(() => ({
+          active: injector.active,
+          name: injector.name,
+        })))
+        .filter(injector => injector !== undefined),
     });
   };
 }
