@@ -1,0 +1,12 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "jsx": "preserve",
+    "sourceMap": true,
+    "outDir": "utils",
+    "declaration": true
+  },
+  "include": [
+    "utils/index.ts"
+  ]
+}
