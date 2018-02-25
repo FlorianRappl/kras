@@ -1,34 +1,61 @@
 import { basename } from 'path';
-import { KrasInjectorOption, KrasInjectorOptions } from '../types';
+import { KrasInjectorOption, KrasInjectorOptions, Dict } from '../types';
 
-export function appendFileOption(options: KrasInjectorOptions, fileName: string) {
-  options[`_${fileName}`] = editFileOption(fileName);
+export interface FileInfo {
+  active: boolean;
+  error?: string;
 }
 
-export function appendDirectoryOption(options: KrasInjectorOptions, directory: string) {
-  options[directory] = editDirectoryOption(directory);
+export interface DescribeEntry<T> {
+  (item: T, file: string, index: number): string;
 }
 
-export function appendDirectoryOptions(options: KrasInjectorOptions, directories: Array<string>) {
-  for (const directory of directories) {
-    appendDirectoryOption(options, directory);
-  }
-}
-
-export function editDirectoryOption(directory: string): KrasInjectorOption {
+function getFile(files: Dict<FileInfo>, fileName: string) {
+  const file = files[fileName];
   return {
-    description: `Changes the location of the directory ${directory}.`,
-    title: basename(directory),
-    type: 'text',
-    value: directory,
+    id: Buffer.from(fileName).toString('base64'),
+    name: fileName,
+    basename: basename(fileName),
+    active: file.active,
+    error: file.error,
   };
 }
 
-export function editFileOption(fileName: string): KrasInjectorOption {
+function getEntry<T extends FileInfo>(files: Dict<Array<T>>, fileName: string, desc: DescribeEntry<T>) {
   return {
-    description: `Modify the file ${fileName} directly without using an external text editor.`,
-    title: basename(fileName),
+    id: Buffer.from(fileName).toString('base64'),
+    name: fileName,
+    basename: basename(fileName),
+    entries: files[fileName].map((entry, i) => ({
+      ...(entry as FileInfo),
+      description: desc(entry, fileName, i),
+    })),
+  };
+}
+
+export function editDirectoryOption(directories: Array<string>): KrasInjectorOption {
+  return {
+    description: `Select the directories to inspect for matching files.`,
+    title: 'Source Directories',
+    type: 'directory',
+    value: directories,
+  };
+}
+
+export function editFileOption(files: Dict<FileInfo>): KrasInjectorOption {
+  return {
+    description: `Toggle or modify the found files without using an external text editor.`,
+    title: 'Found Files',
     type: 'file',
-    value: Buffer.from(fileName).toString('base64'),
+    value: Object.keys(files).map(fileName => getFile(files, fileName)),
+  };
+}
+
+export function editEntryOption<T extends FileInfo>(files: Dict<Array<T>>, desc: DescribeEntry<T>): KrasInjectorOption {
+  return {
+    description: `Modify the found files without using an external text editor or toggle their entries.`,
+    title: 'Found Files & Entries',
+    type: 'entry',
+    value: Object.keys(files).map(fileName => getEntry(files, fileName, desc)),
   };
 }

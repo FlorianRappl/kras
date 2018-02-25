@@ -12,10 +12,40 @@ export interface KrasInjectorCheckboxOption {
 
 export interface KrasInjectorFileOption {
   type: 'file';
-  value: string;
+  value: Array<{
+    id: string;
+    name: string;
+    basename: string;
+    active: boolean;
+    error?: string;
+  }>;
 }
 
-export type KrasInjectorValueOption = KrasInjectorStringOption | KrasInjectorCheckboxOption | KrasInjectorFileOption;
+export interface KrasInjectorDirectoryOption {
+  type: 'directory';
+  value: Array<string>;
+}
+
+export interface KrasInjectorEntryOption {
+  type: 'entry';
+  value: Array<{
+    id: string;
+    name: string;
+    basename: string;
+    entries: Array<{
+      active: boolean;
+      description: string;
+      error?: string;
+    }>;
+  }>;
+}
+
+export type KrasInjectorValueOption =
+  KrasInjectorStringOption |
+  KrasInjectorCheckboxOption |
+  KrasInjectorFileOption |
+  KrasInjectorDirectoryOption |
+  KrasInjectorEntryOption;
 
 export type KrasInjectorOption = {
   title: string;
