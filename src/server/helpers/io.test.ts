@@ -15,7 +15,7 @@ jest.mock('fs', () => ({
 
 jest.mock('chokidar', () => ({
   watch: jest.fn(),
-}))
+}));
 
 describe('io helpers', () => {
   it('watch should work against a single directory', () => {
