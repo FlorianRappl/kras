@@ -60,7 +60,10 @@ export class WebServer extends EventEmitter implements BaseKrasServer {
     this.app = express();
     this.server = ssl ? createHttpsServer(ssl, this.app) : createHttpServer(this.app);
     this.ws = config.ws;
-    this.app.use(text({ type: '*/*' }));
+    this.app.use(text({
+      type: '*/*',
+      limit: '50mb',
+    }));
     this.targets.forEach(target => this.app.ws(target, (ws, req) => {
       const url = req.url.replace('/.websocket', '').substr(target.length);
       const id = Date.now() % 100000000;
