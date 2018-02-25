@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.4.1
+
+- Added utils module for kras injectors, use `kras/utils`
+- Fixed picking wrong paths in local injector debug mode
+- Improved injector file options in the API and client
+- Improved injector directory options in the API and client
+- Allow switching `delay` in the client for the har-injector
+- Added `randomize` option for the json-injector
+
 ## 0.4.0
 
 - Changed default base directory from `db` to `mocks`

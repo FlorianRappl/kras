@@ -1,6 +1,6 @@
 {
   "name": "kras",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "Efficient server proxying and mocking in Node.js.",
   "main": "dist/server/kras.js",
   "types": "dist/server/kras.d.ts",
@@ -25,7 +25,8 @@
     "watch": "nodemon --exec ts-node -- src/server/kras-cli.ts",
     "build:client": "cross-env NODE_ENV=production webpack -p",
     "build:server": "tsc --project tsconfig.server.json",
-    "build": "npm run build:server && npm run build:client"
+    "build:utility": "tsc --project tsconfig.utility.json",
+    "build": "npm run build:server && npm run build:utility && npm run build:client"
   },
   "author": "Florian Rappl <rappl.florian@gmail.com>",
   "contributors": [],
