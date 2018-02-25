@@ -2,6 +2,7 @@ src/
 docs/
 test/
 utils/*.ts
+!utils/*.d.ts
 .editorconfig
 .gitignore
 .travis.yml

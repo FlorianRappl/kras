@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.4.2
+
+- Include typings for `kras/utils` module
+- Default to plain text editing in the client
+- Also include YAML as potential format in the client
+
 ## 0.4.1
 
 - Added utils module for kras injectors, use `kras/utils`
