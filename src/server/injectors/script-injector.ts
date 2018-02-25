@@ -95,8 +95,6 @@ export default class ScriptInjector implements KrasInjector {
   }
 
   setOptions(options: DynamicScriptInjectorConfig): void {
-    const directories = [...this.watcher.directories];
-
     for (const file of options.files) {
       const script = this.files[file.name];
       const active = file.active;
