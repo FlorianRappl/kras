@@ -78,7 +78,14 @@ export interface HarInjectorConfig {
 }
 
 export interface DynamicHarInjectorConfig {
-  [id: string]: boolean;
+  delay: boolean;
+  directories: Array<string>;
+  files: Array<{
+    name: string;
+    entries: Array<{
+      active: boolean;
+    }>;
+  }>;
 }
 
 export default class HarInjector implements KrasInjector {
@@ -108,40 +115,35 @@ export default class HarInjector implements KrasInjector {
 
   getOptions(): KrasInjectorOptions {
     return {
+      delay: {
+        description: `If active delays the responses with the time it took according to the HAR.`,
+        title: `Delay Responses`,
+        type: 'checkbox',
+        value: this.options.delay || false,
+      },
       directories: editDirectoryOption(this.watcher.directories),
-      entries: editEntryOption(this.files, ({ request }) => `${request.method} ${request.url}`),
+      files: editEntryOption(this.files, ({ request }) => `${request.method} ${request.url}`),
     };
   }
 
   setOptions(options: DynamicHarInjectorConfig): void {
-    const directories = [...this.watcher.directories];
+    this.options.delay = options.delay;
 
-    for (const option of Object.keys(options)) {
-      const script = this.files[option];
-      const value = options[option];
+    for (const file of options.files) {
+      const entries = this.files[file.name];
 
-      if (option.indexOf('#') > 0 && typeof value === 'boolean') {
-        const file = option.substr(0, option.indexOf('#'));
-        const items = this.files[file];
+      if (entries) {
+        for (let i = 0; i < entries.length; i++) {
+          const entry = file.entries[i];
 
-        if (items) {
-          const id = +option.substr(option.indexOf('#') + 1);
-          const item = items[id];
-
-          if (item) {
-            item.active = value;
+          if (entry && typeof entry.active === 'boolean') {
+            entries[i].active = entry.active;
           }
-        }
-      } else if (typeof value === 'string') {
-        const index = directories.indexOf(option);
-
-        if (index !== -1) {
-          directories[index] = value;
         }
       }
     }
 
-    this.watcher.directories = directories;
+    this.watcher.directories = options.directories;
   }
 
   get name() {

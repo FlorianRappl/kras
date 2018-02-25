@@ -19,7 +19,11 @@ export interface ScriptInjectorConfig {
 }
 
 export interface DynamicScriptInjectorConfig {
-  [file: string]: boolean | string;
+  directories: Array<string>;
+  files: Array<{
+    name: string;
+    active: boolean;
+  }>;
 }
 
 export interface ScriptResponseBuilderData {
@@ -93,22 +97,16 @@ export default class ScriptInjector implements KrasInjector {
   setOptions(options: DynamicScriptInjectorConfig): void {
     const directories = [...this.watcher.directories];
 
-    for (const option of Object.keys(options)) {
-      const script = this.files[option];
-      const value = options[option];
+    for (const file of options.files) {
+      const script = this.files[file.name];
+      const active = file.active;
 
-      if (script && typeof value === 'boolean') {
-        script.active = value;
-      } else if (typeof value === 'string') {
-        const index = directories.indexOf(option);
-
-        if (index !== -1) {
-          directories[index] = value;
-        }
+      if (script && typeof active === 'boolean') {
+        script.active = active;
       }
     }
 
-    this.watcher.directories = directories;
+    this.watcher.directories = options.directories;
   }
 
   get name() {

@@ -5,9 +5,9 @@ import { fromJson } from '../helpers/build-response';
 import { compareRequests } from '../helpers/compare-requests';
 import { KrasInjectorConfig, KrasResponse, KrasAnswer, KrasInjector, KrasConfiguration, KrasRequest, Headers, StoredFileEntry, KrasInjectorOptions } from '../types';
 
-function find(response: KrasAnswer | Array<KrasAnswer>) {
+function find(response: KrasAnswer | Array<KrasAnswer>, randomize: boolean) {
   if (Array.isArray(response)) {
-    const index = Math.floor(Math.random() * response.length);
+    const index = randomize ? Math.floor(Math.random() * response.length) : 0;
     return response[index];
   }
 
@@ -26,10 +26,18 @@ interface JsonFiles {
 
 export interface JsonInjectorConfig {
   directory?: string | Array<string>;
+  randomize?: boolean;
 }
 
 export interface DynamicJsonInjectorConfig {
-  [id: string]: boolean;
+  randomize: boolean;
+  directories: Array<string>;
+  files: Array<{
+    name: string;
+    entries: Array<{
+      active: boolean;
+    }>;
+  }>;
 }
 
 export default class JsonInjector implements KrasInjector {
@@ -55,40 +63,35 @@ export default class JsonInjector implements KrasInjector {
 
   getOptions(): KrasInjectorOptions {
     return {
+      randomize: {
+        description: `If active randomizes the selected response. Only applicable in case where multiple responses are found for a given request.`,
+        title: `Randomize Response`,
+        type: 'checkbox',
+        value: this.options.randomize || false,
+      },
       directories: editDirectoryOption(this.watcher.directories),
-      entries: editEntryOption(this.files, ({ request }) => `${request.method} ${request.url}`),
+      files: editEntryOption(this.files, ({ request }) => `${request.method} ${request.url}`),
     };
   }
 
   setOptions(options: DynamicJsonInjectorConfig): void {
-    const directories = [...this.watcher.directories];
+    this.options.randomize = options.randomize;
 
-    for (const option of Object.keys(options)) {
-      const script = this.files[option];
-      const value = options[option];
+    for (const file of options.files) {
+      const entries = this.files[file.name];
 
-      if (option.indexOf('#') > 0 && typeof value === 'boolean') {
-        const file = option.substr(0, option.indexOf('#'));
-        const items = this.files[file];
+      if (entries) {
+        for (let i = 0; i < entries.length; i++) {
+          const entry = file.entries[i];
 
-        if (items) {
-          const id = +option.substr(option.indexOf('#') + 1);
-          const item = items[id];
-
-          if (item) {
-            item.active = value;
+          if (entry && typeof entry.active === 'boolean') {
+            entries[i].active = entry.active;
           }
-        }
-      } else if (typeof value === 'string') {
-        const index = directories.indexOf(option);
-
-        if (index !== -1) {
-          directories[index] = value;
         }
       }
     }
 
-    this.watcher.directories = directories;
+    this.watcher.directories = options.directories;
   }
 
   get name() {
@@ -133,7 +136,8 @@ export default class JsonInjector implements KrasInjector {
           const request = entry.request;
 
           if (compareRequests(request, req)) {
-            const response = find(entry.response);
+            const rand = this.options.randomize;
+            const response = find(entry.response, rand);
             const name = this.name;
             return fromJson(
               request.url,
