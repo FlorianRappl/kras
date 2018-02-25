@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Row, Col, Label, Badge, Button, Input, FormGroup, FormText } from 'reactstrap';
 import { Page } from '../components';
 import { Editor } from './editor';
-import { areDifferent } from '../utils';
+import { areDifferent, areEqual } from '../utils';
 
 export interface InjectorProps {
   active: boolean;
@@ -31,10 +31,40 @@ export interface KrasInjectorCheckboxOption {
 
 export interface KrasInjectorFileOption {
   type: 'file';
-  value: string;
+  value: Array<{
+    id: string;
+    name: string;
+    basename: string;
+    active: boolean;
+    error?: string;
+  }>;
 }
 
-export type KrasInjectorOption = KrasInjectorStringOption | KrasInjectorCheckboxOption | KrasInjectorFileOption;
+export interface KrasInjectorDirectoryOption {
+  type: 'directory';
+  value: Array<string>;
+}
+
+export interface KrasInjectorEntryOption {
+  type: 'entry';
+  value: Array<{
+    id: string;
+    name: string;
+    basename: string;
+    entries: Array<{
+      active: boolean;
+      description: string;
+      error?: string;
+    }>;
+  }>;
+}
+
+export type KrasInjectorOption =
+  KrasInjectorStringOption |
+  KrasInjectorCheckboxOption |
+  KrasInjectorFileOption |
+  KrasInjectorDirectoryOption |
+  KrasInjectorEntryOption;
 
 export interface KrasInjectorOptions {
   [name: string]: {
@@ -45,7 +75,15 @@ export interface KrasInjectorOptions {
 
 function compareOptions(original: KrasInjectorOptions, options: KrasInjectorOptions) {
   for (const option of Object.keys(original)) {
-    if (!options[option] || options[option].value !== original[option].value) {
+    if (options[option]) {
+      const a = options[option].value;
+      const b = original[option].value;
+
+      if (!areEqual(a, b)) {
+        return false;
+      }
+
+    } else {
       return false;
     }
   }
@@ -78,7 +116,7 @@ export class Injector extends React.Component<InjectorProps, InjectorState> {
     }
   }
 
-  private changeOption(e: React.ChangeEvent<HTMLInputElement>, name: string) {
+  private changeOption(e: React.ChangeEvent<HTMLInputElement>, name: string, index?: number, position?: number) {
     const { options: previousOptions } = this.state;
     const { options: originalOptions } = this.props;
     const option = previousOptions[name];
@@ -99,8 +137,34 @@ export class Injector extends React.Component<InjectorProps, InjectorState> {
           value: e.target.value,
         };
         break;
+      case 'directory':
+        newOptions[name] = {
+          ...option,
+          value: option.value.map((item, i) => i !== index ? item : e.target.value),
+        };
+        break;
+      case 'file':
+        newOptions[name] = {
+          ...option,
+          value: option.value.map((item, i) => i !== index ? item : ({
+            ...item,
+            active: e.target.checked,
+          })),
+        };
+        break;
+      case 'entry':
+        newOptions[name] = {
+          ...option,
+          value: option.value.map((item, i) => i !== index ? item : ({
+            ...item,
+            entries: item.entries.map((entry, j) => (position !== undefined && j !== position) ? entry : ({
+              ...entry,
+              active: e.target.checked,
+            })),
+          })),
+        };
+        break;
     }
-
 
     this.setState({
       hasChanges: !compareOptions(originalOptions, newOptions),
@@ -127,12 +191,9 @@ export class Injector extends React.Component<InjectorProps, InjectorState> {
         input = <Input type="text" value={option.value} onChange={(e) => this.changeOption(e, name)} />;
         break;
       case 'file':
-        input = (
-          <FormGroup>
-            <Button color="info" size="sm" href={`#/editor/${option.value}`}>Open File in Editor</Button>
-          </FormGroup>
-        );
-        break;
+      case 'directory':
+      case 'entry':
+        return this.renderMultiInput(name);
     }
 
     return (
@@ -144,6 +205,96 @@ export class Injector extends React.Component<InjectorProps, InjectorState> {
         <FormText>
           {option.description}
         </FormText>
+      </FormGroup>
+    );
+  }
+
+  private renderMultiInput(name: string) {
+    const { options } = this.state;
+    const option = options[name];
+    let content: React.ReactChild;
+
+    switch (option.type) {
+      case 'directory':
+        content = (
+          <div>
+            {
+              option.value.map((directory, i) => (
+                <div style={{ margin: '0.5em 0' }} key={i}>
+                  <FormGroup>
+                    <Input type="text" value={directory} onChange={(e) => this.changeOption(e, name, i)} />
+                  </FormGroup>
+                </div>
+              ))
+            }
+          </div>
+        );
+        break;
+      case 'entry':
+        content = (
+          <div>
+            {
+              option.value.map((file, i) => (
+                <div style={{ margin: '0.5em 0' }} key={file.id}>
+                  <FormGroup check>
+                    <Label check>
+                      <Input
+                        type="checkbox"
+                        checked={file.entries.filter(m => m.active).length > 0}
+                        onChange={(e) => this.changeOption(e, name, i)} /> {file.basename}
+                    </Label>
+                    <FormText>
+                      <Button color="info" size="sm" href={`#/editor/${file.id}`}>Open File in Editor</Button> {file.name}
+                    </FormText>
+                  </FormGroup>
+                  <div style={{ marginLeft: '1.5em' }}>
+                    {
+                      file.entries.map((entry, j) => (
+                        <FormGroup check key={j}>
+                          <Label check>
+                            <Input type="checkbox" checked={entry.active} onChange={(e) => this.changeOption(e, name, i, j)} /> {entry.description}
+                          </Label>
+                        </FormGroup>
+                      ))
+                    }
+                  </div>
+                </div>
+              ))
+            }
+          </div>
+        );
+        break;
+      case 'file':
+        content = (
+          <div>
+            {
+              option.value.map((file, i) => (
+                <div style={{ margin: '0.5em 0' }} key={file.id}>
+                  <FormGroup check>
+                    <Label check>
+                      <Input type="checkbox" checked={file.active} onChange={(e) => this.changeOption(e, name, i)} /> {file.basename}
+                    </Label>
+                    <FormText>
+                      <Button color="info" size="sm" href={`#/editor/${file.id}`}>Open File in Editor</Button> {file.name}
+                    </FormText>
+                  </FormGroup>
+                </div>
+              ))
+            }
+          </div>
+        );
+        break;
+    }
+
+    return (
+      <FormGroup key={name}>
+        <Label>
+          {option.title}
+        </Label>
+        <FormText>
+          {option.description}
+        </FormText>
+        {content}
       </FormGroup>
     );
   }
@@ -170,13 +321,11 @@ export class Injector extends React.Component<InjectorProps, InjectorState> {
     return  (
       <Row>
         <Col sm="12">
-          <div>
+          <h4>
             <Badge color={active ? 'success' : 'secondary'}>
               {active ? 'Active' : 'Disabled'}
             </Badge>
-          </div>
-          <h4>
-            {name}
+            {' ' + name}
           </h4>
           {Object.keys(options).map(name => this.renderInput(name))}
           <Button color="primary" disabled={!hasChanges} onClick={this.saveChanges}>Save Changes</Button>
