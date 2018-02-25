@@ -5,8 +5,10 @@ import { Page, Loader } from '../components';
 import { request } from '../utils';
 import AceEditor from 'react-ace';
 import 'brace/mode/javascript';
+import 'brace/mode/yaml';
 import 'brace/mode/xml';
 import 'brace/mode/json';
+import 'brace/mode/plain_text';
 import 'brace/theme/tomorrow';
 import 'brace/ext/language_tools';
 import 'brace/ext/searchbox';
@@ -41,12 +43,19 @@ function getMode(type: string) {
   switch (type) {
     case '.json':
       return 'json';
+    case 'yaml':
+    case 'yml':
+      return 'yaml';
     case '.html':
     case '.xml':
       return 'xml';
     case '.js':
-    default:
+    case '.ts':
+    case '.tsx':
+    case '.jsx':
       return 'javascript';
+    default:
+      return 'plain_text';
   }
 }
 
