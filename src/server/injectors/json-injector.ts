@@ -1,5 +1,5 @@
 import { asJson, watch, Watcher } from '../helpers/io';
-import { appendFileOption, appendDirectoryOptions } from '../helpers/build-options';
+import { editDirectoryOption, editEntryOption } from '../helpers/build-options';
 import { basename } from 'path';
 import { fromJson } from '../helpers/build-response';
 import { compareRequests } from '../helpers/compare-requests';
@@ -33,7 +33,7 @@ export interface DynamicJsonInjectorConfig {
 }
 
 export default class JsonInjector implements KrasInjector {
-  private readonly db: JsonFiles = {};
+  private readonly files: JsonFiles = {};
   private readonly options: KrasInjectorConfig & JsonInjectorConfig;
   private readonly watcher: Watcher;
 
@@ -41,52 +41,35 @@ export default class JsonInjector implements KrasInjector {
     const directory = options.directory || config.directory;
     this.options = options;
 
-    this.watcher = watch(directory, '**/*.json', (ev, file) => {
+    this.watcher = watch(directory, '**/*.json', (ev, fileName) => {
       switch (ev) {
         case 'create':
         case 'update':
-          return this.load(file);
+          return this.load(fileName);
         case 'delete':
-          delete this.db[file];
+          delete this.files[fileName];
           return;
       }
     });
   }
 
   getOptions(): KrasInjectorOptions {
-    const options: KrasInjectorOptions = {};
-    const fileNames = Object.keys(this.db);
-    appendDirectoryOptions(options, this.watcher.directories);
-
-    for (const fileName of fileNames) {
-      const items = this.db[fileName];
-      appendFileOption(options, fileName);
-
-      for (let i = 0; i < items.length; i++) {
-        const item = items[i];
-        const id = `${fileName}#${i}`;
-        options[id] = {
-          description: `#${i + 1} of ${fileName} - ${item.request.method} ${item.request.url}.`,
-          title: basename(fileName),
-          type: 'checkbox',
-          value: item.active,
-        };
-      }
-    }
-
-    return options;
+    return {
+      directories: editDirectoryOption(this.watcher.directories),
+      entries: editEntryOption(this.files, ({ request }) => `${request.method} ${request.url}`),
+    };
   }
 
   setOptions(options: DynamicJsonInjectorConfig): void {
     const directories = [...this.watcher.directories];
 
     for (const option of Object.keys(options)) {
-      const script = this.db[option];
+      const script = this.files[option];
       const value = options[option];
 
       if (option.indexOf('#') > 0 && typeof value === 'boolean') {
         const file = option.substr(0, option.indexOf('#'));
-        const items = this.db[file];
+        const items = this.files[file];
 
         if (items) {
           const id = +option.substr(option.indexOf('#') + 1);
@@ -120,8 +103,8 @@ export default class JsonInjector implements KrasInjector {
     this.options.active = value;
   }
 
-  private load(file: string) {
-    const content = asJson(file);
+  private load(fileName: string) {
+    const content = asJson(fileName);
     const items = Array.isArray(content) ? content : [content];
 
     for (const item of items) {
@@ -136,12 +119,12 @@ export default class JsonInjector implements KrasInjector {
       }
     }
 
-    this.db[file] = items;
+    this.files[fileName] = items;
   }
 
   handle(req: KrasRequest) {
-    for (const file of Object.keys(this.db)) {
-      const entries = this.db[file];
+    for (const fileName of Object.keys(this.files)) {
+      const entries = this.files[fileName];
 
       for (let i = 0; i < entries.length; i++) {
         const entry = entries[i];
@@ -160,7 +143,7 @@ export default class JsonInjector implements KrasInjector {
               response.content, {
                 name,
                 file: {
-                  name: file,
+                  name: fileName,
                   entry: i,
                 },
               });
