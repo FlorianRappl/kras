@@ -121,6 +121,7 @@ export const defaultConfig = {
     },
     'json': {
       active: true,
+      randomize: true,
     },
     'proxy': {
       active: true,
