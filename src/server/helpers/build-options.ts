@@ -27,7 +27,8 @@ function getEntry<T extends FileInfo>(files: Dict<Array<T>>, fileName: string, d
     name: fileName,
     basename: basename(fileName),
     entries: files[fileName].map((entry, i) => ({
-      ...(entry as FileInfo),
+      active: entry.active,
+      error: entry.error,
       description: desc(entry, fileName, i),
     })),
   };
