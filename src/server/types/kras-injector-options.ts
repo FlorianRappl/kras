@@ -40,12 +40,18 @@ export interface KrasInjectorEntryOption {
   }>;
 }
 
+export interface KrasInjectorJsonOption {
+  type: 'json';
+  value: string;
+}
+
 export type KrasInjectorValueOption =
   KrasInjectorStringOption |
   KrasInjectorCheckboxOption |
   KrasInjectorFileOption |
   KrasInjectorDirectoryOption |
-  KrasInjectorEntryOption;
+  KrasInjectorEntryOption |
+  KrasInjectorJsonOption;
 
 export type KrasInjectorOption = {
   title: string;
