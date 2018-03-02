@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.4.3
+
+- Allow editing extended config of script injector in client
+- Provided convenience functions for unit testing
+- Added ability to dispose injectors for fully stopping the server
+
 ## 0.4.2
 
 - Include typings for `kras/utils` module
