@@ -10,7 +10,20 @@ import { buildConfiguration, mergeConfiguration, readConfiguration, Configuratio
 export { KrasRequestHandler, KrasInjectorOptions, KrasInjectorOption, KrasInjectorConfig, KrasRequest, KrasResponse, KrasAnswer } from './types';
 export { KrasInjector, KrasConfiguration };
 
+export interface KrasRunner {
+  (): Promise<void> | void;
+}
+
+export type KrasRuntimeConfiguration = Partial<KrasConfiguration> & {
+};
+
 export const krasrc = '.krasrc';
+
+function disposeInjector(injector: KrasInjector) {
+  if (injector && typeof injector.dispose === 'function') {
+    injector.dispose();
+  }
+}
 
 export class MockServer extends MockServerCore implements KrasServer {
   readonly injectors: Array<KrasInjector> = [];
@@ -26,6 +39,11 @@ export class MockServer extends MockServerCore implements KrasServer {
     withManagement(this, config);
     withInjectors(this, config);
     withFiles(this, config);
+  }
+
+  stop() {
+    return super.stop()
+      .then(() => this.injectors.forEach(disposeInjector));
   }
 
   private log(type: LogEntryType, data: any) {
@@ -57,4 +75,17 @@ export function runKras(config?: Partial<KrasConfiguration>) {
   const server = buildKras(config);
   server.start();
   return server;
+}
+
+export function withKras(config?: KrasRuntimeConfiguration) {
+  return (callback: KrasRunner) => {
+    const server = buildKras(config);
+    return server.start()
+      .then(() => callback())
+      .then(() => server.stop());
+  };
+}
+
+export function runWithKras(cb: KrasRunner, config?: KrasRuntimeConfiguration) {
+  return withKras(config)(cb);
 }
