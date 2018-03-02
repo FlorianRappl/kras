@@ -142,6 +142,10 @@ export default class ScriptInjector implements KrasInjector {
     this.files[fileName] = script;
   }
 
+  dispose() {
+    this.watcher.close();
+  }
+
   handle(req: KrasRequest) {
     for (const fileName of Object.keys(this.files)) {
       const script = this.files[fileName];

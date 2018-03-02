@@ -195,6 +195,10 @@ export default class HarInjector implements KrasInjector {
     };
   }
 
+  dispose() {
+    this.watcher.close();
+  }
+
   handle(req: KrasRequest) {
     for (const fileName of Object.keys(this.files)) {
       const entries = this.files[fileName];

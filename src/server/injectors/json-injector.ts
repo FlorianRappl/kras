@@ -125,6 +125,10 @@ export default class JsonInjector implements KrasInjector {
     this.files[fileName] = items;
   }
 
+  dispose() {
+    this.watcher.close();
+  }
+
   handle(req: KrasRequest) {
     for (const fileName of Object.keys(this.files)) {
       const entries = this.files[fileName];
