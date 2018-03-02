@@ -19,6 +19,7 @@ export interface ScriptInjectorConfig {
 }
 
 export interface DynamicScriptInjectorConfig {
+  extended: string;
   directories: Array<string>;
   files: Array<{
     name: string;
@@ -91,6 +92,12 @@ export default class ScriptInjector implements KrasInjector {
     return {
       directories: editDirectoryOption(this.watcher.directories),
       files: editFileOption(this.files),
+      extended: {
+        description: 'The options available to all script files via the context argument.',
+        title: 'Extended Configuration',
+        type: 'json',
+        value: JSON.stringify(this.options.extended || {}, null, 2),
+      },
     };
   }
 
@@ -104,6 +111,7 @@ export default class ScriptInjector implements KrasInjector {
       }
     }
 
+    this.options.extended = JSON.parse(options.extended || '{}');
     this.watcher.directories = options.directories;
   }
 
