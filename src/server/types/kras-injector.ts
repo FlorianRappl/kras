@@ -38,4 +38,5 @@ export interface KrasInjector {
   readonly handle: KrasRequestHandler;
   getOptions(): KrasInjectorOptions;
   setOptions(options: Dict<any>): void;
+  dispose?(): void;
 }

@@ -16,6 +16,14 @@ interface KrasInjector {
 }
 ```
 
+Optionally, a cleanup function can be introduced. Be sure to implement it when you would leave handles open (e.g., if you use a file watcher):
+
+```typescript
+interface KrasInjector {
+  dispose?(): void
+}
+```
+
 If the injector is developed with TypeScript then kras can simply be used as a development dependency. The types used here are then all available via standard imports from kras, i.e.,
 
 ```typescript
