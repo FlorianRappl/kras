@@ -161,16 +161,19 @@ export class WebServer extends EventEmitter implements BaseKrasServer {
       return corsHandler(req, res);
     });
 
-    this.server.listen(this.port, () => {
-      this.emit('open', {
-        port: this.port,
+    return new Promise<void>(resolve => {
+      this.server.listen(this.port, () => {
+        this.emit('open', {
+          port: this.port,
+        });
+        resolve();
       });
     });
   }
 
   stop() {
     this.emit('close');
-    this.server.close();
+    return new Promise<void>(resolve => this.server.close(resolve));
   }
 
   broadcast<T>(msg: T) {
