@@ -1,17 +1,8 @@
 import * as React from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import { Button, Card, CardBody, CardSubtitle, Alert } from 'reactstrap';
-import { Page, Loader } from '../components';
+import { Page, Loader, TextEditor } from '../components';
 import { request } from '../utils';
-import AceEditor from 'react-ace';
-import 'brace/mode/javascript';
-import 'brace/mode/yaml';
-import 'brace/mode/xml';
-import 'brace/mode/json';
-import 'brace/mode/plain_text';
-import 'brace/theme/tomorrow';
-import 'brace/ext/language_tools';
-import 'brace/ext/searchbox';
 
 export interface EditorParams {
   file: string;
@@ -113,26 +104,7 @@ class EditorView extends React.Component<EditorViewProps, EditorViewState> {
             {data.file}
           </CardSubtitle>
         </CardBody>
-        <AceEditor
-          mode={mode}
-          theme="tomorrow"
-          onChange={this.onChange}
-          fontSize={14}
-          showPrintMargin
-          width="100%"
-          showGutter
-          highlightActiveLine
-          value={value}
-          editorProps={{
-            $blockScrolling: Infinity,
-          }}
-          setOptions={{
-            enableBasicAutocompletion: true,
-            enableLiveAutocompletion: false,
-            enableSnippets: false,
-            showLineNumbers: true,
-            tabSize: 2,
-          }} />
+        <TextEditor value={value} mode={value} onChange={this.onChange} />
         <CardBody>
           <Alert color={alert && alert.color} isOpen={!!alert} toggle={this.dismissAlert}>
             {alert && alert.text}
