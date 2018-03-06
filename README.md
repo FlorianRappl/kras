@@ -115,6 +115,8 @@ The configuration of kras can also be (partially) changed during runtime using t
 
 We are totally open for contribution and appreciate any feedback, bug reports, or feature requests. More detailed information on contributing incl. a code of conduct are soon to be presented.
 
+Regarding the plans / strategy for kras we also published [a roadmap document](docs/roadmap.md).
+
 ## FAQ
 
 *What does kras mean?*
