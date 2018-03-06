@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.4.4
+
+- Fixed WS proxy bug when sending on closed sockets
+- Added roadmap
+
 ## 0.4.3
 
 - Allow editing extended config of script injector in client
