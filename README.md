@@ -151,6 +151,10 @@ Well, you could add the certificate to your trusted roots and therefore get rid 
 
 There are several ways on how to use kras with webpack. The two most common ways are [documented in detail here](docs/webpack.md). In general, the idea is to run kras side by side to the webpack dev server. This can be archieved by modifying the used *webpack.config.js* or by concurrently running two processes. Of course, programmatically, it can be also achieved to run the webpack dev server and kras on the same port, however, the gain is potentially not worth the effort (at least for most users).
 
+*Isn't this the same as http-proxy-middleware?*
+
+[http-proxy-middleware](https://github.com/chimurai/http-proxy-middleware) is a great package. Maybe if I would have known about it earlier kras (or any earlier form of it) would not exit. But kras is different. While http-proxy-middleware gives you a tool for being used in an Express application, kras gives you a full server including a finished client for simple modifications and interactions during runtime. Furthermore, kras can be used as a library, which creates the full server for you. Finally, kras tries to be easy to extend with its injector model, which is completely independent of Express or any other HTTP framework. The way I see it http-proxy-middleware would be the lib of choice for bringing proxy-ing capabilities to an Express application, while kras is the tool of choice for general mocking or proxy-ing of requests via a localhost service.
+
 ## License
 
 kras is released using the MIT license. For more information see the [LICENSE file](LICENSE).
