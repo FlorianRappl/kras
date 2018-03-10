@@ -45,7 +45,9 @@ export class WebServer extends EventEmitter implements BaseKrasServer {
     ws?(target: string, connect: KrasServerConnector): void;
   };
   private readonly hooks: Array<KrasServerHook> = [];
+  private readonly routes: Array<string> = [];
   private readonly port: number;
+  private readonly protocol: string;
   private readonly targets: Array<string>;
   private readonly server: Server;
   private sockets: WebSocketConnection;
@@ -58,6 +60,7 @@ export class WebServer extends EventEmitter implements BaseKrasServer {
     this.targets = keys.filter(key => mapping[key].match('^wss?://'));
     this.port = config.port || 9000;
     this.app = express();
+    this.protocol = ssl ? 'https' : 'http';
     this.server = ssl ? createHttpsServer(ssl, this.app) : createHttpServer(this.app);
     this.ws = config.ws;
     this.app.use(text({
@@ -141,6 +144,7 @@ export class WebServer extends EventEmitter implements BaseKrasServer {
         return api;
       },
     };
+    this.routes.push(endpoint);
     return api;
   }
 
@@ -165,6 +169,8 @@ export class WebServer extends EventEmitter implements BaseKrasServer {
       this.server.listen(this.port, () => {
         this.emit('open', {
           port: this.port,
+          protocol: this.protocol,
+          routes: this.routes,
         });
         resolve();
       });

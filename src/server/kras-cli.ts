@@ -4,7 +4,7 @@ import chalk from 'chalk';
 import { buildKras, readKrasConfig, krasrc } from './kras';
 import { resolve } from 'path';
 import { defaultConfig } from './core/config';
-import { author, currentDir } from './core/info';
+import { author, currentDir, version } from './core/info';
 
 const argv = require('yargs')
   .usage('Usage: $0 [options]')
@@ -65,7 +65,12 @@ const config = readKrasConfig(options, argv.c !== krasrc && argv.c);
 const server = buildKras(config);
 
 server.on('open', svc => {
-  console.log(`Server listening at port ${chalk.green(svc.port)}.`);
+  const port = chalk.green(svc.port);
+  const protocol = svc.protocol;
+  const server = `${protocol}://localhost:${port}`;
+  const manage = svc.routes[0] || '/manage';
+  console.log(`Server listening at port ${port} (${protocol.toUpperCase()}).`);
+  console.log(`Management app: ${server}${manage}`);
 });
 
 server.on('close', svc => {
@@ -126,4 +131,5 @@ server.on('info', msg => {
   }
 });
 
+console.log(`Starting kras v${version} ...`);
 server.start();
