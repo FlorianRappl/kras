@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.5.0
+
+- Enhanced documentation
+- Provide function injector for unit tests
+- Improved initial console output
+- Added preview animation to README
+
 ## 0.4.4
 
 - Fixed WS proxy bug when sending on closed sockets
