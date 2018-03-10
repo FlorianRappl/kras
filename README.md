@@ -50,6 +50,10 @@ While the former may be good in general to play around, the latter should be pre
 
 Running kras can then be done, e.g., via specifying the `kras` command (global usage) or referring to `kras` via the npm scripts in the *package.json*. kras can also be used programmatically, e.g., in a webpack configuration. The library exports several classes and functions that help you establish a mock server for your project in no time.
 
+The following animation shows the first-time experience, where the default configuration is used:
+
+![kras first-time experience](docs/images/preview-resized.gif)
+
 ## Configuration
 
 kras uses configuration files and command line options to be properly configred. The configuration files are named `.krasrc` and are looked up in the following order: home directory, local directory, via the command line specified configuration file. Configuration options are merged from left to right.
@@ -154,6 +158,14 @@ There are several ways on how to use kras with webpack. The two most common ways
 *Isn't this the same as http-proxy-middleware?*
 
 [http-proxy-middleware](https://github.com/chimurai/http-proxy-middleware) is a great package. Maybe if I would have known about it earlier kras (or any earlier form of it) would not exit. But kras is different. While http-proxy-middleware gives you a tool for being used in an Express application, kras gives you a full server including a finished client for simple modifications and interactions during runtime. Furthermore, kras can be used as a library, which creates the full server for you. Finally, kras tries to be easy to extend with its injector model, which is completely independent of Express or any other HTTP framework. The way I see it http-proxy-middleware would be the lib of choice for bringing proxy-ing capabilities to an Express application, while kras is the tool of choice for general mocking or proxy-ing of requests via a localhost service.
+
+*Can I write my own injector?*
+
+Yes. Injectors are powerful stuff and can be written in your own code base / project or in their own repository. They could be globally registered or published via NPM. More details [can be found here](docs/injectors.md).
+
+*I don't like the web client - what can I do?*
+
+The bundled client is only the default client. If you prefer you can interact with kras via `curl` or postman or any other possibility to run raw API requests. If this is too tedious you could also write a custom client. If the client is registered as an NPM package kras can also (via the configuration) serve that client from the mangement endpoint. Details are aggregated [in the client documentation](docs/client.md).
 
 ## License
 
