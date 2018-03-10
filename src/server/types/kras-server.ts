@@ -26,6 +26,7 @@ export interface KrasServerMethods {
   put(handler: KrasServerHandler): KrasServerMethods;
   post(handler: KrasServerHandler): KrasServerMethods;
   delete(handler: KrasServerHandler): KrasServerMethods;
+  any(handler: KrasServerHandler): KrasServerMethods;
   feed(handler: KrasServerConnector): KrasServerMethods;
 }
 

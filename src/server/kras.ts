@@ -4,18 +4,14 @@ import { MockServerCore } from './core';
 import { withManagement } from './management';
 import { withInjectors } from './injectors';
 import { withFiles } from './helpers/files';
+import { runWith, configureHandler } from './helpers/fluent';
 import { currentDir } from './core/info';
-import { KrasConfiguration, KrasServer, LogEntry, LogEntryType, LogLevel, KrasInjector } from './types';
+import { KrasConfiguration, KrasServer, LogEntry, LogEntryType, LogLevel, KrasInjector, KrasServerMethods, KrasServerHandler, KrasHandlerConfiguration, KrasRunner } from './types';
 import { buildConfiguration, mergeConfiguration, readConfiguration, ConfigurationOptions } from './core/config';
 export { KrasRequestHandler, KrasInjectorOptions, KrasInjectorOption, KrasInjectorConfig, KrasRequest, KrasResponse, KrasAnswer } from './types';
-export { KrasInjector, KrasConfiguration };
+export { KrasInjector, KrasConfiguration, KrasServerMethods, KrasServerHandler, KrasHandlerConfiguration, KrasRunner };
 
-export interface KrasRunner {
-  (): Promise<void> | void;
-}
-
-export type KrasRuntimeConfiguration = Partial<KrasConfiguration> & {
-};
+export type KrasRuntimeConfiguration = Partial<KrasConfiguration> & KrasHandlerConfiguration;
 
 export const krasrc = '.krasrc';
 
@@ -80,9 +76,8 @@ export function runKras(config?: Partial<KrasConfiguration>) {
 export function withKras(config?: KrasRuntimeConfiguration) {
   return (callback: KrasRunner) => {
     const server = buildKras(config);
-    return server.start()
-      .then(() => callback())
-      .then(() => server.stop());
+    configureHandler(server, config);
+    return runWith(server, callback);
   };
 }
 

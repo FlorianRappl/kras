@@ -5,3 +5,4 @@ export { KrasInjectorOptions, KrasInjectorCheckboxOption, KrasInjectorOption, Kr
 export { KrasRecorder, RecordedError, RecordedMessage, RecordedRequest } from './kras-recorder';
 export { KrasRequest, KrasRequestQuery } from './kras-request';
 export { BaseKrasServer, KrasServer, KrasServerHandler, KrasServerHook, KrasServerMethods, KrasServerConnector, KrasWebSocket } from './kras-server';
+export { KrasHandlerConfiguration, KrasConfigurator, KrasRunner } from './kras-handler';

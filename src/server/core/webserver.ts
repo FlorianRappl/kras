@@ -139,6 +139,10 @@ export class WebServer extends EventEmitter implements BaseKrasServer {
         app.post(endpoint, handler);
         return api;
       },
+      any(handler: KrasServerHandler) {
+        app.all(endpoint, handler);
+        return api;
+      },
       feed(handler: KrasServerConnector) {
         app.ws(endpoint, handler);
         return api;
