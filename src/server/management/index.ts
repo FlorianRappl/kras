@@ -5,7 +5,7 @@ import { broadcastAt } from './broadcast';
 import { readFile, saveFile } from './files';
 import { errorDetails, messageDetails, overview, requestDetails, liveData } from './overview';
 import { readSettings, saveSettings } from './settings';
-import { readInjectorsSettings, saveInjectorSettings } from './injectors';
+import { readInjectorsSettings, saveInjectorSettings, readInjectorSettings } from './injectors';
 import { configOf, updateClient } from './basics';
 import { recentLogsOf, allLogsOf, liveLogs } from './logs';
 
@@ -64,5 +64,6 @@ export function withManagement(server: KrasServer, config: KrasConfiguration) {
     .get(readInjectorsSettings(server));
 
   server.at(api, 'injector', ':name')
+    .get(readInjectorSettings(server))
     .put(saveInjectorSettings(server));
 };
