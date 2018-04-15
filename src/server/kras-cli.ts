@@ -68,9 +68,12 @@ server.on('open', svc => {
   const port = chalk.green(svc.port);
   const protocol = svc.protocol;
   const server = `${protocol}://localhost:${port}`;
-  const manage = svc.routes[0] || '/manage';
   console.log(`Server listening at port ${port} (${protocol.toUpperCase()}).`);
-  console.log(`Management app: ${server}${manage}`);
+
+  if (config.api !== false) {
+    const manage = svc.routes[0] || '/manage';
+    console.log(`Management app: ${server}${manage}`);
+  }
 });
 
 server.on('close', svc => {

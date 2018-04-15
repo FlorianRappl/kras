@@ -113,7 +113,9 @@ The `.krasrc` is a simple JSON format. An example is the following configuration
 
 Directory paths are always resolved to an absolute with respect to the location of the containing configuration file. The injector sections are actually dynamic settings that are transported as-is to the respective injector. An injector is just a request handler, which may know how to get an answer to the current request.
 
-The configuration of kras can also be (partially) changed during runtime using the management endpoint. By default this endpoint can be accessed at `https://localhost:9000/manage`. Please note that the HTTPS could be changed to HTTP (if the ssl option was disabled), the port could be changed, and the endpoint itself could be changed.
+The configuration of kras can also be (partially) changed during runtime using the management endpoint. By default this endpoint can be accessed at `https://localhost:9000/manage`. Please note that the HTTPS could be changed to HTTP (if the `ssl` option was disabled), the port could be changed, and the endpoint itself could be changed.
+
+Disabling the management endpoint can be done by setting the `api` option `false`.
 
 ## Contributing
 
