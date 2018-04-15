@@ -2,7 +2,7 @@ import { KrasConfiguration, KrasServer } from '../types';
 import { broadcastAt } from './broadcast';
 import { readFile, saveFile } from './files';
 import { errorDetails, messageDetails, overview, requestDetails, liveData } from './overview';
-import { readSettings, saveSettings } from './settings';
+import { readSettings, saveSettings, downloadSettings } from './settings';
 import { readInjectorsSettings, saveInjectorSettings, readInjectorSettings } from './injectors';
 import { clientOf } from './client';
 import { configOf, updateClient } from './basics';
@@ -53,6 +53,9 @@ export function withManagement(server: KrasServer, config: KrasConfiguration) {
     protect(server.at(api, 'settings'))
       .get(readSettings(server))
       .put(saveSettings(server));
+
+    protect(server.at(api, 'settings', 'file'))
+      .get(downloadSettings(server, config))
 
     protect(server.at(api, 'injector'))
       .get(readInjectorsSettings(server));

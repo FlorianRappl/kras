@@ -2,7 +2,7 @@ import * as React from 'react';
 import { FormGroup, Label, Input, Button } from 'reactstrap';
 import { RouteComponentProps } from 'react-router';
 import { Page, Panel, Loader } from '../components';
-import { request } from '../utils';
+import { request, fullUrl } from '../utils';
 
 export interface SettingsProps extends RouteComponentProps<{}> {}
 
@@ -89,6 +89,11 @@ class SettingsView extends React.Component<SettingsViewProps, SettingsViewState>
     });
   };
 
+  private downloadSettings = () => {
+    const url = fullUrl('settings/file');
+    location.href = url;
+  };
+
   render() {
     const { ws, wsOriginal, injectors } = this.state;
     const hasChanges = ws !== wsOriginal || injectors.filter(inj => inj.active !== inj.activeOriginal).length > 0;
@@ -113,7 +118,13 @@ class SettingsView extends React.Component<SettingsViewProps, SettingsViewState>
             ))
           }
         </Panel>
-        <Button color="primary" onClick={this.saveChanges} disabled={!hasChanges}>Save Changes</Button>
+        <Button color="primary" onClick={this.saveChanges} disabled={!hasChanges}>
+          Save Changes
+        </Button>
+        {' | '}
+        <Button color="info" onClick={this.downloadSettings}>
+          Download Settings
+        </Button>
       </div>
     );
   }

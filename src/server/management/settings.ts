@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { KrasServer } from '../types';
+import { KrasServer, KrasConfiguration } from '../types';
 
 function tryRead<T>(fn: () => T) {
   try {
@@ -20,6 +20,14 @@ export function readSettings(server: KrasServer) {
         })))
         .filter(injector => injector !== undefined),
     });
+  };
+}
+
+export function downloadSettings(server: KrasServer, config: KrasConfiguration) {
+  return (req: Request, res: Response) => {
+    res.setHeader('Content-disposition', 'attachment; filename=.krasrc');
+    res.setHeader('Content-type', 'application/json');
+    res.send(JSON.stringify(config, null, 2));
   };
 }
 
