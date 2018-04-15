@@ -9,7 +9,7 @@ export interface LoadedProps<T> {
 
 export interface LoaderState<T> {
   data: T | undefined;
-  status: 'none' | 'loading' | 'loaded';
+  status: 'none' | 'loading' | 'success' | 'error';
   error: string | undefined;
 }
 
@@ -20,7 +20,7 @@ export interface LoaderProps<T> {
   query?: string;
   component: React.ComponentType<LoadedProps<T>>;
   forward?: any;
-  children?: void;
+  onAuthError?(): void;
 }
 
 export class Loader<T> extends React.Component<LoaderProps<T>, LoaderState<T>> {
@@ -38,7 +38,7 @@ export class Loader<T> extends React.Component<LoaderProps<T>, LoaderState<T>> {
   private resolve = (data: T) => {
     if (this.mounted) {
       this.setState({
-        status: 'loaded',
+        status: data ? 'success' : 'error',
         data,
       });
     }
@@ -47,7 +47,7 @@ export class Loader<T> extends React.Component<LoaderProps<T>, LoaderState<T>> {
   private revoke = (err: Error) => {
     if (this.mounted) {
       this.setState({
-        status: 'loaded',
+        status: 'error',
         error: err && (err.message || err.toString()),
       });
     }
@@ -71,19 +71,26 @@ export class Loader<T> extends React.Component<LoaderProps<T>, LoaderState<T>> {
 
   render() {
     const { data, status, error } = this.state;
-    const { component: Component, forward = {} } = this.props;
+    const { component: Component, forward = {}, onAuthError } = this.props;
 
     switch (status) {
       case 'none':
         return false;
       case 'loading':
         return <Spinner />;
-      case 'loaded':
-        return data && !error ? <Component {...forward} data={data} /> : (
+      case 'error':
+        if (error === 'auth' && typeof onAuthError === 'function') {
+          onAuthError();
+          return false;
+        }
+
+        return (
           <Alert color="danger">
             {error || 'Error while loading the data. Is the server still running?'}
           </Alert>
         );
+      case 'success':
+        return <Component {...forward} data={data} />;
     }
   }
 }

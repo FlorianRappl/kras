@@ -4,9 +4,7 @@ import { Table, Button } from 'reactstrap';
 import { Page, Loader, Feed } from '../components';
 import { fullUrl, toTime, request } from '../utils';
 
-export interface LogsProps extends RouteComponentProps<{}> {
-  children?: React.ReactNode;
-}
+export interface LogsProps extends RouteComponentProps<{}> {}
 
 interface LogEntry {
   time: string;
@@ -83,7 +81,7 @@ class LogsView extends React.Component<LogsViewProps, LogsViewState> {
   }
 }
 
-export const Logs = ({}: LogsProps) => (
+export const Logs: React.SFC<LogsProps> = () => (
   <Page title="Logs" description="Captured log entries of the server.">
     <Loader url="logs" component={LogsView} />
   </Page>

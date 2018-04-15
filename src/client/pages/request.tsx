@@ -6,9 +6,7 @@ export interface RequestRouteParameters {
   id: string;
 }
 
-export interface RequestProps extends RouteComponentProps<RequestRouteParameters> {
-  children?: React.ReactNode;
-}
+export interface RequestProps extends RouteComponentProps<RequestRouteParameters> {}
 
 interface RequestViewProps {
   data: {
@@ -43,10 +41,9 @@ interface RequestViewProps {
       };
     };
   };
-  children?: React.ReactNode;
 }
 
-const RequestView = ({ data }: RequestViewProps) => (
+const RequestView: React.SFC<RequestViewProps> = ({ data }) => (
   <Protect condition={!!data.id}>
     {
       !!data.id && <Details fields={[
@@ -71,7 +68,7 @@ const RequestView = ({ data }: RequestViewProps) => (
   </Protect>
 );
 
-export const Request = ({ match }: RequestProps) => (
+export const Request: React.SFC<RequestProps> = ({ match }) => (
   <Page title="Request" description="Details on the succeeded request.">
     <Loader url={`data/request/${match.params.id}`} component={RequestView} />
   </Page>

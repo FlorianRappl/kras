@@ -27,7 +27,7 @@ export interface TextEditorProps {
   onChange?: (value: string) => void;
 }
 
-export const TextEditor = ({ mode, value, height, onChange }: TextEditorProps) => (
+export const TextEditor: React.SFC<TextEditorProps> = ({ mode, value, height, onChange }) => (
   <AceEditor
     mode={mode}
     theme="tomorrow"

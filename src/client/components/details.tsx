@@ -10,16 +10,14 @@ export interface DetailsProps {
     label: string;
     value: DetailsFieldValue;
   }>;
-  children?: React.ReactNode;
 }
 
 interface FieldProps {
   label: string;
   value: DetailsFieldValue;
-  children?: React.ReactNode;
 }
 
-const Field = ({ label, value }: FieldProps) => (
+const Field: React.SFC<FieldProps> = ({ label, value }) => (
   <Row>
     <Col md={12}>
       <p><b>{label}</b></p>
@@ -44,7 +42,7 @@ const Field = ({ label, value }: FieldProps) => (
   </Row>
 );
 
-export const Details = ({ fields }: DetailsProps) => (
+export const Details: React.SFC<DetailsProps> = ({ fields }) => (
   <div>
     {
       fields.map((field, i) => (

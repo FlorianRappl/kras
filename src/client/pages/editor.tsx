@@ -8,9 +8,7 @@ export interface EditorParams {
   file: string;
 }
 
-export interface EditorProps extends RouteComponentProps<EditorParams> {
-  children?: React.ReactNode;
-}
+export interface EditorProps extends RouteComponentProps<EditorParams> {}
 
 interface EditorViewProps {
   data: {
@@ -116,7 +114,7 @@ class EditorView extends React.Component<EditorViewProps, EditorViewState> {
   }
 }
 
-export const Editor = ({ match }: EditorProps) => (
+export const Editor: React.SFC<EditorProps> = ({ match }) => (
   <Page title="Editor" description="Modifies the file directly in the browser.">
     <Loader url={`file/${match.params.file}`} component={EditorView} forward={match.params} />
   </Page>

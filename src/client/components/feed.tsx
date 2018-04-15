@@ -4,7 +4,6 @@ import { fullUrl } from '../utils';
 export interface FeedProps {
   feed: string;
   onMessage(msg: any): void;
-  children?: React.ReactNode;
 }
 
 export class Feed extends React.Component<FeedProps> {

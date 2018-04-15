@@ -4,9 +4,7 @@ import { RouteComponentProps } from 'react-router';
 import { Page, Panel, Loader } from '../components';
 import { request } from '../utils';
 
-export interface SettingsProps extends RouteComponentProps<{}> {
-  children?: React.ReactNode;
-}
+export interface SettingsProps extends RouteComponentProps<{}> {}
 
 interface KrasSettings {
   ws: boolean;
@@ -18,7 +16,6 @@ interface KrasSettings {
 
 interface SettingsViewProps {
   data: KrasSettings;
-  children?: React.ReactNode;
 }
 
 interface SettingsViewState {
@@ -122,7 +119,7 @@ class SettingsView extends React.Component<SettingsViewProps, SettingsViewState>
   }
 }
 
-export const Settings = ({}: SettingsProps) => (
+export const Settings: React.SFC<SettingsProps> = () => (
   <Page title="Settings" description="General application settings and dynamic configuration possibilities.">
     <Loader component={SettingsView} url="settings" />
   </Page>

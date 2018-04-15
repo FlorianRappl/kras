@@ -8,9 +8,7 @@ export interface RequestsParams {
   tab: string;
 }
 
-export interface RequestsProps extends RouteComponentProps<RequestsParams> {
-  children?: React.ReactNode;
-}
+export interface RequestsProps extends RouteComponentProps<RequestsParams> {}
 
 interface KrasRequestData {
   id: string;
@@ -61,7 +59,6 @@ interface RequestsViewProps {
     messages: Array<KrasMessageData>;
   };
   tab?: string;
-  children?: React.ReactNode;
 }
 
 interface RequestsViewState {
@@ -76,7 +73,7 @@ interface TabNavItemProps {
   name: string;
 }
 
-const TabNavItem = ({ activeTab, name }: TabNavItemProps) => (
+const TabNavItem: React.SFC<TabNavItemProps> = ({ activeTab, name }) => (
   <NavItem>
     <NavLink
       style={{ cursor: 'pointer' }}
@@ -228,7 +225,7 @@ class RequestsView extends React.Component<RequestsViewProps, RequestsViewState>
   }
 }
 
-export const Requests = ({ match }: RequestsProps) => (
+export const Requests: React.SFC<RequestsProps> = ({ match }) => (
   <Page title="Requests" description="Overview of the messages, succeeded and failed requests.">
     <Loader url="data" component={RequestsView} forward={match.params} />
   </Page>

@@ -6,9 +6,7 @@ export interface MessageRouteParameters {
   id: string;
 }
 
-export interface MessageProps extends RouteComponentProps<MessageRouteParameters> {
-  children?: React.ReactNode;
-}
+export interface MessageProps extends RouteComponentProps<MessageRouteParameters> {}
 
 interface MessageViewProps {
   data: {
@@ -18,10 +16,9 @@ interface MessageViewProps {
     from: string;
     to: string;
   };
-  children?: React.ReactNode;
 }
 
-const MessageView = ({ data }: MessageViewProps) => (
+const MessageView: React.SFC<MessageViewProps> = ({ data }) => (
   <Protect condition={!!data.id}>
     {
       !!data.id && <Details fields={[
@@ -35,7 +32,7 @@ const MessageView = ({ data }: MessageViewProps) => (
   </Protect>
 );
 
-export const Message = ({ match }: MessageProps) => (
+export const Message: React.SFC<MessageProps> = ({ match }) => (
   <Page title="Message" description="Details on the message.">
     <Loader url={`data/message/${match.params.id}`} component={MessageView} />
   </Page>

@@ -4,9 +4,7 @@ import { FormGroup, FormText, Label, Button } from 'reactstrap';
 import { Page } from '../components';
 import { request } from '../utils';
 
-export interface BroadcastProps extends RouteComponentProps<{}> {
-  children?: React.ReactNode;
-}
+export interface BroadcastProps extends RouteComponentProps<{}> {}
 
 export interface BroadcastState {
   message: string;

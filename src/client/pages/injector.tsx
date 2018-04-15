@@ -8,7 +8,6 @@ export interface InjectorProps {
   active: boolean;
   name: string;
   options: KrasInjectorOptions;
-  children?: React.ReactNode;
   onSaveChanges(e: {
     options: KrasInjectorOptions,
   }): void;

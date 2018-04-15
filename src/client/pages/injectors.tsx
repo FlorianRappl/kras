@@ -9,9 +9,7 @@ export interface InjectorsParams {
   injector: string;
 }
 
-export interface InjectorsProps extends RouteComponentProps<InjectorsParams> {
-  children?: React.ReactNode;
-}
+export interface InjectorsProps extends RouteComponentProps<InjectorsParams> {}
 
 interface KrasInjector {
   name: string;
@@ -26,7 +24,6 @@ interface KrasInjectors {
 interface InjectorsViewProps {
   data: KrasInjectors;
   injector?: string;
-  children?: React.ReactNode;
 }
 
 interface InjectorsViewState {
@@ -122,7 +119,7 @@ class InjectorsView extends React.Component<InjectorsViewProps, InjectorsViewSta
   }
 }
 
-export const Injectors = ({ match }: InjectorsProps) => (
+export const Injectors: React.SFC<InjectorsProps> = ({ match }) => (
   <Page title="Injectors" description="Injector specific settings and options to play around with.">
     <Loader component={InjectorsView} url="injector" forward={match.params} />
   </Page>

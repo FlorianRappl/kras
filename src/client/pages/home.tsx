@@ -5,9 +5,7 @@ import { Page, Details } from '../components';
 import { request } from '../utils';
 import { config } from '../data';
 
-export interface HomeProps extends RouteComponentProps<{}> {
-  children?: React.ReactNode;
-}
+export interface HomeProps extends RouteComponentProps<{}> {}
 
 function restartServer() {
   request({
@@ -29,7 +27,7 @@ function stopServer() {
   });
 }
 
-export const Home = ({}: HomeProps) => (
+export const Home: React.SFC<HomeProps> = ({}) => (
   <Page title="Overview" description="General overview and information.">
     <Details fields={[
       { label: 'Name', value: config.name },

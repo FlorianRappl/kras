@@ -2,9 +2,7 @@ import * as React from 'react';
 import { Nav, NavItem, NavLink, Navbar, NavbarBrand, NavbarToggler, Container, Row, Col, Collapse } from 'reactstrap';
 import { config } from './data';
 
-export interface LayoutProps {
-  children?: React.ReactNode;
-}
+export interface LayoutProps {}
 
 export interface LayoutState {
   isOpen: boolean;

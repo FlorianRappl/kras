@@ -1,10 +1,8 @@
 import * as React from 'react';
 
-export interface SpinnerProps {
-  children?: void;
-}
+export interface SpinnerProps {}
 
-export const Spinner = () => (
+export const Spinner: React.SFC<SpinnerProps> = () => (
   <div className="spinner">
     <div className="bounce1" />
     <div className="bounce2" />

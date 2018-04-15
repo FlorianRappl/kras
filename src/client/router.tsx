@@ -2,11 +2,9 @@ import * as React from 'react';
 import { HashRouter, Switch, Route } from 'react-router-dom';
 import { Home, Requests, Broadcast, Settings, Injectors, Error, Message, Request, Editor, Logs } from './pages';
 
-export interface RouterProps {
-  children?: React.ReactNode;
-}
+export interface RouterProps {}
 
-export const Router = ({}: RouterProps) => (
+export const Router: React.SFC<RouterProps> = () => (
   <HashRouter>
     <Switch>
       <Route exact path="/" component={Home} />

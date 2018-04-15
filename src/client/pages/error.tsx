@@ -6,9 +6,7 @@ export interface ErrorRouteParameters {
   id: string;
 }
 
-export interface ErrorProps extends RouteComponentProps<ErrorRouteParameters> {
-  children?: React.ReactNode;
-}
+export interface ErrorProps extends RouteComponentProps<ErrorRouteParameters> {}
 
 interface ErrorViewProps {
   data: {
@@ -28,10 +26,9 @@ interface ErrorViewProps {
       content: string;
     };
   };
-  children?: React.ReactNode;
 }
 
-const ErrorView = ({ data }: ErrorViewProps) => (
+const ErrorView: React.SFC<ErrorViewProps> = ({ data }) => (
   <Protect condition={!!data.id}>
     {
       !!data.id && <Details fields={[
@@ -51,7 +48,7 @@ const ErrorView = ({ data }: ErrorViewProps) => (
   </Protect>
 );
 
-export const Error = ({ match }: ErrorProps) => (
+export const Error: React.SFC<ErrorProps> = ({ match }) => (
   <Page title="Error" description="Details on the failed request.">
     <Loader url={`data/error/${match.params.id}`} component={ErrorView} />
   </Page>

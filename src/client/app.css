@@ -1,3 +1,8 @@
+html, body, #app {
+  height: 100%;
+  width: 100%;
+}
+
 .spinner {
   margin: 100px auto 0;
   width: 70px;
@@ -38,4 +43,14 @@
     -webkit-transform: scale(1.0);
     transform: scale(1.0);
   }
+}
+
+.login {
+  height: 100%;
+  width: 100%;
+  display: flex;
+}
+
+.login form {
+  margin: auto;
 }
