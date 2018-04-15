@@ -24,46 +24,48 @@ function clientOf(server: KrasServer, config: KrasConfiguration) {
 export function withManagement(server: KrasServer, config: KrasConfiguration) {
   const api = config.api;
 
-  server.at(api)
-    .get(clientOf(server, config));
+  if (api !== false) {
+    server.at(api)
+      .get(clientOf(server, config));
 
-  server.at(api, 'config')
-    .get(configOf(server, config))
-    .put(updateClient(server, config));
+    server.at(api, 'config')
+      .get(configOf(server, config))
+      .put(updateClient(server, config));
 
-  server.at(api, 'logs')
-    .get(recentLogsOf(server))
-    .delete(allLogsOf(server))
-    .feed(liveLogs(server));
+    server.at(api, 'logs')
+      .get(recentLogsOf(server))
+      .delete(allLogsOf(server))
+      .feed(liveLogs(server));
 
-  server.at(api, 'broadcast')
-    .post(broadcastAt(server));
+    server.at(api, 'broadcast')
+      .post(broadcastAt(server));
 
-  server.at(api, 'data')
-    .get(overview(server))
-    .feed(liveData(server));
+    server.at(api, 'data')
+      .get(overview(server))
+      .feed(liveData(server));
 
-  server.at(api, 'data', 'request', ':id')
-    .get(requestDetails(server));
+    server.at(api, 'data', 'request', ':id')
+      .get(requestDetails(server));
 
-  server.at(api, 'data', 'message', ':id')
-    .get(messageDetails(server));
+    server.at(api, 'data', 'message', ':id')
+      .get(messageDetails(server));
 
-  server.at(api, 'data', 'error', ':id')
-    .get(errorDetails(server));
+    server.at(api, 'data', 'error', ':id')
+      .get(errorDetails(server));
 
-  server.at(api, 'file', ':name')
-    .get(readFile(server))
-    .put(saveFile(server));
+    server.at(api, 'file', ':name')
+      .get(readFile(server))
+      .put(saveFile(server));
 
-  server.at(api, 'settings')
-    .get(readSettings(server))
-    .put(saveSettings(server));
+    server.at(api, 'settings')
+      .get(readSettings(server))
+      .put(saveSettings(server));
 
-  server.at(api, 'injector')
-    .get(readInjectorsSettings(server));
+    server.at(api, 'injector')
+      .get(readInjectorsSettings(server));
 
-  server.at(api, 'injector', ':name')
-    .get(readInjectorSettings(server))
-    .put(saveInjectorSettings(server));
+    server.at(api, 'injector', ':name')
+      .get(readInjectorSettings(server))
+      .put(saveInjectorSettings(server));
+  }
 };

@@ -18,7 +18,7 @@ export interface KrasConfiguration extends WebServerConfiguration {
   name: string;
   client: string;
   directory: string;
-  api: string;
+  api: string | false;
   injectors: {
     [name: string]: KrasInjectorConfig;
   };
