@@ -13,7 +13,7 @@ export function withManagement(server: KrasServer, config: KrasConfiguration) {
   const api = config.api;
 
   if (api !== false) {
-    const protectAccess = getAuth(server, config);
+    const protect = getAuth(server, config);
 
     server.at(api)
       .get(clientOf(server, config));
@@ -21,54 +21,43 @@ export function withManagement(server: KrasServer, config: KrasConfiguration) {
     server.at(api, 'login')
       .post(userLogin(server, config));
 
-    server.at(api, 'config')
-      .any(protectAccess)
+    protect(server.at(api, 'config'))
       .get(configOf(server, config))
       .put(updateClient(server, config));
 
-    server.at(api, 'logs')
-      .any(protectAccess)
+    protect(server.at(api, 'logs'))
       .get(recentLogsOf(server))
       .delete(allLogsOf(server))
       .feed(liveLogs(server));
 
-    server.at(api, 'broadcast')
-      .any(protectAccess)
+    protect(server.at(api, 'broadcast'))
       .post(broadcastAt(server));
 
-    server.at(api, 'data')
-      .any(protectAccess)
+    protect(server.at(api, 'data'))
       .get(overview(server))
       .feed(liveData(server));
 
-    server.at(api, 'data', 'request', ':id')
-      .any(protectAccess)
+    protect(server.at(api, 'data', 'request', ':id'))
       .get(requestDetails(server));
 
-    server.at(api, 'data', 'message', ':id')
-      .any(protectAccess)
+    protect(server.at(api, 'data', 'message', ':id'))
       .get(messageDetails(server));
 
-    server.at(api, 'data', 'error', ':id')
-      .any(protectAccess)
+    protect(server.at(api, 'data', 'error', ':id'))
       .get(errorDetails(server));
 
-    server.at(api, 'file', ':name')
-      .any(protectAccess)
+    protect(server.at(api, 'file', ':name'))
       .get(readFile(server))
       .put(saveFile(server));
 
-    server.at(api, 'settings')
-      .any(protectAccess)
+    protect(server.at(api, 'settings'))
       .get(readSettings(server))
       .put(saveSettings(server));
 
-    server.at(api, 'injector')
-      .any(protectAccess)
+    protect(server.at(api, 'injector'))
       .get(readInjectorsSettings(server));
 
-    server.at(api, 'injector', ':name')
-      .any(protectAccess)
+    protect(server.at(api, 'injector', ':name'))
       .get(readInjectorSettings(server))
       .put(saveInjectorSettings(server));
   }

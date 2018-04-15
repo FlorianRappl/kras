@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { fullUrl } from '../utils';
+import { feedUrl } from '../utils';
 
 export interface FeedProps {
   feed: string;
@@ -11,7 +11,7 @@ export class Feed extends React.Component<FeedProps> {
 
   componentWillMount() {
     const { feed } = this.props;
-    const url = `ws${fullUrl(feed).substr(4)}`;
+    const url = feedUrl(feed);
 
     try {
       this.ws = new WebSocket(url);

@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Button, Alert, Input } from 'reactstrap';
-import { setMiddleware, request } from '../utils';
+import { setAuthToken, request } from '../utils';
 
 export interface LoginProps {
   onSuccess?(): void;
@@ -46,14 +46,7 @@ export class Login extends React.Component<LoginProps, LoginState> {
 
   private authorized(token: string) {
     const { onSuccess } = this.props;
-
-    setMiddleware(opts => {
-      const headers = opts.headers || {};
-      opts.headers = {
-        ...headers,
-        Authorization: `Bearer ${token}`
-      };
-    });
+    setAuthToken(token);
 
     if (typeof onSuccess === 'function') {
       onSuccess();

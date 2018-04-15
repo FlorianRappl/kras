@@ -1,31 +1,55 @@
 import { Request, Response, NextFunction } from 'express';
-import { KrasServer, KrasConfiguration, KrasServerHandler } from '../types';
+import { parse } from 'url';
+import { KrasServer, KrasConfiguration, KrasServerHandler, KrasServerMethods } from '../types';
 import * as providers from '../auth';
 
 const bearer = 'Bearer ';
 
-export function getAuth(server: KrasServer, config: KrasConfiguration): KrasServerHandler {
+export interface ProtectHandler {
+  (api: KrasServerMethods): KrasServerMethods;
+}
+
+export function getAuth(server: KrasServer, config: KrasConfiguration): ProtectHandler {
   const auth = config.auth;
   const provider = auth && providers[auth.provider];
 
   if (provider) {
-    return (req: Request, res: Response, next: NextFunction) => {
-      const header = req.header('authorization');
+    return server => {
+      const connectToFeed = server.feed;
+      server.feed = (handler) => {
+        connectToFeed((ws, req) => {
+          const { token } = parse(req.url, true).query;
 
-      if (header && header.startsWith(bearer)) {
-        const token = header.substr(bearer.length);
-        const valid = provider.validateToken(auth, token);
+          if (!Array.isArray(token)) {
+            const valid = provider.validateToken(auth, token);
 
-        if (valid) {
-          return next();
+            if (valid) {
+              return handler(ws, req);
+            }
+          }
+
+          ws.close();
+        });
+        return server;
+      };
+      return server.any((req, res, next) => {
+        const header = req.header('authorization');
+
+        if (header && header.startsWith(bearer)) {
+          const token = header.substr(bearer.length);
+          const valid = provider.validateToken(auth, token);
+
+          if (valid) {
+            return next();
+          }
         }
-      }
 
-      return res.sendStatus(401);
-    }
+        return res.sendStatus(401);
+      });
+    };
   }
 
-  return (_req: Request, _res: Response, next: NextFunction) => next();
+  return server => server;
 }
 
 export function userLogin(server: KrasServer, config: KrasConfiguration): KrasServerHandler {

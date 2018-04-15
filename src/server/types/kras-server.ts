@@ -15,6 +15,7 @@ export interface KrasServerHandler {
 
 export type KrasWebSocket = EventEmitter & {
   send(msg: string): void;
+  close(): void;
 };
 
 export interface KrasServerConnector {
