@@ -1,21 +1,27 @@
 # Changelog
 
+## 0.6.0
+
+- Option for deactivating management API (#13)
+- Ability to protect the management API (#14)
+- Provide download settings functionality (#17)
+
 ## 0.5.0
 
-- Enhanced documentation
+- Enhanced documentation (#10)
 - Provide function injector for unit tests
 - Improved initial console output
 - Added preview animation to README
 
 ## 0.4.4
 
-- Fixed WS proxy bug when sending on closed sockets
+- Fixed WS proxy bug when sending on closed sockets (#12)
 - Added roadmap
 
 ## 0.4.3
 
 - Allow editing extended config of script injector in client
-- Provided convenience functions for unit testing
+- Provided convenience functions for unit testing (#11)
 - Added ability to dispose injectors for fully stopping the server
 
 ## 0.4.2
@@ -29,7 +35,7 @@
 - Added utils module for kras injectors, use `kras/utils`
 - Fixed picking wrong paths in local injector debug mode
 - Improved injector file options in the API and client
-- Improved injector directory options in the API and client
+- Improved injector directory options in the API and client (#9)
 - Allow switching `delay` in the client for the har-injector
 - Added `randomize` option for the json-injector
 
@@ -37,39 +43,39 @@
 
 - Changed default base directory from `db` to `mocks`
 - By default all injectors also use the base directory
-- Fixed bug where files have been present, but not evaluated
+- Fixed bug where files have been present, but not evaluated (#8)
 - Also allow variations of injector names
 - Enable local debugging of injectors
 - Added information on creating injectors
 
 ## 0.3.2
 
-- Added restart and stop functionality
+- Added restart and stop functionality (#5)
 - Introduced dedicated logs page
 - Documentation on usage with webpack
-- Non-existing directory is created and watched
+- Non-existing directory is created and watched (#7)
 
 ## 0.3.1
 
 - Edit directories during runtime in the client
 - Extended injector resolution algorithm
-- Allow transmitting WebSocket send
+- Allow transmitting WebSocket send (#6)
 
 ## 0.3.0
 
 - Included log levels, `error`, `debug`, and `info`
 - Introduced more log messages (if wanted)
 - Go back: store current tab in route
-- Provide ability to edit files in the client
-- Added support for multi directories in the HAR, JSON, and Script injector
+- Provide ability to edit files in the client (#4)
+- Added support for multi directories in the HAR, JSON, and Script injector (#3)
 
 ## 0.2.1
 
-- Script injector now ignores modules that do not export a function
+- Script injector now ignores modules that do not export a function (#2)
 - Fixed the badge links in README
 - Fixed the double execution of build
 - Expose `readKrasConfig` and default `krasrc` name
-- Show available logs in the overview of the management client
+- Show available logs in the overview of the management client (#1)
 - Allow resetting logs via the management API
 
 ## 0.2.0
