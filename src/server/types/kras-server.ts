@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import { EventEmitter } from 'events';
 import { KrasInjector } from './kras-injector';
 import { KrasRecorder } from './kras-recorder';
@@ -10,7 +10,7 @@ export interface KrasServerHook {
 }
 
 export interface KrasServerHandler {
-  (req: Request, res: Response): void;
+  (req: Request, res: Response, next?: NextFunction): void;
 }
 
 export type KrasWebSocket = EventEmitter & {

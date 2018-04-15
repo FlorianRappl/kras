@@ -111,6 +111,7 @@ export const defaultConfig = {
     '/api': 'https://jsonplaceholder.typicode.com',
     '/events': 'ws://demos.kaazing.com/echo',
   },
+  auth: undefined,
   injectors: {
     'script': {
       active: true,
