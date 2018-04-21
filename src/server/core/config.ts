@@ -112,6 +112,7 @@ export const defaultConfig = {
     '/events': 'ws://demos.kaazing.com/echo',
   },
   auth: undefined,
+  middlewares: [],
   injectors: {
     'script': {
       active: true,

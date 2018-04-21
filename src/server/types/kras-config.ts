@@ -1,5 +1,6 @@
 import { SslConfiguration, LogLevel } from './kras-basics';
 import { KrasInjectorConfig } from './kras-injector';
+import { KrasMiddlewareDefinition } from './kras-middleware';
 
 export interface AppConfiguration {
   logLevel: LogLevel;
@@ -26,6 +27,7 @@ export interface KrasConfiguration extends WebServerConfiguration {
       password: string;
     }>;
   };
+  middlewares: Array<KrasMiddlewareDefinition>;
   injectors: {
     [name: string]: KrasInjectorConfig;
   };

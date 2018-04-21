@@ -13,6 +13,11 @@ export function readSettings(server: KrasServer) {
   return (req: Request, res: Response) => {
     res.json({
       ws: server.ws,
+      middlewares: server.middlewares
+        .map(middleware => tryRead(() => ({
+          options: middleware.options,
+          source: middleware.source,
+        }))),
       injectors: server.injectors
         .map(injector => tryRead(() => ({
           active: injector.active,
@@ -34,13 +39,18 @@ export function downloadSettings(server: KrasServer, config: KrasConfiguration) 
 export function saveSettings(server: KrasServer) {
   return (req: Request, res: Response) => {
     const settings = JSON.parse(req.body || '{}');
-    server.ws = settings.ws || false;
 
-    for (const injector of server.injectors) {
-      for (const changedInjector of settings.injectors) {
-        if (changedInjector.name === injector.name) {
-          injector.active = changedInjector.active || false;
-          break;
+    if (typeof settings.ws === 'boolean') {
+      server.ws = settings.ws;
+    }
+
+    if (settings.injectors) {
+      for (const injector of server.injectors) {
+        for (const changedInjector of settings.injectors) {
+          if (changedInjector.name === injector.name) {
+            injector.active = changedInjector.active || false;
+            break;
+          }
         }
       }
     }

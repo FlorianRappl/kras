@@ -154,6 +154,7 @@ export class WebServer extends EventEmitter implements BaseKrasServer {
 
   start() {
     this.app.all('*', (req: Request, res: Response) => {
+
       if (req.method !== 'OPTIONS') {
         const hook = findHook(this.hooks, req);
 

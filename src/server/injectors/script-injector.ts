@@ -160,7 +160,10 @@ export default class ScriptInjector implements KrasInjector {
           },
         });
         const extended = this.options.extended || {};
-        const ctx = { ...extended };
+        const ctx = {
+          $server: this.core,
+          ...extended,
+        };
         const res = handler(ctx, req, builder);
 
         if (res) {
