@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.6.1
+
+- Fixed WebSocket communication after opening (#18)
+- WebSocket injection in scripts is now possible (#16)
+- Possibility for middleware via options (#15)
+- Scripts from the script injector get the server via `$server` from the context
+- Disabled management API disables recording
+
 ## 0.6.0
 
 - Option for deactivating management API (#13)
