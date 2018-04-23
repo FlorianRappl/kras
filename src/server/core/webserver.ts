@@ -75,12 +75,14 @@ export class WebServer extends EventEmitter implements BaseKrasServer {
         ws,
         target,
         url,
+        req,
       });
       ws.on('close', () => this.emit('user-disconnected', {
         id,
         ws,
         target,
         url,
+        req,
       }));
     }));
   }

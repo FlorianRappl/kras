@@ -7,12 +7,49 @@ import { withFiles } from './helpers/files';
 import { withMiddlewares } from './helpers/middlewares';
 import { runWith, configureHandler } from './helpers/fluent';
 import { currentDir } from './core/info';
-import { KrasConfiguration, KrasServer, LogEntry, LogEntryType, LogLevel, KrasInjector, KrasServerMethods, KrasServerHandler, KrasHandlerConfiguration, KrasRunner, KrasMiddleware } from './types';
-import { buildConfiguration, mergeConfiguration, readConfiguration, ConfigurationOptions } from './core/config';
-export { KrasRequestHandler, KrasInjectorOptions, KrasInjectorOption, KrasInjectorConfig, KrasRequest, KrasResponse, KrasAnswer } from './types';
-export { KrasInjector, KrasConfiguration, KrasServerMethods, KrasServerHandler, KrasHandlerConfiguration, KrasRunner };
+import {
+  KrasConfiguration,
+  KrasServer,
+  LogEntry,
+  LogEntryType,
+  LogLevel,
+  KrasInjector,
+  KrasServerMethods,
+  KrasServerHandler,
+  KrasHandlerConfiguration,
+  KrasRunner,
+  KrasMiddleware
+} from './types';
+import {
+  buildConfiguration,
+  mergeConfiguration,
+  readConfiguration,
+  ConfigurationOptions
+} from './core/config';
+export {
+  KrasRequestHandler,
+  KrasInjectorOptions,
+  KrasInjectorOption,
+  KrasInjectorConfig,
+  KrasRequest,
+  KrasResponse,
+  KrasAnswer,
+  Dict,
+  Headers,
+  ScriptResponseBuilder,
+  ScriptResponseBuilderData
+} from './types';
+export {
+  KrasInjector,
+  KrasConfiguration,
+  KrasServerMethods,
+  KrasServerHandler,
+  KrasHandlerConfiguration,
+  KrasRunner
+};
 
-export type KrasRuntimeConfiguration = Partial<KrasConfiguration> & KrasHandlerConfiguration;
+export type KrasRuntimeConfiguration = Partial<KrasConfiguration> &
+  KrasHandlerConfiguration;
 
 export const krasrc = '.krasrc';
 
@@ -32,7 +69,11 @@ export class MockServer extends MockServerCore implements KrasServer {
     super(config);
 
     this.logLevel = config.logLevel || 'error';
-    this.on('error', (e) => this.log('error', e));
+    this.on('error', e => this.log('error', e));
+
+    if (config.api === false) {
+      this.recorder.disable();
+    }
 
     withManagement(this, config);
     withInjectors(this, config);
@@ -41,15 +82,14 @@ export class MockServer extends MockServerCore implements KrasServer {
   }
 
   stop() {
-    return super.stop()
-      .then(() => this.injectors.forEach(disposeInjector));
+    return super.stop().then(() => this.injectors.forEach(disposeInjector));
   }
 
   private log(type: LogEntryType, data: any) {
     const item: LogEntry = {
       type,
       data,
-      time: new Date(),
+      time: new Date()
     };
     this.logs.push(item);
     this.emit('logged', item);
@@ -62,7 +102,7 @@ export function readKrasConfig(options?: ConfigurationOptions, file?: string) {
     options,
     readConfiguration(homedir(), krasrc),
     readConfiguration(dir, krasrc),
-    readConfiguration(dir, file),
+    readConfiguration(dir, file)
   );
 }
 

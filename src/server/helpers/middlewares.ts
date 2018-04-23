@@ -6,22 +6,22 @@ interface RequestHandlerCreator {
   (...args: Array<any>): KrasServerHandler;
 }
 
-function findMiddleware(modulePath: string): RequestHandlerCreator {
-  try {
-    const middlewareCreator = require(modulePath);
-
-    if (typeof middlewareCreator === 'function') {
-      return middlewareCreator;
-    }
-  } catch (e) {}
-
-  return undefined;
+interface RequestHandlerInitializer {
+  setup?(server: KrasServer, config: KrasConfiguration): void;
 }
 
-function createMiddleware(source: string, options: Array<any>) {
+function findMiddleware(modulePath: string): RequestHandlerCreator | RequestHandlerInitializer {
+  try {
+    return require(modulePath);
+  } catch (e) {
+    return undefined;
+  }
+}
+
+function createMiddleware(server: KrasServer, config: KrasConfiguration, source: string, options: Array<any>) {
   const creator = findMiddleware(source);
 
-  if (creator) {
+  if (typeof creator === 'function') {
     const handler = creator(...options);
 
     if (typeof handler === 'function') {
@@ -32,6 +32,8 @@ function createMiddleware(source: string, options: Array<any>) {
         handler,
       };
     }
+  } else if (creator && typeof creator.setup === 'function') {
+    creator.setup(server, config);
   }
 
   return undefined;
@@ -53,7 +55,7 @@ export function withMiddlewares(server: KrasServer, config: KrasConfiguration) {
   for (const definition of middlewareDefinitions) {
     const source = definition.source;
     const options = definition.options || [];
-    const middleware = createMiddleware(source, options);
+    const middleware = createMiddleware(server, config, source, options);
 
     if (middleware) {
       server.middlewares.push(middleware);

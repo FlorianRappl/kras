@@ -2,7 +2,7 @@ import { asScript, watch, Watcher } from '../helpers/io';
 import { basename } from 'path';
 import { editFileOption, editDirectoryOption } from '../helpers/build-options';
 import { fromJson } from '../helpers/build-response';
-import { KrasRequest, KrasConfiguration, Headers, StoredFileEntry, KrasInjectorConfig, KrasInjector, KrasAnswer, KrasInjectorOptions } from '../types';
+import { KrasRequest, KrasConfiguration, StoredFileEntry, KrasInjectorConfig, KrasInjector, KrasAnswer, KrasInjectorOptions, ScriptResponseBuilder } from '../types';
 import { EventEmitter } from 'events';
 
 function errorHandler(): undefined {
@@ -25,17 +25,6 @@ export interface DynamicScriptInjectorConfig {
     name: string;
     active: boolean;
   }>;
-}
-
-export interface ScriptResponseBuilderData {
-  statusCode: number;
-  statusText: string;
-  headers: Headers;
-  content: string;
-}
-
-export interface ScriptResponseBuilder {
-  (data: ScriptResponseBuilderData): KrasAnswer;
 }
 
 export interface ScriptFileEntry {

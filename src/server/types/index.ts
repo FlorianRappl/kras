@@ -9,3 +9,4 @@ export { BaseKrasServer, KrasServer, KrasServerMethods } from './kras-server';
 export { KrasServerHandler, KrasServerHook, KrasWebSocket, KrasServerConnector } from './kras-express';
 export { KrasHandlerConfiguration, KrasConfigurator, KrasRunner } from './kras-handler';
 export { UserCredentials } from './kras-auth';
+export { ScriptResponseBuilder, ScriptResponseBuilderData } from './kras-script-injector';

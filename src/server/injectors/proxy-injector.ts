@@ -17,6 +17,21 @@ interface WebSocketSessions {
   [id: string]: WebSocket;
 }
 
+interface BufferEntry {
+  time: number;
+  data: WebSocket.Data;
+}
+
+function releaseFrom(buffer: Array<BufferEntry>, ws: WebSocket) {
+    const item = buffer.shift();
+    ws.send(item.data);
+
+    if (buffer.length) {
+      const diff = buffer[0].time - item.time;
+      setTimeout(() => releaseFrom(buffer, ws), diff);
+    }
+}
+
 export default class ProxyInjector implements KrasInjector {
   private readonly sessions: WebSocketSessions = {};
   private readonly options: KrasInjectorConfig & ProxyInjectorConfig;
@@ -32,8 +47,21 @@ export default class ProxyInjector implements KrasInjector {
 
     core.on('user-connected', e => {
       const url = this.map[e.target] + e.url;
+      let open = false;
+      const buffer: Array<BufferEntry> = [];
       const ws = new WebSocket(url, {
         rejectUnauthorized: false,
+        protocol: e.ws.protocol,
+      });
+      ws.on('open', () => {
+        open = true;
+
+        if (buffer.length) {
+          releaseFrom(buffer, ws);
+        }
+      });
+      ws.on('close', e => {
+        core.emit('ws-closed', { reason: e });
       });
       ws.on('message', data => {
         core.emit('message', { content: data, from: url, to: e.id });
@@ -41,7 +69,15 @@ export default class ProxyInjector implements KrasInjector {
       });
       e.ws.on('message', (data: WebSocket.Data) => {
         core.emit('message', { content: data, to: url, from: e.id });
-        ws.send(data, (err: Error) => core.emit('error', err));
+
+        if (open) {
+          ws.send(data, (err: Error) => core.emit('error', err));
+        } else {
+          buffer.push({
+            time: Date.now(),
+            data,
+          })
+        }
       });
       ws.on('error', err => core.emit('error', err.error));
       this.sessions[e.id] = ws;
