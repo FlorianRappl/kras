@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.6.2
+
+- Cover WebSockets with any route (if no target given)
+- Middleware works against base directory (in case of path)
+- Command-line option to disable API (`--skip-api`)
+- Expose the `KrasWebSocket`
+
 ## 0.6.1
 
 - Fixed WebSocket communication after opening (#18)
