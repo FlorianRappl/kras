@@ -26,6 +26,8 @@ const argv = require('yargs')
   .alias('l', 'log-level')
   .describe('l', `Sets the log level of the application, by default ${defaultConfig.logLevel}`)
   .choices('l', ['info', 'debug', 'error'])
+  .boolean('skip-api')
+  .describe('skip-api', 'If set avoids creating the management API endpoint')
   .version()
   .help('h')
   .alias('h', 'help')
@@ -59,6 +61,7 @@ const options = {
   cert: argv.cert,
   key: argv.key,
   dir: argv.d,
+  skipApi: argv.skipApi,
 };
 
 const config = readKrasConfig(options, argv.c !== krasrc && argv.c);

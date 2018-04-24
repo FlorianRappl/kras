@@ -7,7 +7,7 @@ import { text } from 'body-parser';
 import { EventEmitter } from 'events';
 import { readSsl } from './readSsl';
 import { corsHandler } from './proxy';
-import { WebServerConfiguration, KrasServerHook, BaseKrasServer, KrasServerMethods, KrasServerHandler, KrasServerConnector } from '../types';
+import { WebServerConfiguration, KrasServerHook, BaseKrasServer, KrasServerMethods, KrasServerHandler, KrasServerConnector, Dict } from '../types';
 
 type Server = HttpServer | HttpsServer;
 
@@ -40,6 +40,20 @@ interface WebSocketConnection {
   };
 }
 
+function getWsTargets(mapping: Dict<string>) {
+  const keys = Object.keys(mapping);
+
+  if (keys.length) {
+    const targets = keys.filter(key => mapping[key].match('^wss?://'));
+
+    if (targets.length) {
+      return targets;
+    }
+  }
+
+  return ['*'];
+}
+
 export class WebServer extends EventEmitter implements BaseKrasServer {
   private readonly app: Application & {
     ws?(target: string, connect: KrasServerConnector): void;
@@ -56,8 +70,7 @@ export class WebServer extends EventEmitter implements BaseKrasServer {
     super();
     const mapping = config.map || {};
     const ssl = readSsl(config.ssl);
-    const keys = Object.keys(mapping);
-    this.targets = keys.filter(key => mapping[key].match('^wss?://'));
+    this.targets = getWsTargets(mapping);
     this.port = config.port || 9000;
     this.app = express();
     this.protocol = ssl ? 'https' : 'http';
@@ -195,8 +208,10 @@ export class WebServer extends EventEmitter implements BaseKrasServer {
     if (sockets) {
       const isObject = typeof msg === 'object';
       const data = isObject ? JSON.stringify(msg) : (msg || '').toString();
+      const targets = this.targets;
+      const wst = targets.length !== 1 || targets[0] !== '*' ? targets : undefined;
       this.emit('broadcast', { content: data, from: 'kras', to: '*' });
-      const socket = sockets.getWss(this.targets);
+      const socket = sockets.getWss(wst);
 
       if (socket) {
         const clients = socket.clients;

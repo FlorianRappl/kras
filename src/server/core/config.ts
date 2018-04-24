@@ -10,6 +10,7 @@ export interface ConfigurationOptions {
   dir?: string;
   cert?: string;
   key?: string;
+  skipApi?: boolean;
 }
 
 export interface ConfigurationFile {
@@ -72,6 +73,10 @@ export function mergeConfiguration(options?: ConfigurationOptions, ...configs: A
         cert: options.cert || (config.ssl && config.ssl.cert),
         key: options.key || (config.ssl && config.ssl.key),
       };
+    }
+
+    if (options.skipApi) {
+      config.api = false;
     }
 
     if (options.logs) {

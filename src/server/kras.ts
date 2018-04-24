@@ -18,13 +18,13 @@ import {
   KrasServerHandler,
   KrasHandlerConfiguration,
   KrasRunner,
-  KrasMiddleware
+  KrasMiddleware,
 } from './types';
 import {
   buildConfiguration,
   mergeConfiguration,
   readConfiguration,
-  ConfigurationOptions
+  ConfigurationOptions,
 } from './core/config';
 export {
   KrasRequestHandler,
@@ -37,7 +37,8 @@ export {
   Dict,
   Headers,
   ScriptResponseBuilder,
-  ScriptResponseBuilderData
+  ScriptResponseBuilderData,
+  KrasWebSocket,
 } from './types';
 export {
   KrasInjector,
@@ -45,7 +46,7 @@ export {
   KrasServerMethods,
   KrasServerHandler,
   KrasHandlerConfiguration,
-  KrasRunner
+  KrasRunner,
 };
 
 export type KrasRuntimeConfiguration = Partial<KrasConfiguration> &

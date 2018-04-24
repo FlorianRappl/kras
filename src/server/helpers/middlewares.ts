@@ -1,5 +1,5 @@
 import * as readFile from 'send';
-import { dirname } from 'path';
+import { dirname, resolve } from 'path';
 import { KrasServer, KrasConfiguration, KrasServerHandler, KrasMiddleware } from '../types';
 
 interface RequestHandlerCreator {
@@ -19,7 +19,10 @@ function findMiddleware(modulePath: string): RequestHandlerCreator | RequestHand
 }
 
 function createMiddleware(server: KrasServer, config: KrasConfiguration, source: string, options: Array<any>) {
-  const creator = findMiddleware(source);
+  const creator = findMiddleware(source) ||
+    findMiddleware(resolve(config.directory, source)) ||
+    findMiddleware(resolve(process.cwd(), source)) ||
+    findMiddleware(resolve(__dirname, source));
 
   if (typeof creator === 'function') {
     const handler = creator(...options);
