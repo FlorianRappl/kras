@@ -64,6 +64,7 @@ export class WebServer extends EventEmitter implements BaseKrasServer {
   private readonly protocol: string;
   private readonly targets: Array<string>;
   private readonly server: Server;
+  private readonly wsOptions: Dict<any>;
   private sockets: WebSocketConnection;
 
   constructor(config: Partial<WebServerConfiguration> = {}) {
@@ -75,7 +76,8 @@ export class WebServer extends EventEmitter implements BaseKrasServer {
     this.app = express();
     this.protocol = ssl ? 'https' : 'http';
     this.server = ssl ? createHttpsServer(ssl, this.app) : createHttpServer(this.app);
-    this.ws = config.ws;
+    this.wsOptions = typeof config.ws === 'object' ? config.ws : undefined;;
+    this.ws = !!config.ws;
     this.app.use(text({
       type: '*/*',
       limit: '50mb',
@@ -114,7 +116,10 @@ export class WebServer extends EventEmitter implements BaseKrasServer {
       this.sockets = undefined;
     } else if (!ws && value) {
       this.emit('info', 'Turned on WebSocket support');
-      this.sockets = expressWs(this.app, this.server);
+      console.log(this.wsOptions);
+      this.sockets = expressWs(this.app, this.server, {
+        wsOptions: this.wsOptions,
+      });
     }
   }
 

@@ -26,7 +26,9 @@ export interface KrasInjectorConfig {
   active: boolean;
 }
 
-export type KrasResponse = Promise<KrasAnswer> | KrasAnswer | void;
+export type KrasResult = KrasAnswer | void;
+
+export type KrasResponse = Promise<KrasResult> | KrasResult;
 
 export interface KrasRequestHandler {
   (req: KrasRequest): KrasResponse;

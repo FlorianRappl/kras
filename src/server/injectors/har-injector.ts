@@ -165,7 +165,7 @@ export default class HarInjector implements KrasInjector {
 
   private findTarget(url: string) {
     for (const target of Object.keys(this.map)) {
-      if (url.indexOf(this.map[target])) {
+      if (url.indexOf(this.map[target]) !== -1) {
         return target;
       }
     }

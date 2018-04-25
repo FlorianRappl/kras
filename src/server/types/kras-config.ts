@@ -1,4 +1,4 @@
-import { SslConfiguration, LogLevel } from './kras-basics';
+import { SslConfiguration, LogLevel, Dict } from './kras-basics';
 import { KrasInjectorConfig } from './kras-injector';
 import { KrasMiddlewareDefinition } from './kras-middleware';
 
@@ -11,7 +11,7 @@ export interface WebServerConfiguration extends AppConfiguration {
     [target: string]: string;
   };
   ssl: SslConfiguration;
-  ws: boolean;
+  ws: boolean | Dict<any>;
   port: number;
 }
 
