@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.6.3
+
+- Fixed find target bug in HAR injector
+- Made `ScriptResponseBuilderData` properties optional
+- Allow setting WebSocket options
+
 ## 0.6.2
 
 - Cover WebSockets with any route (if no target given)
