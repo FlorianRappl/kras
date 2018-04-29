@@ -14,4 +14,4 @@ interface HarInjectorConfiguration {
 }
 ```
 
-The `delay` option can artifically delay the response to requests. This is particularly useful to simulate something with exactly the same timing as the HAR file proposed.
+The `delay` option can artificially delay the response to requests. This is particularly useful to simulate something with exactly the same timing as the HAR file proposed.

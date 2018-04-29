@@ -23,4 +23,4 @@ interface ProxyInjectorConfiguration {
 }
 ```
 
-The mapping is already a general configuration, as the targets need to be known as well as their usual counterparts (e.g., to identify the correct URLs in an HAR file). The `agentOptions` can be used to specify more sophisticated options for the proxied request (e.g., which ciphers to use). The `proxy` option allows us to set a (corporate?) proxy to be used on the local machine (oh the irony - a proxy server that allows setting another proxy ...).
+The mapping is already a general configuration, as the targets need to be known as well as their usual counterparts (e.g., to identify the correct URLs in an HAR file). The `agentOptions` can be used to specify more sophisticated options for the proxyed request (e.g., which ciphers to use). The `proxy` option allows us to set a (corporate?) proxy to be used on the local machine (oh the irony - a proxy server that allows setting another proxy ...).

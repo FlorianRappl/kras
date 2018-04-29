@@ -56,9 +56,9 @@ The following animation shows the first-time experience, where the default confi
 
 ## Configuration
 
-kras uses configuration files and command line options to be properly configred. The configuration files are named `.krasrc` and are looked up in the following order: home directory, local directory, via the command line specified configuration file. Configuration options are merged from left to right.
+kras uses configuration files and command line options to be properly configured. The configuration files are named `.krasrc` and are looked up in the following order: home directory, local directory, via the command line specified configuration file. Configuration options are merged from left to right.
 
-If specified the command line options have higher precendence. The following options exist.
+If specified the command line options have higher precedence. The following options exist.
 
 ```plain
   -c, --config  Sets the configuration file to use, by default .krasrc  [string]
@@ -67,6 +67,7 @@ If specified the command line options have higher precendence. The following opt
   -d, --dir     Sets the base directory of the server, by default ...   [string]
   --cert        Sets the certificate of the server, by default ...      [string]
   --key         Sets the key of the server, by default ...              [string]
+  --skip-api    Sets the management API to be inaccessible              [toggle]
 ```
 
 The `.krasrc` is a simple JSON format. An example is the following configuration:
@@ -167,7 +168,11 @@ Yes. Injectors are powerful stuff and can be written in your own code base / pro
 
 *I don't like the web client - what can I do?*
 
-The bundled client is only the default client. If you prefer you can interact with kras via `curl` or postman or any other possibility to run raw API requests. If this is too tedious you could also write a custom client. If the client is registered as an NPM package kras can also (via the configuration) serve that client from the mangement endpoint. Details are aggregated [in the client documentation](docs/client.md).
+The bundled client is only the default client. If you prefer you can interact with kras via `curl` or postman or any other possibility to run raw API requests. If this is too tedious you could also write a custom client. If the client is registered as an NPM package kras can also (via the configuration) serve that client from the management endpoint. Details are aggregated [in the client documentation](docs/client.md).
+
+*I need to protect the management API but how?*
+
+The management API can be protected with the `auth` option. More information can be read [in the authentication documentation](docs/auth.md).
 
 ## License
 

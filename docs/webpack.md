@@ -37,7 +37,7 @@ Potentially, the port of kras needs to be changed, e.g., via the *.krasrc* in th
 
 For webpack (and many other bundlers, even task runners, e.g., Gulp) we can abuse the fact that kras was released not only as a CLI tool, but also as a library. So at the end of the day we may simply use the package within our application / run scripts to spawn / block the port we want it to.
 
-While it can make sense to run kras always, we usually want to run kras only during (live) development, i.e., when the webpack dev server is online. There are multiple ways to archieve this:
+While it can make sense to run kras always, we usually want to run kras only during (live) development, i.e., when the webpack dev server is online. There are multiple ways to achieve this:
 
 - Use a dedicated configuration file for the dev server
 - Branch in the main configuration file

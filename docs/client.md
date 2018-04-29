@@ -1,6 +1,6 @@
 # Client
 
-The defaut management client is a single-page application that was build using React as view layer. It tries to be minimal yet complete.
+The default management client is a single-page application that was build using React as view layer. It tries to be minimal yet complete.
 
 kras also provides the ability to show other clients at the management endpoint. The configuration contains a `client` property, which (if supplied) should map to the file being served (e.g., `index.html`). The location can be relative to the base directory specific in the configuration (falls back to the current working directory if missing).
 
@@ -22,4 +22,4 @@ function fullUrl(url, query) {
 }
 ```
 
-Keep in mind that for WebSocket the decision also had to be made between secure websockets and normal websockets.
+Keep in mind that for WebSocket the decision also had to be made between secure and normal websockets.

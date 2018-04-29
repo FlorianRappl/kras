@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.6.4
+
+- Updated request to effectively use hoek 4.2.1
+- Removed unnecessary console.log
+- Updated documentation
+
 ## 0.6.3
 
 - Fixed find target bug in HAR injector

@@ -77,7 +77,7 @@ Broadcasts the body of the request via websocket. Can be anything, such that no 
 
 ### GET /data
 
-Gets the current request data split in normal requests, errored requests, and websocket messages.
+Gets the current request data split in normal requests, failed requests, and websocket messages.
 
 Example:
 
@@ -105,23 +105,23 @@ This is the live feed to be notified when a new request has been recorded.
 
 ### GET /data/request/:id
 
-A detailled view of a specific request.
+A detailed view of a specific request.
 
 Example:
 
 ```json
-{  
+{
   "id":"ba419f81-2b7f-4bf0-9147-9446bc3bf3d0",
   "start":"2018-03-09T20:50:36.223Z",
   "end":"2018-03-09T20:50:36.468Z",
-  "request":{  
+  "request": {
     "url":"/posts",
     "target":"/api",
-    "query":{  
+    "query": {
 
     },
     "method":"GET",
-    "headers":{  
+    "headers": {
       "host":"localhost:9000",
       "connection":"keep-alive",
       "upgrade-insecure-requests":"1",
@@ -132,18 +132,18 @@ Example:
     },
     "content":""
    },
-   "response":{  
-    "status":{  
-      "code":200,
+   "response": {
+    "status": {
+      "code": 200,
       "text":"OK"
     },
     "url":"https://jsonplaceholder.typicode.com/posts",
-    "content":{  
+    "content": {
       "type":"Buffer",
-      "data":[  
+      "data": [
         //...
       ],
-      "headers":{  
+      "headers": {
         "date":"Fri, 09 Mar 2018 20:50:36 GMT",
         "content-type":"application/json; charset=utf-8",
         "transfer-encoding":"chunked",
@@ -163,9 +163,9 @@ Example:
         "server":"cloudflare",
         "cf-ray":"3f906a31a8bb6c94-SJC"
       },
-      "injector":{  
+      "injector": {
         "name":"proxy-injector",
-        "host":{  
+        "host": {
           "name":"https://jsonplaceholder.typicode.com"
         }
       }
@@ -176,11 +176,11 @@ Example:
 
 ### GET /data/message/:id
 
-A detailled view on the specific websocket message.
+A detailed view on the specific websocket message.
 
 ### GET /data/error/:id
 
-A detailled view on the specific errored request.
+A detailed view on the specific failed request.
 
 ### GET /file/:name
 
