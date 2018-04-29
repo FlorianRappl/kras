@@ -116,7 +116,6 @@ export class WebServer extends EventEmitter implements BaseKrasServer {
       this.sockets = undefined;
     } else if (!ws && value) {
       this.emit('info', 'Turned on WebSocket support');
-      console.log(this.wsOptions);
       this.sockets = expressWs(this.app, this.server, {
         wsOptions: this.wsOptions,
       });
