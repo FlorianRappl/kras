@@ -34,7 +34,7 @@
   "dependencies": {
     "body-parser": "^1.15.2",
     "chalk": "^2.3.0",
-    "chokidar": "^2.0.2",
+    "chokidar": "^2.0.4",
     "express": "^4.14.0",
     "express-ws": "^2.0.0",
     "request": "^2.85.0",
@@ -70,6 +70,7 @@
     "html-webpack-plugin": "^2.30.1",
     "jest": "^22.1.4",
     "jest-enzyme": "^4.1.1",
+    "mixin-deep": "^1.3.1",
     "nodemon": "^1.14.11",
     "react": "^16.2.0",
     "react-ace": "^5.9.0",
