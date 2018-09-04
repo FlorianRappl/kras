@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.6.5
+
+- Updated dependencies due to CVE 2018-3719
+
 ## 0.6.4
 
 - Updated request to effectively use hoek 4.2.1

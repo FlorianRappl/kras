@@ -1,6 +1,6 @@
 {
   "name": "kras",
-  "version": "0.6.4",
+  "version": "0.6.5",
   "description": "Efficient server proxying and mocking in Node.js.",
   "main": "dist/server/kras.js",
   "types": "dist/server/kras.d.ts",
