@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.6.6
+
+- Updated dependencies due to CVE 2018-3721
+- Updated dependencies due to CVE 2018-3774
+- Refactored deprecated calls
+
 ## 0.6.5
 
 - Updated dependencies due to CVE 2018-3719

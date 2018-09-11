@@ -116,7 +116,7 @@ export function fromHar(url: string, response: HarResponse, injector?: KrasInjec
     url,
     redirectUrl: response.redirectURL,
     headers,
-    content: new Buffer(text, encoding),
+    content: Buffer.from(text, encoding),
     injector,
   });
 }
