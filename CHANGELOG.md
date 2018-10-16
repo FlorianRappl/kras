@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.6.7
+
+- Updated dependencies due to CVE 2018-14041
+
 ## 0.6.6
 
 - Updated dependencies due to CVE 2018-3721
