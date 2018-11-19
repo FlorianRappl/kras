@@ -17,7 +17,8 @@ export interface FullKrasServer extends KrasServer {
 }
 
 export function runWith(server: FullKrasServer, callback: KrasRunner) {
-  return server.start()
+  return server
+    .start()
     .then(() => callback(server))
     .then(() => server.stop());
 }

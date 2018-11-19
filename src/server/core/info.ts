@@ -9,15 +9,17 @@ function optional(p: string) {
     if (existsSync(projectFile)) {
       return require(p);
     }
-  } catch (e) { }
+  } catch (e) {}
 
   return undefined;
 }
 
 function isInjectorDebug(name: string) {
-  return /^kras\-[A-Za-z0-9\-]+\-injector$/.test(name) ||
+  return (
+    /^kras\-[A-Za-z0-9\-]+\-injector$/.test(name) ||
     /^[A-Za-z0-9\-]+\-kras\-injector$/.test(name) ||
-    /^[A-Za-z0-9\-]+\-injector$/.test(name);
+    /^[A-Za-z0-9\-]+\-injector$/.test(name)
+  );
 }
 
 const packageInfo = require(resolve(rootDir, 'package.json'));

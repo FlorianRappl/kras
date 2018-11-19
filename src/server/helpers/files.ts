@@ -11,10 +11,9 @@ export function withFiles(server: KrasServer, config: KrasConfiguration) {
       root: dirname(config.client),
     };
 
-    server.at(api, 'static/*')
-      .get((req, res) => {
-        const path = req.url.substr(prefix.length);
-        readFile(req, path, options).pipe(res);
-      });
+    server.at(api, 'static/*').get((req, res) => {
+      const path = req.url.substr(prefix.length);
+      readFile(req, path, options).pipe(res);
+    });
   }
-};
+}

@@ -68,15 +68,17 @@ export function liveData(server: KrasServer) {
   const clients: Array<KrasWebSocket> = [];
   const broadcast = (type: string, data: any) => {
     for (const client of clients) {
-      client.send(JSON.stringify({
-        type,
-        data,
-      }));
+      client.send(
+        JSON.stringify({
+          type,
+          data,
+        }),
+      );
     }
   };
 
   server.recorder.on('recorded-request', item => {
-    broadcast('request', convertRequest(item))
+    broadcast('request', convertRequest(item));
   });
 
   server.recorder.on('recorded-message', item => {
@@ -84,7 +86,7 @@ export function liveData(server: KrasServer) {
   });
 
   server.recorder.on('recorded-miss', item => {
-    broadcast('error', convertMiss(item))
+    broadcast('error', convertMiss(item));
   });
 
   return (ws: KrasWebSocket) => {

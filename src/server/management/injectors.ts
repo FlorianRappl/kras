@@ -21,9 +21,7 @@ function transformInjector(injector: KrasInjector) {
 
 export function readInjectorsSettings(server: KrasServer) {
   return (req: Request, res: Response) => {
-    const injectors = server.injectors
-      .map(transformInjector)
-      .filter(injector => injector !== undefined);
+    const injectors = server.injectors.map(transformInjector).filter(injector => injector !== undefined);
 
     res.json({ injectors });
   };
@@ -32,9 +30,7 @@ export function readInjectorsSettings(server: KrasServer) {
 export function readInjectorSettings(server: KrasServer) {
   return (req: Request, res: Response) => {
     const name = req.params.name;
-    const injector = server.injectors
-      .filter(m => m.name === name)
-      .map(transformInjector)[0];
+    const injector = server.injectors.filter(m => m.name === name).map(transformInjector)[0];
 
     if (injector) {
       res.json(injector);
@@ -48,8 +44,7 @@ export function saveInjectorSettings(server: KrasServer) {
   return (req: Request, res: Response) => {
     const name = req.params.name;
     const options = JSON.parse(req.body || '{}');
-    const injector = server.injectors
-      .filter(m => m.name === name)[0];
+    const injector = server.injectors.filter(m => m.name === name)[0];
 
     if (injector) {
       injector.setOptions(options);

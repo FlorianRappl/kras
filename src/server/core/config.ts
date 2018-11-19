@@ -64,7 +64,10 @@ export function readConfiguration(dir: string, file: string): ConfigurationFile 
   return {};
 }
 
-export function mergeConfiguration(options?: ConfigurationOptions, ...configs: Array<ConfigurationFile>): KrasConfiguration {
+export function mergeConfiguration(
+  options?: ConfigurationOptions,
+  ...configs: Array<ConfigurationFile>
+): KrasConfiguration {
   const config: KrasConfiguration = Object.assign({}, ...configs);
 
   if (options) {
@@ -119,24 +122,24 @@ export const defaultConfig = {
   auth: undefined,
   middlewares: [],
   injectors: {
-    'script': {
+    script: {
       active: true,
     },
-    'har': {
+    har: {
       active: true,
       delay: false,
     },
-    'json': {
+    json: {
       active: true,
       randomize: true,
     },
-    'proxy': {
+    proxy: {
       active: true,
     },
-    'store': {
+    store: {
       active: false,
-    }
-  }
+    },
+  },
 } as KrasConfiguration;
 
 export function buildConfiguration(config: Partial<ConfigurationFile> = {}): KrasConfiguration {

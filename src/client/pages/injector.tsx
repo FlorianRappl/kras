@@ -8,9 +8,7 @@ export interface InjectorProps {
   active: boolean;
   name: string;
   options: KrasInjectorOptions;
-  onSaveChanges(e: {
-    options: KrasInjectorOptions,
-  }): void;
+  onSaveChanges(e: { options: KrasInjectorOptions }): void;
 }
 
 export interface InjectorState {
@@ -64,12 +62,12 @@ export interface KrasInjectorEntryOption {
 }
 
 export type KrasInjectorOption =
-  KrasInjectorStringOption |
-  KrasInjectorCheckboxOption |
-  KrasInjectorFileOption |
-  KrasInjectorDirectoryOption |
-  KrasInjectorEntryOption |
-  KrasInjectorJsonOption;
+  | KrasInjectorStringOption
+  | KrasInjectorCheckboxOption
+  | KrasInjectorFileOption
+  | KrasInjectorDirectoryOption
+  | KrasInjectorEntryOption
+  | KrasInjectorJsonOption;
 
 export interface KrasInjectorOptions {
   [name: string]: {
@@ -87,7 +85,6 @@ function compareOptions(original: KrasInjectorOptions, options: KrasInjectorOpti
       if (!areEqual(a, b)) {
         return false;
       }
-
     } else {
       return false;
     }
@@ -115,7 +112,7 @@ export class Injector extends React.Component<InjectorProps, InjectorState> {
       this.setState({
         hasChanges: false,
         options: {
-          ...nextProps.options
+          ...nextProps.options,
         },
       });
     }
@@ -138,7 +135,7 @@ export class Injector extends React.Component<InjectorProps, InjectorState> {
       case 'directory':
         newOptions[name] = {
           ...option,
-          value: option.value.map((item, i) => i !== index ? item : value),
+          value: option.value.map((item, i) => (i !== index ? item : value)),
         };
         break;
       case 'json':
@@ -169,22 +166,34 @@ export class Injector extends React.Component<InjectorProps, InjectorState> {
       case 'file':
         newOptions[name] = {
           ...option,
-          value: option.value.map((item, i) => i !== index ? item : ({
-            ...item,
-            active: value,
-          })),
+          value: option.value.map((item, i) =>
+            i !== index
+              ? item
+              : {
+                  ...item,
+                  active: value,
+                },
+          ),
         };
         break;
       case 'entry':
         newOptions[name] = {
           ...option,
-          value: option.value.map((item, i) => i !== index ? item : ({
-            ...item,
-            entries: item.entries.map((entry, j) => (position !== undefined && j !== position) ? entry : ({
-              ...entry,
-              active: value,
-            })),
-          })),
+          value: option.value.map((item, i) =>
+            i !== index
+              ? item
+              : {
+                  ...item,
+                  entries: item.entries.map((entry, j) =>
+                    position !== undefined && j !== position
+                      ? entry
+                      : {
+                          ...entry,
+                          active: value,
+                        },
+                  ),
+                },
+          ),
         };
         break;
     }
@@ -211,16 +220,23 @@ export class Injector extends React.Component<InjectorProps, InjectorState> {
         input = (
           <FormGroup check>
             <Label check>
-              <Input type="checkbox" checked={option.value} onChange={(e) => this.changeBooleanOption(e.target.checked, name)} /> Enabled
+              <Input
+                type="checkbox"
+                checked={option.value}
+                onChange={e => this.changeBooleanOption(e.target.checked, name)}
+              />{' '}
+              Enabled
             </Label>
           </FormGroup>
         );
         break;
       case 'text':
-        input = <Input type="text" value={option.value} onChange={(e) => this.changeTextOption(e.target.value, name)} />;
+        input = <Input type="text" value={option.value} onChange={e => this.changeTextOption(e.target.value, name)} />;
         break;
       case 'json':
-        input = <TextEditor mode="json" height="8em" value={option.value} onChange={(e) => this.changeTextOption(e, name)} />;
+        input = (
+          <TextEditor mode="json" height="8em" value={option.value} onChange={e => this.changeTextOption(e, name)} />
+        );
         break;
       case 'file':
       case 'directory':
@@ -230,13 +246,9 @@ export class Injector extends React.Component<InjectorProps, InjectorState> {
 
     return (
       <FormGroup key={name}>
-        <Label>
-          {option.title}
-        </Label>
+        <Label>{option.title}</Label>
         {input}
-        <FormText>
-          {option.description}
-        </FormText>
+        <FormText>{option.description}</FormText>
       </FormGroup>
     );
   }
@@ -250,69 +262,79 @@ export class Injector extends React.Component<InjectorProps, InjectorState> {
       case 'directory':
         content = (
           <div>
-            {
-              option.value.map((directory, i) => (
-                <div style={{ margin: '0.5em 0' }} key={i}>
-                  <FormGroup>
-                    <Input type="text" value={directory} onChange={(e) => this.changeTextOption(e.target.value, name, i)} />
-                  </FormGroup>
-                </div>
-              ))
-            }
+            {option.value.map((directory, i) => (
+              <div style={{ margin: '0.5em 0' }} key={i}>
+                <FormGroup>
+                  <Input type="text" value={directory} onChange={e => this.changeTextOption(e.target.value, name, i)} />
+                </FormGroup>
+              </div>
+            ))}
           </div>
         );
         break;
       case 'entry':
         content = (
           <div>
-            {
-              option.value.map((file, i) => (
-                <div style={{ margin: '0.5em 0' }} key={file.id}>
-                  <FormGroup check>
-                    <Label check>
-                      <Input
-                        type="checkbox"
-                        checked={file.entries.filter(m => m.active).length > 0}
-                        onChange={(e) => this.changeBooleanOption(e.target.checked, name, i)} /> {file.basename}
-                    </Label>
-                    <FormText>
-                      <Button color="info" size="sm" href={`#/editor/${file.id}`}>Open File in Editor</Button> {file.name}
-                    </FormText>
-                  </FormGroup>
-                  <div style={{ marginLeft: '1.5em' }}>
-                    {
-                      file.entries.map((entry, j) => (
-                        <FormGroup check key={j}>
-                          <Label check>
-                            <Input type="checkbox" checked={entry.active} onChange={(e) => this.changeBooleanOption(e.target.checked, name, i, j)} /> {entry.description}
-                          </Label>
-                        </FormGroup>
-                      ))
-                    }
-                  </div>
+            {option.value.map((file, i) => (
+              <div style={{ margin: '0.5em 0' }} key={file.id}>
+                <FormGroup check>
+                  <Label check>
+                    <Input
+                      type="checkbox"
+                      checked={file.entries.filter(m => m.active).length > 0}
+                      onChange={e => this.changeBooleanOption(e.target.checked, name, i)}
+                    />{' '}
+                    {file.basename}
+                  </Label>
+                  <FormText>
+                    <Button color="info" size="sm" href={`#/editor/${file.id}`}>
+                      Open File in Editor
+                    </Button>{' '}
+                    {file.name}
+                  </FormText>
+                </FormGroup>
+                <div style={{ marginLeft: '1.5em' }}>
+                  {file.entries.map((entry, j) => (
+                    <FormGroup check key={j}>
+                      <Label check>
+                        <Input
+                          type="checkbox"
+                          checked={entry.active}
+                          onChange={e => this.changeBooleanOption(e.target.checked, name, i, j)}
+                        />{' '}
+                        {entry.description}
+                      </Label>
+                    </FormGroup>
+                  ))}
                 </div>
-              ))
-            }
+              </div>
+            ))}
           </div>
         );
         break;
       case 'file':
         content = (
           <div>
-            {
-              option.value.map((file, i) => (
-                <div style={{ margin: '0.5em 0' }} key={file.id}>
-                  <FormGroup check>
-                    <Label check>
-                      <Input type="checkbox" checked={file.active} onChange={(e) => this.changeBooleanOption(e.target.checked, name, i)} /> {file.basename}
-                    </Label>
-                    <FormText>
-                      <Button color="info" size="sm" href={`#/editor/${file.id}`}>Open File in Editor</Button> {file.name}
-                    </FormText>
-                  </FormGroup>
-                </div>
-              ))
-            }
+            {option.value.map((file, i) => (
+              <div style={{ margin: '0.5em 0' }} key={file.id}>
+                <FormGroup check>
+                  <Label check>
+                    <Input
+                      type="checkbox"
+                      checked={file.active}
+                      onChange={e => this.changeBooleanOption(e.target.checked, name, i)}
+                    />{' '}
+                    {file.basename}
+                  </Label>
+                  <FormText>
+                    <Button color="info" size="sm" href={`#/editor/${file.id}`}>
+                      Open File in Editor
+                    </Button>{' '}
+                    {file.name}
+                  </FormText>
+                </FormGroup>
+              </div>
+            ))}
           </div>
         );
         break;
@@ -320,12 +342,8 @@ export class Injector extends React.Component<InjectorProps, InjectorState> {
 
     return (
       <FormGroup key={name}>
-        <Label>
-          {option.title}
-        </Label>
-        <FormText>
-          {option.description}
-        </FormText>
+        <Label>{option.title}</Label>
+        <FormText>{option.description}</FormText>
         {content}
       </FormGroup>
     );
@@ -344,23 +362,23 @@ export class Injector extends React.Component<InjectorProps, InjectorState> {
     this.setState({
       hasChanges: false,
     });
-  }
+  };
 
   render() {
     const { active, name } = this.props;
     const { options, hasChanges } = this.state;
 
-    return  (
+    return (
       <Row>
         <Col sm="12">
           <h4>
-            <Badge color={active ? 'success' : 'secondary'}>
-              {active ? 'Active' : 'Disabled'}
-            </Badge>
+            <Badge color={active ? 'success' : 'secondary'}>{active ? 'Active' : 'Disabled'}</Badge>
             {' ' + name}
           </h4>
           {Object.keys(options).map(name => this.renderInput(name))}
-          <Button color="primary" disabled={!hasChanges} onClick={this.saveChanges}>Save Changes</Button>
+          <Button color="primary" disabled={!hasChanges} onClick={this.saveChanges}>
+            Save Changes
+          </Button>
         </Col>
       </Row>
     );

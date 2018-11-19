@@ -1,9 +1,5 @@
-import { asJson, watch, Watcher } from '../helpers/io';
-import { editDirectoryOption, editEntryOption } from '../helpers/build-options';
-import { basename } from 'path';
-import { fromJson } from '../helpers/build-response';
-import { compareRequests } from '../helpers/compare-requests';
-import { KrasInjectorConfig, KrasResponse, KrasAnswer, KrasInjector, KrasConfiguration, KrasRequest, Headers, StoredFileEntry, KrasInjectorOptions } from '../types';
+import { asJson, watch, Watcher, editDirectoryOption, editEntryOption, fromJson, compareRequests } from '../helpers';
+import { KrasInjectorConfig, KrasAnswer, KrasInjector, KrasRequest, KrasInjectorOptions } from '../types';
 
 function find(response: KrasAnswer | Array<KrasAnswer>, randomize: boolean) {
   if (Array.isArray(response)) {
@@ -113,11 +109,11 @@ export default class JsonInjector implements KrasInjector {
     for (const item of items) {
       item.active = true;
 
-      if (typeof(item.request) !== 'object') {
+      if (typeof item.request !== 'object') {
         item.request = {};
       }
 
-      if (typeof(item.response) !== 'object') {
+      if (typeof item.response !== 'object') {
         item.response = {};
       }
     }
@@ -129,7 +125,7 @@ export default class JsonInjector implements KrasInjector {
     this.watcher.close();
   }
 
-  handle(req: KrasRequest) {
+  handle(req: KrasRequest): Promise<KrasAnswer> | KrasAnswer {
     for (const fileName of Object.keys(this.files)) {
       const entries = this.files[fileName];
 
@@ -148,13 +144,15 @@ export default class JsonInjector implements KrasInjector {
               response.status.code,
               response.status.text,
               response.headers,
-              response.content, {
+              response.content,
+              {
                 name,
                 file: {
                   name: fileName,
                   entry: i,
                 },
-              });
+              },
+            );
           }
         }
       }

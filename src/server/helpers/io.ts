@@ -82,7 +82,13 @@ export function isInDirectory(fn: string, dir: string) {
   return !!rel && !rel.startsWith('..') && !isAbsolute(rel);
 }
 
-function installWatcher(directory: string, pattern: string, loadFile: WatchEvent, updateFile: WatchEvent, deleteFile: WatchEvent) {
+function installWatcher(
+  directory: string,
+  pattern: string,
+  loadFile: WatchEvent,
+  updateFile: WatchEvent,
+  deleteFile: WatchEvent,
+) {
   mk(directory);
   return chokidar
     .watch(pattern, { cwd: directory })
@@ -91,7 +97,11 @@ function installWatcher(directory: string, pattern: string, loadFile: WatchEvent
     .on('unlink', deleteFile);
 }
 
-function watchSingle(directory: string, pattern: string, callback: (type: string, file: string) => void): SingleWatcher {
+function watchSingle(
+  directory: string,
+  pattern: string,
+  callback: (type: string, file: string) => void,
+): SingleWatcher {
   const updateFile = (file: string) => callback('update', resolve(directory, file));
   const deleteFile = (file: string) => callback('delete', resolve(directory, file));
   const loadFile = (file: string) => callback('create', resolve(directory, file));
@@ -109,10 +119,14 @@ function watchSingle(directory: string, pattern: string, callback: (type: string
 
       w.close();
     },
-  }
+  };
 }
 
-export function watch(directory: string | Array<string>, pattern: string, callback: (type: string, file: string) => void): Watcher {
+export function watch(
+  directory: string | Array<string>,
+  pattern: string,
+  callback: (type: string, file: string) => void,
+): Watcher {
   if (Array.isArray(directory)) {
     const ws = directory.map(dir => watchSingle(dir, pattern, callback));
     return {

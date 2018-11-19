@@ -37,7 +37,7 @@ interface RequestViewProps {
       redirectUrl: string;
       content: string;
       injector?: {
-        name: string
+        name: string;
       };
     };
   };
@@ -45,26 +45,31 @@ interface RequestViewProps {
 
 const RequestView: React.SFC<RequestViewProps> = ({ data }) => (
   <Protect condition={!!data.id}>
-    {
-      !!data.id && <Details fields={[
-        { label: 'Request sent (date)', value: new Date(data.start).toDateString() },
-        { label: 'Request sent (time)', value: new Date(data.start).toTimeString() },
-        { label: 'Request failed (date)', value: new Date(data.end).toDateString() },
-        { label: 'Request failed (time)', value: new Date(data.end).toTimeString() },
-        { label: 'Duration (time)', value: `${(new Date(data.end).valueOf() - new Date(data.start).valueOf()) / 1000}s` },
-        { label: 'Target mapping', value: data.request.target },
-        { label: 'Responsible injector', value: data.response.injector.name },
-        { label: 'HTTP request URL', value: data.request.url },
-        { label: 'HTTP request method', value: data.request.method },
-        { label: 'HTTP request query parameters', value: data.request.query },
-        { label: 'HTTP request headers', value: data.request.headers },
-        { label: 'HTTP request body', value: data.request.content },
-        { label: 'HTTP response URL', value: data.response.url },
-        { label: 'HTTP response redirect URL', value: data.response.redirectUrl },
-        { label: 'HTTP response headers', value: data.response.headers },
-        { label: 'HTTP response status', value: `${data.response.status.code} ${data.response.status.text}` },
-      ]} />
-    }
+    {!!data.id && (
+      <Details
+        fields={[
+          { label: 'Request sent (date)', value: new Date(data.start).toDateString() },
+          { label: 'Request sent (time)', value: new Date(data.start).toTimeString() },
+          { label: 'Request failed (date)', value: new Date(data.end).toDateString() },
+          { label: 'Request failed (time)', value: new Date(data.end).toTimeString() },
+          {
+            label: 'Duration (time)',
+            value: `${(new Date(data.end).valueOf() - new Date(data.start).valueOf()) / 1000}s`,
+          },
+          { label: 'Target mapping', value: data.request.target },
+          { label: 'Responsible injector', value: data.response.injector.name },
+          { label: 'HTTP request URL', value: data.request.url },
+          { label: 'HTTP request method', value: data.request.method },
+          { label: 'HTTP request query parameters', value: data.request.query },
+          { label: 'HTTP request headers', value: data.request.headers },
+          { label: 'HTTP request body', value: data.request.content },
+          { label: 'HTTP response URL', value: data.response.url },
+          { label: 'HTTP response redirect URL', value: data.response.redirectUrl },
+          { label: 'HTTP response headers', value: data.response.headers },
+          { label: 'HTTP response status', value: `${data.response.status.code} ${data.response.status.text}` },
+        ]}
+      />
+    )}
   </Protect>
 );
 

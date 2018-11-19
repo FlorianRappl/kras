@@ -1,7 +1,6 @@
-import { open, JsonStore } from '../helpers/json-store';
 import { resolve } from 'path';
-import { Request, Response } from 'express';
-import { KrasInjectorOptions, KrasRequest, KrasConfiguration, KrasInjectorConfig, KrasInjector } from '../types';
+import { open, JsonStore } from '../helpers';
+import { KrasInjectorOptions, KrasRequest, KrasInjectorConfig, KrasInjector } from '../types';
 
 export interface StoreInjectorConfig {
   directory?: string;

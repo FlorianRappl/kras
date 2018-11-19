@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
-import { KrasServer, KrasConfiguration } from '../types';
 import { resolve } from 'path';
 import { spawn } from 'child_process';
+import { KrasServer, KrasConfiguration } from '../types';
 
 const started = new Date();
 

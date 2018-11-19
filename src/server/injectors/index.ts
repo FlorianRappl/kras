@@ -1,20 +1,31 @@
 import { resolve } from 'path';
-import { fromMissing } from '../helpers/build-response';
-import { open } from '../helpers/json-store';
+import { EventEmitter } from 'events';
 import { Request, Response } from 'express';
 import { parse } from 'url';
-import { KrasConfiguration, KrasServer, KrasAnswer, KrasRequestHandler, KrasInjectorInfo, KrasInjector, KrasResponse, KrasInjectorConfig, KrasRequest, KrasInjectorOptions } from '../types';
+import { fromMissing } from '../helpers';
 import { injectorDebug, injectorConfig, injectorMain } from '../core/info';
-import { EventEmitter } from 'events';
+import {
+  KrasConfiguration,
+  KrasServer,
+  KrasAnswer,
+  KrasInjector,
+  KrasResponse,
+  KrasInjectorConfig,
+  KrasRequest,
+} from '../types';
+import HarInjector from './har-injector';
+import JsonInjector from './json-injector';
+import ProxyInjector from './proxy-injector';
+import ScriptInjector from './script-injector';
+import StoreInjector from './store-injector';
 
-const specialHeaders = [
-  'origin',
-  'content-type',
-];
+export { ScriptInjector, ProxyInjector, HarInjector, StoreInjector, JsonInjector };
+
+const specialHeaders = ['origin', 'content-type'];
 
 function sendResponse(req: KrasRequest, ans: KrasAnswer, res: Response) {
   if (!ans.redirectUrl) {
-    const origin = req.headers['origin'];
+    const origin = req.headers.origin;
     const type = ans.headers['content-type'];
 
     for (const headerName of Object.keys(ans.headers)) {
@@ -62,7 +73,7 @@ function normalize(targets: Array<string>, req: Request): KrasRequest {
   const headers = Object.assign({}, req.headers);
   const content = typeof req.body === 'string' ? req.body : '';
   const method = typeof req.method === 'string' ? req.method : 'GET';
-  delete query['_'];
+  delete query._;
 
   return {
     url,
@@ -79,30 +90,27 @@ function tryInjectors(injectors: Array<KrasInjector>, req: KrasRequest): Promise
     const injector = injectors.shift();
     const response = injector.handle(req);
 
-    return Promise.resolve<KrasResponse>(response)
-      .then((ans) => ans || tryInjectors(injectors, req));
+    return Promise.resolve<KrasResponse>(response).then(ans => ans || tryInjectors(injectors, req));
   }
 
   return Promise.resolve(undefined);
 }
 
 function handleRequest(server: KrasServer, req: KrasRequest, res: Response) {
-  const injectors = server.injectors
-    .filter((injector) => injector.active);
+  const injectors = server.injectors.filter(injector => injector.active);
 
   server.emit('request', req);
 
-  tryInjectors(injectors, req)
-    .then((ans) => {
-      if (!ans) {
-        server.emit('missing', req);
-        ans = fromMissing(req.url);
-      } else {
-        server.emit('response', ans);
-      }
+  tryInjectors(injectors, req).then(ans => {
+    if (!ans) {
+      server.emit('missing', req);
+      ans = fromMissing(req.url);
+    } else {
+      server.emit('response', ans);
+    }
 
-      sendResponse(req, ans, res);
-    });
+    sendResponse(req, ans, res);
+  });
 }
 
 interface KrasInjectorClass {
@@ -118,7 +126,12 @@ function findInjector(modulePath: string): KrasInjectorClass {
   }
 }
 
-function addInjectorInstance(Injector: KrasInjectorClass, options: KrasInjectorConfig, config: KrasConfiguration, server: KrasServer) {
+function addInjectorInstance(
+  Injector: KrasInjectorClass,
+  options: KrasInjectorConfig,
+  config: KrasConfiguration,
+  server: KrasServer,
+) {
   if (Injector) {
     server.injectors.push(new Injector(options, config, server));
   }
@@ -134,7 +147,8 @@ export function withInjectors(server: KrasServer, config: KrasConfiguration) {
   }
 
   for (const name of names) {
-    const Injector = findInjector(resolve(config.directory, `${name}-injector`)) ||
+    const Injector =
+      findInjector(resolve(config.directory, `${name}-injector`)) ||
       findInjector(`kras-${name}-injector`) ||
       findInjector(`${name}-kras-injector`) ||
       findInjector(`${name}-injector`) ||
@@ -144,7 +158,7 @@ export function withInjectors(server: KrasServer, config: KrasConfiguration) {
   }
 
   server.add({
-    rate: (req) => {
+    rate: req => {
       const hasTarget = getTarget(heads, req.url) !== undefined;
       return hasTarget ? 1 : 0;
     },
@@ -153,4 +167,4 @@ export function withInjectors(server: KrasServer, config: KrasConfiguration) {
       return handleRequest(server, entry, res);
     },
   });
-};
+}

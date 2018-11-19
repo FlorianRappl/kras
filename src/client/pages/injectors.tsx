@@ -51,7 +51,7 @@ class InjectorsView extends React.Component<InjectorsViewProps, InjectorsViewSta
 
   private saveChanges(injector: KrasInjector, options: KrasInjectorOptions) {
     const { injectors } = this.state;
-    const data: { [x: string]: any; } = {};
+    const data: { [x: string]: any } = {};
 
     for (const option of Object.keys(options)) {
       if (option && option[0] !== '_') {
@@ -63,17 +63,27 @@ class InjectorsView extends React.Component<InjectorsViewProps, InjectorsViewSta
       method: 'PUT',
       url: `injector/${injector.name}`,
       body: JSON.stringify(data),
-    }).then(() => request({
-      url: 'injector'
-    })).then(({ injectors }) => this.setState({
-      injectors,
-    }));
+    })
+      .then(() =>
+        request({
+          url: 'injector',
+        }),
+      )
+      .then(({ injectors }) =>
+        this.setState({
+          injectors,
+        }),
+      );
 
     this.setState({
-      injectors: injectors.map(inj => inj !== injector ? inj : ({
-        ...injector,
-        options,
-      })),
+      injectors: injectors.map(inj =>
+        inj !== injector
+          ? inj
+          : {
+              ...injector,
+              options,
+            },
+      ),
     });
   }
 
@@ -81,38 +91,35 @@ class InjectorsView extends React.Component<InjectorsViewProps, InjectorsViewSta
     const { injectors, activeTab } = this.state;
 
     if (injectors.length === 0) {
-      return (
-        <Alert color="warning">
-          No injectors loaded.
-        </Alert>
-      );
+      return <Alert color="warning">No injectors loaded.</Alert>;
     }
 
     return (
       <div>
         <Nav tabs>
-          {
-            injectors.map(injector => (
-              <NavItem key={injector.name}>
-                <NavLink
-                  style={{ cursor: 'pointer' }}
-                  tag={Link}
-                  className={activeTab === injector.name ? 'active' : '' }
-                  {...{ to: `/injectors/${injector.name}` }}>
-                  {injector.name}
-                </NavLink>
-              </NavItem>
-            ))
-          }
+          {injectors.map(injector => (
+            <NavItem key={injector.name}>
+              <NavLink
+                style={{ cursor: 'pointer' }}
+                tag={Link}
+                className={activeTab === injector.name ? 'active' : ''}
+                {...{ to: `/injectors/${injector.name}` }}>
+                {injector.name}
+              </NavLink>
+            </NavItem>
+          ))}
         </Nav>
         <TabContent activeTab={activeTab}>
-          {
-            injectors.map(injector => (
-              <TabPane tabId={injector.name} key={injector.name}>
-                <Injector name={injector.name} active={injector.active} options={injector.options} onSaveChanges={({ options }) => this.saveChanges(injector, options)} />
-              </TabPane>
-            ))
-          }
+          {injectors.map(injector => (
+            <TabPane tabId={injector.name} key={injector.name}>
+              <Injector
+                name={injector.name}
+                active={injector.active}
+                options={injector.options}
+                onSaveChanges={({ options }) => this.saveChanges(injector, options)}
+              />
+            </TabPane>
+          ))}
         </TabContent>
       </div>
     );

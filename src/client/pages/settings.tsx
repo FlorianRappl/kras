@@ -108,15 +108,14 @@ class SettingsView extends React.Component<SettingsViewProps, SettingsViewState>
           </FormGroup>
         </Panel>
         <Panel title="Available Injectors" type="primary">
-          {
-            injectors.map((injector, index) => (
-              <FormGroup check key={injector.name}>
-                <Label check>
-                  <Input type="checkbox" checked={injector.active} onChange={this.changeInjector(index)} /> Activate {injector.name}
-                </Label>
-              </FormGroup>
-            ))
-          }
+          {injectors.map((injector, index) => (
+            <FormGroup check key={injector.name}>
+              <Label check>
+                <Input type="checkbox" checked={injector.active} onChange={this.changeInjector(index)} /> Activate{' '}
+                {injector.name}
+              </Label>
+            </FormGroup>
+          ))}
         </Panel>
         <Button color="primary" onClick={this.saveChanges} disabled={!hasChanges}>
           Save Changes

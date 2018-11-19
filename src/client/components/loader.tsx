@@ -84,11 +84,7 @@ export class Loader<T> extends React.Component<LoaderProps<T>, LoaderState<T>> {
           return false;
         }
 
-        return (
-          <Alert color="danger">
-            {error || 'Error while loading the data. Is the server still running?'}
-          </Alert>
-        );
+        return <Alert color="danger">{error || 'Error while loading the data. Is the server still running?'}</Alert>;
       case 'success':
         return <Component {...forward} data={data} />;
     }

@@ -1,8 +1,14 @@
 import * as WebSocket from 'ws';
-import { Request } from 'express';
 import { EventEmitter } from 'events';
-import { proxyRequest } from '../helpers/proxy-request';
-import { KrasInjector, KrasAnswer, KrasInjectorConfig, KrasConfiguration, KrasRequest, KrasInjectorOptions } from '../types';
+import { proxyRequest } from '../helpers';
+import {
+  KrasInjector,
+  KrasAnswer,
+  KrasInjectorConfig,
+  KrasConfiguration,
+  KrasRequest,
+  KrasInjectorOptions,
+} from '../types';
 
 export interface ProxyInjectorConfig {
   agentOptions?: any;
@@ -23,13 +29,13 @@ interface BufferEntry {
 }
 
 function releaseFrom(buffer: Array<BufferEntry>, ws: WebSocket) {
-    const item = buffer.shift();
-    ws.send(item.data);
+  const item = buffer.shift();
+  ws.send(item.data);
 
-    if (buffer.length) {
-      const diff = buffer[0].time - item.time;
-      setTimeout(() => releaseFrom(buffer, ws), diff);
-    }
+  if (buffer.length) {
+    const diff = buffer[0].time - item.time;
+    setTimeout(() => releaseFrom(buffer, ws), diff);
+  }
 }
 
 export default class ProxyInjector implements KrasInjector {
@@ -76,7 +82,7 @@ export default class ProxyInjector implements KrasInjector {
           buffer.push({
             time: Date.now(),
             data,
-          })
+          });
         }
       });
       ws.on('error', err => core.emit('error', err.error));
@@ -123,8 +129,8 @@ export default class ProxyInjector implements KrasInjector {
     this.options.active = value;
   }
 
-  handle(req: KrasRequest) {
-    return new Promise<KrasAnswer>((resolve) => {
+  handle(req: KrasRequest): Promise<KrasAnswer> | KrasAnswer {
+    return new Promise<KrasAnswer>(resolve => {
       const target = this.map[req.target];
       const name = this.name;
       const label = {
@@ -133,20 +139,24 @@ export default class ProxyInjector implements KrasInjector {
           name: target,
         },
       };
-      proxyRequest({
-        headers: req.headers,
-        url: target + req.url,
-        method: req.method,
-        body: req.content,
-        agentOptions: this.options.agentOptions,
-        proxy: this.options.proxy,
-      }, (err, ans) => {
-        if (err) {
-          this.core.emit('error', err);
-        }
+      proxyRequest(
+        {
+          headers: req.headers,
+          url: target + req.url,
+          method: req.method,
+          body: req.content,
+          agentOptions: this.options.agentOptions,
+          proxy: this.options.proxy,
+        },
+        (err, ans) => {
+          if (err) {
+            this.core.emit('error', err);
+          }
 
-        resolve(ans);
-      }, label);
+          resolve(ans);
+        },
+        label,
+      );
     });
   }
 }

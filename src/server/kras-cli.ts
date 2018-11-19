@@ -32,11 +32,10 @@ const argv = require('yargs')
   .help('h')
   .alias('h', 'help')
   .describe('h', 'Shows the argument descriptions')
-  .epilog(`Copyright (c) 2018 ${author}`)
-  .argv;
+  .epilog(`Copyright (c) 2018 ${author}`).argv;
 
 function info(message: string) {
-  return message && message.length > 50 ? (message.substr(0, 47) + ' ...') : message;
+  return message && message.length > 50 ? message.substr(0, 47) + ' ...' : message;
 }
 
 function isDebug(logLevel: string) {

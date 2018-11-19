@@ -9,8 +9,7 @@ function none<T>(_item: T) {
 }
 
 export class JsonStore<T> {
-  constructor(public file: string) {
-  }
+  constructor(public file: string) {}
 
   insert(item: T) {
     const file = this.file;

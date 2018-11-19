@@ -1,4 +1,4 @@
-import * as uuid from 'uuid/v4';
+import { v4 } from 'uuid';
 import { EventEmitter } from 'events';
 import { KrasRecorder, KrasRequest, KrasAnswer, RecordedRequest, RecordedError, RecordedMessage } from '../types';
 
@@ -21,7 +21,7 @@ export class Recorder extends EventEmitter implements KrasRecorder {
   hit(start: Date, end: Date, request: KrasRequest, response: KrasAnswer) {
     if (this.enabled) {
       const requests = this.requests;
-      const id = uuid();
+      const id = v4();
       const item = {
         id,
         start,
@@ -39,9 +39,9 @@ export class Recorder extends EventEmitter implements KrasRecorder {
     }
   }
 
-  message(time: Date, data: { content: string, from: string, to: string }) {
+  message(time: Date, data: { content: string; from: string; to: string }) {
     if (this.enabled) {
-      const id = uuid();
+      const id = v4();
       const item = {
         id,
         time,
@@ -55,7 +55,7 @@ export class Recorder extends EventEmitter implements KrasRecorder {
 
   miss(start: Date, end: Date, request: KrasRequest) {
     if (this.enabled) {
-      const id = uuid();
+      const id = v4();
       const item = {
         id,
         start,

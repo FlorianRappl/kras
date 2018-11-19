@@ -36,7 +36,7 @@ export function setAuthToken(value: string) {
     const headers = opts.headers || {};
     opts.headers = {
       ...headers,
-      Authorization: `Bearer ${value}`
+      Authorization: `Bearer ${value}`,
     };
   });
 }
@@ -50,6 +50,5 @@ export function request({ url, body, method = 'GET', query, response = false }: 
     middleware(opts);
   }
 
-  return fetch(address, opts)
-    .then(res => isAuth(res) ? expectResponse && res.json() : Promise.reject('auth'));
+  return fetch(address, opts).then(res => (isAuth(res) ? expectResponse && res.json() : Promise.reject('auth')));
 }

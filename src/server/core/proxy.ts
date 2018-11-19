@@ -1,11 +1,8 @@
 import { Request, Response } from 'express';
-import { proxyRequest } from '../helpers/proxy-request';
-import { IncomingMessage } from 'http';
-import { EventEmitter } from 'events';
 import { KrasAnswer } from '../types';
 
-function sendResponse(req: Request, ans: KrasAnswer, res: Response) {
-  const origin = req.headers['origin'];
+export function sendResponse(req: Request, ans: KrasAnswer, res: Response) {
+  const origin = req.headers.origin;
   const type = ans.headers['content-type'];
 
   if (origin) {

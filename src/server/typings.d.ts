@@ -1,4 +1,4 @@
 declare module 'express-ws' {
-  var expressWs: any;
+  const expressWs: any;
   export = expressWs;
 }

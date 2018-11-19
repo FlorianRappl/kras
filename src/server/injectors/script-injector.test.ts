@@ -9,33 +9,45 @@ jest.mock('../helpers/io', () => ({
 describe('ScriptInjector', () => {
   it('should be active when configured', () => {
     const evt = new EventEmitter();
-    const injector = new ScriptInjector({
-      active: true,
-    }, {
-      directory: '',
-    }, evt);
+    const injector = new ScriptInjector(
+      {
+        active: true,
+      },
+      {
+        directory: '',
+      },
+      evt,
+    );
     expect(io.watch).toHaveBeenCalledTimes(1);
     expect(injector.active).toBeTruthy();
   });
 
   it('should not be active when turned off', () => {
     const evt = new EventEmitter();
-    const injector = new ScriptInjector({
-      active: true,
-    }, {
-      directory: '',
-    }, evt);
+    const injector = new ScriptInjector(
+      {
+        active: true,
+      },
+      {
+        directory: '',
+      },
+      evt,
+    );
     injector.active = false;
     expect(injector.active).toBeFalsy();
   });
 
   it('should be active when turned on', () => {
     const evt = new EventEmitter();
-    const injector = new ScriptInjector({
-      active: false,
-    }, {
-      directory: '',
-    }, evt);
+    const injector = new ScriptInjector(
+      {
+        active: false,
+      },
+      {
+        directory: '',
+      },
+      evt,
+    );
     injector.active = true;
     expect(injector.active).toBeTruthy();
   });

@@ -18,8 +18,7 @@ function queryEquals(a: KrasRequestQuery, b: KrasRequestQuery) {
 }
 
 function stringEquals(a: string, b: string) {
-  return a.length === b.length
-    && a.toUpperCase() === b.toUpperCase();
+  return a.length === b.length && a.toUpperCase() === b.toUpperCase();
 }
 
 function pathEquals(a: string, b: string) {
@@ -38,8 +37,10 @@ function pathEquals(a: string, b: string) {
 }
 
 export function compareRequests(a: KrasRequest, b: KrasRequest) {
-  return a.method === b.method
-    && (!a.target || !b.target || a.target === b.target)
-    && pathEquals(a.url, b.url)
-    && queryEquals(a.query, b.query);
+  return (
+    a.method === b.method &&
+    (!a.target || !b.target || a.target === b.target) &&
+    pathEquals(a.url, b.url) &&
+    queryEquals(a.query, b.query)
+  );
 }

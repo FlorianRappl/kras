@@ -13,16 +13,19 @@ export function readSettings(server: KrasServer) {
   return (req: Request, res: Response) => {
     res.json({
       ws: server.ws,
-      middlewares: server.middlewares
-        .map(middleware => tryRead(() => ({
+      middlewares: server.middlewares.map(middleware =>
+        tryRead(() => ({
           options: middleware.options,
           source: middleware.source,
-        }))),
+        })),
+      ),
       injectors: server.injectors
-        .map(injector => tryRead(() => ({
-          active: injector.active,
-          name: injector.name,
-        })))
+        .map(injector =>
+          tryRead(() => ({
+            active: injector.active,
+            name: injector.name,
+          })),
+        )
         .filter(injector => injector !== undefined),
     });
   };
@@ -32,7 +35,7 @@ export function downloadSettings(server: KrasServer, config: KrasConfiguration) 
   return (req: Request, res: Response) => {
     res.setHeader('Content-disposition', 'attachment; filename=.krasrc');
     res.setHeader('Content-type', 'application/json');
-    res.send(JSON.stringify(config, null, 2));
+    res.send(JSON.stringify(config, undefined, 2));
   };
 }
 

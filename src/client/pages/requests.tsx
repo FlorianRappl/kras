@@ -120,7 +120,7 @@ class RequestsView extends React.Component<RequestsViewProps, RequestsViewState>
         });
         break;
     }
-  }
+  };
 
   render() {
     const { activeTab, errors, messages, requests } = this.state;
@@ -148,20 +148,20 @@ class RequestsView extends React.Component<RequestsViewProps, RequestsViewState>
                 </tr>
               </thead>
               <tbody>
-                {
-                  requests.map((req, i) => (
-                    <tr key={req.id}>
-                      <th scope="row">{requests.length - i}</th>
-                      <td>{toTime(req.time)}</td>
-                      <td>{req.from}</td>
-                      <td>{req.to}</td>
-                      <td>{req.status}</td>
-                      <td>{req.type}</td>
-                      <td>{req.injector}</td>
-                      <td><a href={`#/requests/request/${req.id}`}>Details</a></td>
-                    </tr>
-                  ))
-                }
+                {requests.map((req, i) => (
+                  <tr key={req.id}>
+                    <th scope="row">{requests.length - i}</th>
+                    <td>{toTime(req.time)}</td>
+                    <td>{req.from}</td>
+                    <td>{req.to}</td>
+                    <td>{req.status}</td>
+                    <td>{req.type}</td>
+                    <td>{req.injector}</td>
+                    <td>
+                      <a href={`#/requests/request/${req.id}`}>Details</a>
+                    </td>
+                  </tr>
+                ))}
               </tbody>
             </Table>
           </TabPane>
@@ -177,17 +177,17 @@ class RequestsView extends React.Component<RequestsViewProps, RequestsViewState>
                 </tr>
               </thead>
               <tbody>
-                {
-                  messages.map((msg, i) => (
-                    <tr key={msg.id}>
-                      <th scope="row">{messages.length - i}</th>
-                      <td>{toTime(msg.time)}</td>
-                      <td>{msg.type}</td>
-                      <td>{msg.size}</td>
-                      <td><a href={`#/requests/message/${msg.id}`}>Details</a></td>
-                    </tr>
-                  ))
-                }
+                {messages.map((msg, i) => (
+                  <tr key={msg.id}>
+                    <th scope="row">{messages.length - i}</th>
+                    <td>{toTime(msg.time)}</td>
+                    <td>{msg.type}</td>
+                    <td>{msg.size}</td>
+                    <td>
+                      <a href={`#/requests/message/${msg.id}`}>Details</a>
+                    </td>
+                  </tr>
+                ))}
               </tbody>
             </Table>
           </TabPane>
@@ -204,18 +204,18 @@ class RequestsView extends React.Component<RequestsViewProps, RequestsViewState>
                 </tr>
               </thead>
               <tbody>
-                {
-                  errors.map((err, i) => (
-                    <tr key={err.id}>
-                      <th scope="row">{errors.length - i}</th>
-                      <td>{toTime(err.time)}</td>
-                      <td>{err.from}</td>
-                      <td>{err.to}</td>
-                      <td>{err.type}</td>
-                      <td><a href={`#/requests/error/${err.id}`}>Details</a></td>
-                    </tr>
-                  ))
-                }
+                {errors.map((err, i) => (
+                  <tr key={err.id}>
+                    <th scope="row">{errors.length - i}</th>
+                    <td>{toTime(err.time)}</td>
+                    <td>{err.from}</td>
+                    <td>{err.to}</td>
+                    <td>{err.type}</td>
+                    <td>
+                      <a href={`#/requests/error/${err.id}`}>Details</a>
+                    </td>
+                  </tr>
+                ))}
               </tbody>
             </Table>
           </TabPane>

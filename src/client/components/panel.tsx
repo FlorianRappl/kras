@@ -9,12 +9,8 @@ export interface PanelProps {
 export const Panel: React.SFC<PanelProps> = ({ title, type = 'info', children }) => (
   <div style={{ margin: '1em 0' }}>
     <Card body outline color={type}>
-      <CardTitle>
-        {title}
-      </CardTitle>
-      <CardBody>
-        {children}
-      </CardBody>
+      <CardTitle>{title}</CardTitle>
+      <CardBody>{children}</CardBody>
     </Card>
   </div>
 );

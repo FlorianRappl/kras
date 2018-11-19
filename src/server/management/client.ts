@@ -12,5 +12,5 @@ export function clientOf(server: KrasServer, config: KrasConfiguration) {
     } else {
       res.redirect(target);
     }
-  }
+  };
 }

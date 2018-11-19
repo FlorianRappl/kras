@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.7.0
+
+- Updated dependencies due to CVE-2018-1000620
+- Updated dependencies due to CVE-2018-16469
+- Expose `KrasServer`
+- Added linting and prettier
+
 ## 0.6.7
 
 - Updated dependencies due to CVE 2018-14041

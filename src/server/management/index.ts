@@ -15,11 +15,9 @@ export function withManagement(server: KrasServer, config: KrasConfiguration) {
   if (api !== false) {
     const protect = getAuth(server, config);
 
-    server.at(api)
-      .get(clientOf(server, config));
+    server.at(api).get(clientOf(server, config));
 
-    server.at(api, 'login')
-      .post(userLogin(server, config));
+    server.at(api, 'login').post(userLogin(server, config));
 
     protect(server.at(api, 'config'))
       .get(configOf(server, config))
@@ -30,21 +28,17 @@ export function withManagement(server: KrasServer, config: KrasConfiguration) {
       .delete(allLogsOf(server))
       .feed(liveLogs(server));
 
-    protect(server.at(api, 'broadcast'))
-      .post(broadcastAt(server));
+    protect(server.at(api, 'broadcast')).post(broadcastAt(server));
 
     protect(server.at(api, 'data'))
       .get(overview(server))
       .feed(liveData(server));
 
-    protect(server.at(api, 'data', 'request', ':id'))
-      .get(requestDetails(server));
+    protect(server.at(api, 'data', 'request', ':id')).get(requestDetails(server));
 
-    protect(server.at(api, 'data', 'message', ':id'))
-      .get(messageDetails(server));
+    protect(server.at(api, 'data', 'message', ':id')).get(messageDetails(server));
 
-    protect(server.at(api, 'data', 'error', ':id'))
-      .get(errorDetails(server));
+    protect(server.at(api, 'data', 'error', ':id')).get(errorDetails(server));
 
     protect(server.at(api, 'file', ':name'))
       .get(readFile(server))
@@ -54,14 +48,12 @@ export function withManagement(server: KrasServer, config: KrasConfiguration) {
       .get(readSettings(server))
       .put(saveSettings(server));
 
-    protect(server.at(api, 'settings', 'file'))
-      .get(downloadSettings(server, config))
+    protect(server.at(api, 'settings', 'file')).get(downloadSettings(server, config));
 
-    protect(server.at(api, 'injector'))
-      .get(readInjectorsSettings(server));
+    protect(server.at(api, 'injector')).get(readInjectorsSettings(server));
 
     protect(server.at(api, 'injector', ':name'))
       .get(readInjectorSettings(server))
       .put(saveInjectorSettings(server));
   }
-};
+}

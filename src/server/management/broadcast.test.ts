@@ -11,15 +11,15 @@ describe('Management API - Broadcast', () => {
     const server: any = {
       broadcast(msg: any) {
         result = msg;
-      }
+      },
     };
     const req: any = {
-      body: 'foo bar'
+      body: 'foo bar',
     };
     const handler = broadcastAt(server);
     handler(req, {
-      sendStatus() {}
-    } as any)
+      sendStatus() {},
+    } as any);
     expect(result).toBe(req.body);
   });
 });

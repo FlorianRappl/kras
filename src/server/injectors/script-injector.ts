@@ -1,9 +1,13 @@
-import { asScript, watch, Watcher } from '../helpers/io';
-import { basename } from 'path';
-import { editFileOption, editDirectoryOption } from '../helpers/build-options';
-import { fromJson } from '../helpers/build-response';
-import { KrasRequest, KrasConfiguration, StoredFileEntry, KrasInjectorConfig, KrasInjector, KrasAnswer, KrasInjectorOptions, ScriptResponseBuilder } from '../types';
 import { EventEmitter } from 'events';
+import { asScript, watch, Watcher, editFileOption, editDirectoryOption, fromJson } from '../helpers';
+import {
+  KrasRequest,
+  KrasInjectorConfig,
+  KrasInjector,
+  KrasAnswer,
+  KrasInjectorOptions,
+  ScriptResponseBuilder,
+} from '../types';
 
 function errorHandler(): undefined {
   return undefined;
@@ -31,7 +35,11 @@ export interface ScriptFileEntry {
   active: boolean;
   file?: string;
   error?: string;
-  handler?(ctx: ScriptContextData, req: KrasRequest, builder: ScriptResponseBuilder): KrasAnswer | Promise<KrasAnswer> | undefined;
+  handler?(
+    ctx: ScriptContextData,
+    req: KrasRequest,
+    builder: ScriptResponseBuilder,
+  ): KrasAnswer | Promise<KrasAnswer> | undefined;
 }
 
 interface ScriptFiles {
@@ -85,7 +93,7 @@ export default class ScriptInjector implements KrasInjector {
         description: 'The options available to all script files via the context argument.',
         title: 'Extended Configuration',
         type: 'json',
-        value: JSON.stringify(this.options.extended || {}, null, 2),
+        value: JSON.stringify(this.options.extended || {}, undefined, 2),
       },
     };
   }
@@ -135,19 +143,20 @@ export default class ScriptInjector implements KrasInjector {
     this.watcher.close();
   }
 
-  handle(req: KrasRequest) {
+  handle(req: KrasRequest): Promise<KrasAnswer> | KrasAnswer {
     for (const fileName of Object.keys(this.files)) {
       const script = this.files[fileName];
       const name = this.name;
 
       if (script.active) {
         const handler = script.handler;
-        const builder = ({ statusCode = 200, statusText = '', headers = {}, content = '' }) => fromJson(req.url, statusCode, statusText, headers, content, {
-          name,
-          file: {
-            name: fileName,
-          },
-        });
+        const builder = ({ statusCode = 200, statusText = '', headers = {}, content = '' }) =>
+          fromJson(req.url, statusCode, statusText, headers, content, {
+            name,
+            file: {
+              name: fileName,
+            },
+          });
         const extended = this.options.extended || {};
         const ctx = {
           $server: this.core,

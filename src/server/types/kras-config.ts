@@ -20,13 +20,15 @@ export interface KrasConfiguration extends WebServerConfiguration {
   client: string;
   directory: string;
   api: string | false;
-  auth: undefined | {
-    provider: 'simple';
-    accounts: Array<{
-      username: string;
-      password: string;
-    }>;
-  };
+  auth:
+    | undefined
+    | {
+        provider: 'simple';
+        accounts: Array<{
+          username: string;
+          password: string;
+        }>;
+      };
   middlewares: Array<KrasMiddlewareDefinition>;
   injectors: {
     [name: string]: KrasInjectorConfig;

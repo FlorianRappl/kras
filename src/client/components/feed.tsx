@@ -15,7 +15,7 @@ export class Feed extends React.Component<FeedProps> {
 
     try {
       this.ws = new WebSocket(url);
-      this.ws.onmessage = (ev) => {
+      this.ws.onmessage = ev => {
         const { onMessage } = this.props;
 
         if (typeof onMessage === 'function') {
@@ -23,7 +23,9 @@ export class Feed extends React.Component<FeedProps> {
         }
       };
     } catch (e) {
-      console.error(`WebSocket connection cannot be established - make sure to activate WebSockets for receiving live updates.`);
+      console.error(
+        `WebSocket connection cannot be established - make sure to activate WebSockets for receiving live updates.`,
+      );
     }
   }
 

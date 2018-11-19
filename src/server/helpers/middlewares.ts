@@ -19,7 +19,8 @@ function findMiddleware(modulePath: string): RequestHandlerCreator | RequestHand
 }
 
 function createMiddleware(server: KrasServer, config: KrasConfiguration, source: string, options: Array<any>) {
-  const creator = findMiddleware(source) ||
+  const creator =
+    findMiddleware(source) ||
     findMiddleware(resolve(config.directory, source)) ||
     findMiddleware(resolve(process.cwd(), source)) ||
     findMiddleware(resolve(__dirname, source));
@@ -66,4 +67,4 @@ export function withMiddlewares(server: KrasServer, config: KrasConfiguration) {
   }
 
   integrateMiddlewares(server);
-};
+}

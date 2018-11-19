@@ -58,9 +58,7 @@ export class Layout extends React.Component<LayoutProps, LayoutState> {
             </Nav>
           </Collapse>
         </Navbar>
-        <Container fluid>
-          {children}
-        </Container>
+        <Container fluid>{children}</Container>
       </div>
     );
   }

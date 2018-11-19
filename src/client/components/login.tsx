@@ -35,10 +35,14 @@ export class Login extends React.Component<LoginProps, LoginState> {
         username,
         password,
       }),
-    }).then(res => this.authorized(res.token), err => this.setState({
-      error: err,
-      submit: false,
-    }));
+    }).then(
+      res => this.authorized(res.token),
+      err =>
+        this.setState({
+          error: err,
+          submit: false,
+        }),
+    );
 
     e.preventDefault();
     return false;
@@ -51,7 +55,7 @@ export class Login extends React.Component<LoginProps, LoginState> {
     if (typeof onSuccess === 'function') {
       onSuccess();
     }
-  };
+  }
 
   private changeUserName = (e: React.ChangeEvent<HTMLInputElement>) => {
     this.setState({
@@ -69,7 +73,7 @@ export class Login extends React.Component<LoginProps, LoginState> {
     const { submit, username, password, error } = this.state;
 
     return (
-      <div className='login'>
+      <div className="login">
         <form onSubmit={this.submit}>
           <h1 className="display-4">Login</h1>
           <p>

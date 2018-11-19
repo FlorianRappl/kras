@@ -6,7 +6,5 @@ export interface ProtectProps {
 }
 
 export const Protect: React.SFC<ProtectProps> = ({ condition, children }) => (
-  <div>
-    {!condition ? <Redirect to="/" /> : children}
-  </div>
+  <div>{!condition ? <Redirect to="/" /> : children}</div>
 );

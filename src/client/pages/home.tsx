@@ -29,14 +29,20 @@ function stopServer() {
 
 export const Home: React.SFC<HomeProps> = ({}) => (
   <Page title="Overview" description="General overview and information.">
-    <Details fields={[
-      { label: 'Name', value: config.name },
-      { label: 'Version', value: config.version },
-      { label: 'Started', value: config.started },
-      { label: 'Base Directory', value: config.directory }
-    ]} />
-    <Button color="danger" onClick={restartServer}>Restart Server</Button>
+    <Details
+      fields={[
+        { label: 'Name', value: config.name },
+        { label: 'Version', value: config.version },
+        { label: 'Started', value: config.started },
+        { label: 'Base Directory', value: config.directory },
+      ]}
+    />
+    <Button color="danger" onClick={restartServer}>
+      Restart Server
+    </Button>
     {' | '}
-    <Button color="danger" onClick={stopServer}>Stop Server</Button>
+    <Button color="danger" onClick={stopServer}>
+      Stop Server
+    </Button>
   </Page>
 );

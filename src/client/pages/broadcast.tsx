@@ -41,13 +41,23 @@ export class Broadcast extends React.Component<BroadcastProps, BroadcastState> {
   render() {
     const { message } = this.state;
     return (
-      <Page title="Broadcast" description="Sends a message to all connected WebSocket clients. Only available if the WebSocket feature is active.">
+      <Page
+        title="Broadcast"
+        description="Sends a message to all connected WebSocket clients. Only available if the WebSocket feature is active.">
         <FormGroup>
           <Label>Message to connected clients:</Label>
-          <textarea className="form-control" value={message} onChange={this.changeMessage} rows={10} style={{ resize: 'vertical' }} />
+          <textarea
+            className="form-control"
+            value={message}
+            onChange={this.changeMessage}
+            rows={10}
+            style={{ resize: 'vertical' }}
+          />
           <FormText>The message will be broadcasted to all connected clients as-is.</FormText>
         </FormGroup>
-        <Button color="primary" onClick={this.sendMessage} disabled={!message}>Broadcast Message</Button>
+        <Button color="primary" onClick={this.sendMessage} disabled={!message}>
+          Broadcast Message
+        </Button>
       </Page>
     );
   }

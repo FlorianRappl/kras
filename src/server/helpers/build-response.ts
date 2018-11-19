@@ -106,8 +106,7 @@ export function fromHar(url: string, response: HarResponse, injector?: KrasInjec
   const encoding = response.content.encoding || 'utf8';
   const mimeType = response.content.mimeType;
   const text = response.content.text || '';
-  const headers = response.headers
-    .reduce((h, c) => set(h, c.name, c.value), {});
+  const headers = response.headers.reduce((h, c) => set(h, c.name, c.value), {});
   setIfUndefined(headers, 'content-type', mimeType);
 
   return buildResponse({
@@ -121,7 +120,14 @@ export function fromHar(url: string, response: HarResponse, injector?: KrasInjec
   });
 }
 
-export function fromJson(url: string, statusCode: number, statusText: string, headers: Headers, content: string | Buffer, injector?: KrasInjectorInfo) {
+export function fromJson(
+  url: string,
+  statusCode: number,
+  statusText: string,
+  headers: Headers,
+  content: string | Buffer,
+  injector?: KrasInjectorInfo,
+) {
   return buildResponse({
     statusCode,
     statusText,
@@ -134,7 +140,7 @@ export function fromJson(url: string, statusCode: number, statusText: string, he
 
 export function fromMissing(url: string) {
   const headers = {
-    ['content-type']: 'text/plain'
+    ['content-type']: 'text/plain',
   };
   return buildResponse({
     url,

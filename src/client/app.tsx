@@ -8,11 +8,13 @@ interface AppViewProps {
   data: BasicConfig;
 }
 
-const AppView: React.SFC<AppViewProps> = ({ data }) => withConfig(data, (
-  <Layout>
-    <Router />
-  </Layout>
-));
+const AppView: React.SFC<AppViewProps> = ({ data }) =>
+  withConfig(
+    data,
+    <Layout>
+      <Router />
+    </Layout>,
+  );
 
 export interface AppProps {}
 
@@ -44,13 +46,9 @@ export class App extends React.Component<AppProps, AppState> {
     const { auth } = this.state;
 
     if (auth) {
-      return (
-        <Login onSuccess={this.authSuccess} />
-      );
+      return <Login onSuccess={this.authSuccess} />;
     }
 
-    return (
-      <Loader url="config" component={AppView} onAuthError={this.authError} />
-    );
+    return <Loader url="config" component={AppView} onAuthError={this.authError} />;
   }
 }

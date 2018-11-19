@@ -63,19 +63,19 @@ class LogsView extends React.Component<LogsViewProps, LogsViewState> {
             </tr>
           </thead>
           <tbody>
-            {
-              items.map((item, i) => (
-                <tr key={length - i}>
-                  <th scope="row">{length - i}</th>
-                  <td>{item.type}</td>
-                  <td>{toTime(item.time)}</td>
-                  <td>{JSON.stringify(item.data)}</td>
-                </tr>
-              ))
-            }
+            {items.map((item, i) => (
+              <tr key={length - i}>
+                <th scope="row">{length - i}</th>
+                <td>{item.type}</td>
+                <td>{toTime(item.time)}</td>
+                <td>{JSON.stringify(item.data)}</td>
+              </tr>
+            ))}
           </tbody>
         </Table>
-        <Button color="danger" onClick={this.resetLog}>Clear All Logs</Button>
+        <Button color="danger" onClick={this.resetLog}>
+          Clear All Logs
+        </Button>
       </Feed>
     );
   }

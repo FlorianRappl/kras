@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response } from 'express';
 import { parse } from 'url';
 import { KrasServer, KrasConfiguration, KrasServerHandler, KrasServerMethods } from '../types';
 import * as providers from '../auth';
@@ -16,7 +16,7 @@ export function getAuth(server: KrasServer, config: KrasConfiguration): ProtectH
   if (provider) {
     return server => {
       const connectToFeed = server.feed;
-      server.feed = (handler) => {
+      server.feed = handler => {
         connectToFeed((ws, req) => {
           const { token } = parse(req.url, true).query;
 
@@ -65,5 +65,5 @@ export function userLogin(server: KrasServer, config: KrasConfiguration): KrasSe
     } else {
       res.sendStatus(403);
     }
-  }
+  };
 }

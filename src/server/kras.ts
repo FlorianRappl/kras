@@ -20,13 +20,10 @@ import {
   KrasRunner,
   KrasMiddleware,
 } from './types';
-import {
-  buildConfiguration,
-  mergeConfiguration,
-  readConfiguration,
-  ConfigurationOptions,
-} from './core/config';
+import { buildConfiguration, mergeConfiguration, readConfiguration, ConfigurationOptions } from './core/config';
+
 export {
+  KrasServer,
   KrasRequestHandler,
   KrasInjectorOptions,
   KrasInjectorOption,
@@ -40,17 +37,10 @@ export {
   ScriptResponseBuilderData,
   KrasWebSocket,
 } from './types';
-export {
-  KrasInjector,
-  KrasConfiguration,
-  KrasServerMethods,
-  KrasServerHandler,
-  KrasHandlerConfiguration,
-  KrasRunner,
-};
 
-export type KrasRuntimeConfiguration = Partial<KrasConfiguration> &
-  KrasHandlerConfiguration;
+export { KrasInjector, KrasConfiguration, KrasServerMethods, KrasServerHandler, KrasHandlerConfiguration, KrasRunner };
+
+export type KrasRuntimeConfiguration = Partial<KrasConfiguration> & KrasHandlerConfiguration;
 
 export const krasrc = '.krasrc';
 
@@ -90,7 +80,7 @@ export class MockServer extends MockServerCore implements KrasServer {
     const item: LogEntry = {
       type,
       data,
-      time: new Date()
+      time: new Date(),
     };
     this.logs.push(item);
     this.emit('logged', item);
@@ -103,7 +93,7 @@ export function readKrasConfig(options?: ConfigurationOptions, file?: string) {
     options,
     readConfiguration(homedir(), krasrc),
     readConfiguration(dir, krasrc),
-    readConfiguration(dir, file)
+    readConfiguration(dir, file),
   );
 }
 
@@ -128,3 +118,11 @@ export function withKras(config?: KrasRuntimeConfiguration) {
 export function runWithKras(cb: KrasRunner, config?: KrasRuntimeConfiguration) {
   return withKras(config)(cb);
 }
+
+export const standardInjectors = {
+  Script: '',
+  Har: '',
+  Json: '',
+  Store: '',
+  Proxy: '',
+};

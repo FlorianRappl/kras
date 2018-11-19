@@ -46,10 +46,7 @@ describe('io helpers', () => {
       found.push(file);
     });
     expect(w.directories).toEqual(['foo']);
-    expect(found).toEqual([
-      resolve('foo', 'qux.jpg'),
-      resolve('foo', 'baz.jpg'),
-    ]);
+    expect(found).toEqual([resolve('foo', 'qux.jpg'), resolve('foo', 'baz.jpg')]);
   });
 
   it('watch should work against multiple directories', () => {

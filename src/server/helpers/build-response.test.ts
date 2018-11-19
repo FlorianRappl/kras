@@ -34,10 +34,13 @@ describe('Build Response', () => {
 
   describe('fromNode', () => {
     it('is possible with empty node response', () => {
-      const result = fromNode({
-        url: 'foo',
-        headers: {},
-      }, 'Foo');
+      const result = fromNode(
+        {
+          url: 'foo',
+          headers: {},
+        },
+        'Foo',
+      );
       expect(result.content).toBe('Foo');
       expect(result.url).toBe('foo');
       expect(result.status).toEqual({
@@ -47,14 +50,17 @@ describe('Build Response', () => {
     });
 
     it('is handling full node response', () => {
-      const result = fromNode({
-        url: 'http://google.com',
-        headers: {
-          a: '5',
-          b: 'c',
+      const result = fromNode(
+        {
+          url: 'http://google.com',
+          headers: {
+            a: '5',
+            b: 'c',
+          },
+          statusCode: 400,
         },
-        statusCode: 400,
-      }, 'Foo');
+        'Foo',
+      );
       expect(result.url).toBe('http://google.com');
       expect(result.content).toBe('Foo');
       expect(result.status).toEqual({
@@ -62,8 +68,8 @@ describe('Build Response', () => {
         text: '',
       });
       expect(result.headers).toEqual({
-        'a': '5',
-        'b': 'c',
+        a: '5',
+        b: 'c',
         'content-type': 'text/html',
       });
     });

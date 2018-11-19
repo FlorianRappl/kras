@@ -40,5 +40,6 @@ export const TextEditor: React.SFC<TextEditorProps> = ({ mode, value, height, on
     highlightActiveLine
     value={value}
     editorProps={editor}
-    setOptions={options} />
+    setOptions={options}
+  />
 );

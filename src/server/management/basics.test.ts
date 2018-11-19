@@ -15,7 +15,7 @@ describe('Management API - Basics', () => {
     handler(undefined, {
       json(obj: any) {
         result = obj;
-      }
+      },
     } as any);
     expect(result).toHaveProperty('version', version);
   });
@@ -30,7 +30,7 @@ describe('Management API - Basics', () => {
     handler(undefined, {
       json(obj: any) {
         result = obj;
-      }
+      },
     } as any);
     expect(result).toHaveProperty('name', config.name);
     expect(result).toHaveProperty('directory', config.directory);

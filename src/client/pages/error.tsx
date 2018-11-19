@@ -30,21 +30,26 @@ interface ErrorViewProps {
 
 const ErrorView: React.SFC<ErrorViewProps> = ({ data }) => (
   <Protect condition={!!data.id}>
-    {
-      !!data.id && <Details fields={[
-        { label: 'Request sent (date)', value: new Date(data.start).toDateString() },
-        { label: 'Request sent (time)', value: new Date(data.start).toTimeString() },
-        { label: 'Request failed (date)', value: new Date(data.end).toDateString() },
-        { label: 'Request failed (time)', value: new Date(data.end).toTimeString() },
-        { label: 'Duration (time)', value: `${(new Date(data.end).valueOf() - new Date(data.start).valueOf()) / 1000}s` },
-        { label: 'Target mapping', value: data.request.target },
-        { label: 'HTTP URL', value: data.request.url },
-        { label: 'HTTP method', value: data.request.method },
-        { label: 'HTTP query parameters', value: data.request.query },
-        { label: 'HTTP headers', value: data.request.headers },
-        { label: 'HTTP body', value: data.request.content },
-      ]} />
-    }
+    {!!data.id && (
+      <Details
+        fields={[
+          { label: 'Request sent (date)', value: new Date(data.start).toDateString() },
+          { label: 'Request sent (time)', value: new Date(data.start).toTimeString() },
+          { label: 'Request failed (date)', value: new Date(data.end).toDateString() },
+          { label: 'Request failed (time)', value: new Date(data.end).toTimeString() },
+          {
+            label: 'Duration (time)',
+            value: `${(new Date(data.end).valueOf() - new Date(data.start).valueOf()) / 1000}s`,
+          },
+          { label: 'Target mapping', value: data.request.target },
+          { label: 'HTTP URL', value: data.request.url },
+          { label: 'HTTP method', value: data.request.method },
+          { label: 'HTTP query parameters', value: data.request.query },
+          { label: 'HTTP headers', value: data.request.headers },
+          { label: 'HTTP body', value: data.request.content },
+        ]}
+      />
+    )}
   </Protect>
 );
 

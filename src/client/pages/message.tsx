@@ -20,15 +20,17 @@ interface MessageViewProps {
 
 const MessageView: React.SFC<MessageViewProps> = ({ data }) => (
   <Protect condition={!!data.id}>
-    {
-      !!data.id && <Details fields={[
-        { label: 'Message sent (date)', value: new Date(data.time).toDateString() },
-        { label: 'Message sent (time)', value: new Date(data.time).toTimeString() },
-        { label: 'Message sender', value: data.from },
-        { label: 'Message receiver', value: data.to },
-        { label: 'Raw message content', value: data.content },
-      ]} />
-    }
+    {!!data.id && (
+      <Details
+        fields={[
+          { label: 'Message sent (date)', value: new Date(data.time).toDateString() },
+          { label: 'Message sent (time)', value: new Date(data.time).toTimeString() },
+          { label: 'Message sender', value: data.from },
+          { label: 'Message receiver', value: data.to },
+          { label: 'Raw message content', value: data.content },
+        ]}
+      />
+    )}
   </Protect>
 );
 

@@ -7,7 +7,15 @@ import { text } from 'body-parser';
 import { EventEmitter } from 'events';
 import { readSsl } from './readSsl';
 import { corsHandler } from './proxy';
-import { WebServerConfiguration, KrasServerHook, BaseKrasServer, KrasServerMethods, KrasServerHandler, KrasServerConnector, Dict } from '../types';
+import {
+  WebServerConfiguration,
+  KrasServerHook,
+  BaseKrasServer,
+  KrasServerMethods,
+  KrasServerHandler,
+  KrasServerConnector,
+  Dict,
+} from '../types';
 
 type Server = HttpServer | HttpsServer;
 
@@ -32,7 +40,9 @@ function findHook(hooks: Array<KrasServerHook>, req: Request) {
 }
 
 interface WebSocketConnection {
-  getWss(target?: Array<string>): {
+  getWss(
+    target?: Array<string>,
+  ): {
     clients: Array<{
       send(data: string): void;
     }>;
@@ -76,30 +86,36 @@ export class WebServer extends EventEmitter implements BaseKrasServer {
     this.app = express();
     this.protocol = ssl ? 'https' : 'http';
     this.server = ssl ? createHttpsServer(ssl, this.app) : createHttpServer(this.app);
-    this.wsOptions = typeof config.ws === 'object' ? config.ws : undefined;;
+    this.wsOptions = typeof config.ws === 'object' ? config.ws : undefined;
     this.ws = !!config.ws;
-    this.app.use(text({
-      type: '*/*',
-      limit: '50mb',
-    }));
-    this.targets.forEach(target => this.app.ws(target, (ws, req) => {
-      const url = req.url.replace('/.websocket', '').substr(target.length);
-      const id = Date.now() % 100000000;
-      this.emit('user-connected', {
-        id,
-        ws,
-        target,
-        url,
-        req,
-      });
-      ws.on('close', () => this.emit('user-disconnected', {
-        id,
-        ws,
-        target,
-        url,
-        req,
-      }));
-    }));
+    this.app.use(
+      text({
+        type: '*/*',
+        limit: '50mb',
+      }),
+    );
+    this.targets.forEach(target =>
+      this.app.ws(target, (ws, req) => {
+        const url = req.url.replace('/.websocket', '').substr(target.length);
+        const id = Date.now() % 100000000;
+        this.emit('user-connected', {
+          id,
+          ws,
+          target,
+          url,
+          req,
+        });
+        ws.on('close', () =>
+          this.emit('user-disconnected', {
+            id,
+            ws,
+            target,
+            url,
+            req,
+          }),
+        );
+      }),
+    );
   }
 
   get ws() {
@@ -173,7 +189,6 @@ export class WebServer extends EventEmitter implements BaseKrasServer {
 
   start() {
     this.app.all('*', (req: Request, res: Response) => {
-
       if (req.method !== 'OPTIONS') {
         const hook = findHook(this.hooks, req);
 

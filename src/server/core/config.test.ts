@@ -75,16 +75,19 @@ describe('Configuration', () => {
     });
 
     it('should work with a single configuration and no options', () => {
-      const config = mergeConfiguration({
-        name: undefined,
-        key: undefined,
-        cert: undefined,
-        dir: undefined,
-        port: undefined,
-      }, {
-        name: 'foo',
-        directory: 'bar',
-      });
+      const config = mergeConfiguration(
+        {
+          name: undefined,
+          key: undefined,
+          cert: undefined,
+          dir: undefined,
+          port: undefined,
+        },
+        {
+          name: 'foo',
+          directory: 'bar',
+        },
+      );
       expect(config).toEqual({
         name: 'foo',
         directory: 'bar',
@@ -92,16 +95,19 @@ describe('Configuration', () => {
     });
 
     it('should work with a single configuration and some options', () => {
-      const config = mergeConfiguration({
-        name: 'Aff',
-        key: undefined,
-        cert: undefined,
-        dir: 'Boo',
-        port: undefined,
-      }, {
-        name: 'foo',
-        directory: 'bar',
-      });
+      const config = mergeConfiguration(
+        {
+          name: 'Aff',
+          key: undefined,
+          cert: undefined,
+          dir: 'Boo',
+          port: undefined,
+        },
+        {
+          name: 'foo',
+          directory: 'bar',
+        },
+      );
       expect(config).toEqual({
         name: 'Aff',
         directory: 'Boo',

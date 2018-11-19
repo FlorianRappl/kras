@@ -1,9 +1,24 @@
-import { asJson, watch, Watcher } from '../helpers/io';
-import { basename } from 'path';
-import { editDirectoryOption, editEntryOption } from '../helpers/build-options';
-import { fromHar, HarResponse, HarRequest, HarHeaders } from '../helpers/build-response';
-import { compareRequests } from '../helpers/compare-requests';
-import { KrasInjector, KrasInjectorConfig, KrasConfiguration, KrasRequest, KrasAnswer, Headers, StoredFileEntry, KrasInjectorOptions, Dict } from '../types';
+import {
+  asJson,
+  watch,
+  Watcher,
+  editDirectoryOption,
+  editEntryOption,
+  fromHar,
+  HarResponse,
+  HarRequest,
+  HarHeaders,
+  compareRequests,
+} from '../helpers';
+import {
+  KrasInjector,
+  KrasInjectorConfig,
+  KrasRequest,
+  Headers,
+  KrasInjectorOptions,
+  Dict,
+  KrasAnswer,
+} from '../types';
 
 function delay<T>(value: T, time: number) {
   if (time) {
@@ -18,7 +33,7 @@ function delay<T>(value: T, time: number) {
 function ato(arr: HarHeaders) {
   const obj: Headers = {};
 
-  for (const item of (arr || [])) {
+  for (const item of arr || []) {
     obj[item.name] = item.value;
   }
 
@@ -44,7 +59,7 @@ function findEntries(obj: HarContent) {
 interface HarContent {
   log?: {
     entries?: Array<HttpArchive>;
-  }
+  };
 }
 
 interface HttpArchive {
@@ -96,7 +111,7 @@ export default class HarInjector implements KrasInjector {
   };
   private readonly watcher: Watcher;
 
-  constructor(options: KrasInjectorConfig & HarInjectorConfig, config: { directory: string, map: Dict<string> }) {
+  constructor(options: KrasInjectorConfig & HarInjectorConfig, config: { directory: string; map: Dict<string> }) {
     const directory = options.directory || config.directory;
     this.options = options;
     this.map = config.map;
@@ -159,8 +174,7 @@ export default class HarInjector implements KrasInjector {
   }
 
   private load(fileName: string) {
-    this.files[fileName] = findEntries(asJson(fileName))
-      .map(entry => this.transformEntry(entry));
+    this.files[fileName] = findEntries(asJson(fileName)).map(entry => this.transformEntry(entry));
   }
 
   private findTarget(url: string) {
@@ -185,7 +199,7 @@ export default class HarInjector implements KrasInjector {
       query: ato(original.queryString),
     };
 
-    delete request.headers['_'];
+    delete request.headers._;
 
     return {
       active: true,
@@ -199,7 +213,7 @@ export default class HarInjector implements KrasInjector {
     this.watcher.close();
   }
 
-  handle(req: KrasRequest) {
+  handle(req: KrasRequest): Promise<KrasAnswer> | KrasAnswer {
     for (const fileName of Object.keys(this.files)) {
       const entries = this.files[fileName];
 
@@ -211,13 +225,16 @@ export default class HarInjector implements KrasInjector {
           const name = this.name;
 
           if (compareRequests(item, req)) {
-            return delay(fromHar(item.url, entry.response, {
-              name,
-              file: {
-                name: fileName,
-                entry: i,
-              }
-            }), this.options.delay && entry.time);
+            return delay(
+              fromHar(item.url, entry.response, {
+                name,
+                file: {
+                  name: fileName,
+                  entry: i,
+                },
+              }),
+              this.options.delay && entry.time,
+            );
           }
         }
       }

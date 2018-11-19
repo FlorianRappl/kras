@@ -71,25 +71,30 @@ class EditorView extends React.Component<EditorViewProps, EditorViewState> {
       url: `file/${file}`,
       method: 'PUT',
       body: value,
-    }).then(() => this.setState({
-        alert: {
-          text: 'File saved successfully.',
-          color: 'success',
-        },
-      }))
-      .catch(err => this.setState({
-        alert: {
-          text: `Error saving file: ${err}.`,
-          color: 'danger',
-        },
-      }));
+    })
+      .then(() =>
+        this.setState({
+          alert: {
+            text: 'File saved successfully.',
+            color: 'success',
+          },
+        }),
+      )
+      .catch(err =>
+        this.setState({
+          alert: {
+            text: `Error saving file: ${err}.`,
+            color: 'danger',
+          },
+        }),
+      );
   };
 
   private dismissAlert = () => {
     this.setState({
       alert: undefined,
     });
-  }
+  };
 
   render() {
     const { data } = this.props;
@@ -98,16 +103,16 @@ class EditorView extends React.Component<EditorViewProps, EditorViewState> {
     return (
       <Card>
         <CardBody>
-          <CardSubtitle>
-            {data.file}
-          </CardSubtitle>
+          <CardSubtitle>{data.file}</CardSubtitle>
         </CardBody>
         <TextEditor value={value} mode={value} onChange={this.onChange} />
         <CardBody>
           <Alert color={alert && alert.color} isOpen={!!alert} toggle={this.dismissAlert}>
             {alert && alert.text}
           </Alert>
-          <Button color="primary" onClick={this.saveFile}>Save</Button>
+          <Button color="primary" onClick={this.saveFile}>
+            Save
+          </Button>
         </CardBody>
       </Card>
     );
