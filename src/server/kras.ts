@@ -2,11 +2,10 @@ import { homedir } from 'os';
 import { resolve } from 'path';
 import { MockServerCore } from './core';
 import { withManagement } from './management';
-import { withInjectors } from './injectors';
-import { withFiles } from './helpers/files';
-import { withMiddlewares } from './helpers/middlewares';
-import { runWith, configureHandler } from './helpers/fluent';
+import { withInjectors, ScriptInjector, HarInjector, JsonInjector, ProxyInjector, StoreInjector } from './injectors';
+import { withFiles, withMiddlewares, runWith, configureHandler } from './helpers';
 import { currentDir } from './core/info';
+import { buildConfiguration, mergeConfiguration, readConfiguration, ConfigurationOptions } from './core/config';
 import {
   KrasConfiguration,
   KrasServer,
@@ -20,7 +19,6 @@ import {
   KrasRunner,
   KrasMiddleware,
 } from './types';
-import { buildConfiguration, mergeConfiguration, readConfiguration, ConfigurationOptions } from './core/config';
 
 export {
   KrasServer,
@@ -37,6 +35,8 @@ export {
   ScriptResponseBuilderData,
   KrasWebSocket,
 } from './types';
+
+export { ScriptInjector, HarInjector, JsonInjector, StoreInjector, ProxyInjector };
 
 export { KrasInjector, KrasConfiguration, KrasServerMethods, KrasServerHandler, KrasHandlerConfiguration, KrasRunner };
 
@@ -118,11 +118,3 @@ export function withKras(config?: KrasRuntimeConfiguration) {
 export function runWithKras(cb: KrasRunner, config?: KrasRuntimeConfiguration) {
   return withKras(config)(cb);
 }
-
-export const standardInjectors = {
-  Script: '',
-  Har: '',
-  Json: '',
-  Store: '',
-  Proxy: '',
-};
