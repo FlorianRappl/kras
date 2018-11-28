@@ -6,7 +6,7 @@ configure({
   adapter: new Adapter(),
 });
 
-declare const global;
+declare const global: any;
 
 global.requestAnimationFrame = (cb: any) => setTimeout(cb, 0);
 global.shallow = shallow;

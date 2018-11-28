@@ -1,6 +1,5 @@
-import { open, JsonStore } from './json-store';
+import { open } from './json-store';
 import { asJson, toFile } from './io';
-import { resolve } from 'path';
 
 jest.mock('./io', () => ({
   asJson: jest.fn(),

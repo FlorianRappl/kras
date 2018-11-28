@@ -77,7 +77,7 @@ export default class ProxyInjector implements KrasInjector {
         core.emit('message', { content: data, to: url, from: e.id });
 
         if (open) {
-          ws.send(data, (err: Error) => core.emit('error', err));
+          ws.send(data, err => core.emit('error', err));
         } else {
           buffer.push({
             time: Date.now(),
@@ -85,7 +85,7 @@ export default class ProxyInjector implements KrasInjector {
           });
         }
       });
-      ws.on('error', err => core.emit('error', err.error));
+      ws.on('error', err => core.emit('error', err));
       this.sessions[e.id] = ws;
     });
 

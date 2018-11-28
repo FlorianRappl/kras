@@ -43,7 +43,7 @@ interface WebSocketConnection {
   getWss(
     target?: Array<string>,
   ): {
-    clients: Array<{
+    clients: Set<{
       send(data: string): void;
     }>;
     close(): void;
@@ -234,7 +234,7 @@ export class WebServer extends EventEmitter implements BaseKrasServer {
 
       if (socket) {
         const clients = socket.clients;
-        this.emit('debug', `Broadcasting to ${clients.length} client(s)`);
+        this.emit('debug', `Broadcasting to ${clients.size} client(s)`);
         clients.forEach(client => client.send(data));
       }
     }

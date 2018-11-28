@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.7.1
+
+- Updated outdated dependencies
+- Updated dependencies due to GHSA-mh6f-8j2x-4483
+
 ## 0.7.0
 
 - Updated dependencies due to CVE-2018-1000620
