@@ -55,9 +55,8 @@ export default class ProxyInjector implements KrasInjector {
       const url = this.map[e.target] + e.url;
       let open = false;
       const buffer: Array<BufferEntry> = [];
-      const ws = new WebSocket(url, {
+      const ws = new WebSocket(url, e.ws.protocol, {
         rejectUnauthorized: false,
-        protocol: e.ws.protocol,
       });
       ws.on('open', () => {
         open = true;
@@ -67,6 +66,7 @@ export default class ProxyInjector implements KrasInjector {
         }
       });
       ws.on('close', e => {
+        open = false;
         core.emit('ws-closed', { reason: e });
       });
       ws.on('message', data => {
