@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.7.3
+
+- Updated outdated dependencies
+- Improved WebSocket messages
+- Include more debug information
+
 ## 0.7.2
 
 - Fixed bug in WebSocket initialization
