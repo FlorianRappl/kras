@@ -41,6 +41,8 @@ function convertMessage(item: RecordedMessage) {
     time: item.time,
     type: getType(item.content),
     size: item.content.length,
+    received: item.from,
+    origin: item.remote ? 'server' : item.from === 'kras' ? 'broadcast' : 'client',
   };
 }
 

@@ -1,6 +1,14 @@
 import { v4 } from 'uuid';
 import { EventEmitter } from 'events';
-import { KrasRecorder, KrasRequest, KrasAnswer, RecordedRequest, RecordedError, RecordedMessage } from '../types';
+import {
+  KrasRecorder,
+  KrasRequest,
+  KrasAnswer,
+  RecordedRequest,
+  RecordedError,
+  RecordedMessage,
+  WebSocketMessage,
+} from '../types';
 
 export class Recorder extends EventEmitter implements KrasRecorder {
   private readonly maximum: number;
@@ -39,7 +47,7 @@ export class Recorder extends EventEmitter implements KrasRecorder {
     }
   }
 
-  message(time: Date, data: { content: string; from: string; to: string }) {
+  message(time: Date, data: WebSocketMessage) {
     if (this.enabled) {
       const id = v4();
       const item = {

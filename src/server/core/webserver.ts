@@ -229,7 +229,7 @@ export class WebServer extends EventEmitter implements BaseKrasServer {
       const data = isObject ? JSON.stringify(msg) : (msg || '').toString();
       const targets = this.targets;
       const wst = targets.length !== 1 || targets[0] !== '*' ? targets : undefined;
-      this.emit('broadcast', { content: data, from: 'kras', to: '*' });
+      this.emit('broadcast', { content: data, from: 'kras', to: '*', remote: false });
       const socket = sockets.getWss(wst);
 
       if (socket) {

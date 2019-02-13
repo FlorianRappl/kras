@@ -1,12 +1,6 @@
 import { WebServer } from './webserver';
 import { Recorder } from './recorder';
-import { WebServerConfiguration, KrasRequest, KrasAnswer } from '../types';
-
-export interface WebSocketMessage {
-  content: string;
-  from: string;
-  to: string;
-}
+import { WebServerConfiguration, KrasRequest, KrasAnswer, WebSocketMessage } from '../types';
 
 export class MockServerCore extends WebServer {
   readonly recorder = new Recorder(16 * 1024);

@@ -70,11 +70,11 @@ export default class ProxyInjector implements KrasInjector {
         core.emit('ws-closed', { reason: e });
       });
       ws.on('message', data => {
-        core.emit('message', { content: data, from: url, to: e.id });
+        core.emit('message', { content: data, from: url, to: e.id, remote: true });
         e.ws.send(data, (err: Error) => core.emit('error', err));
       });
       e.ws.on('message', (data: WebSocket.Data) => {
-        core.emit('message', { content: data, to: url, from: e.id });
+        core.emit('message', { content: data, to: url, from: e.id, remote: false });
 
         if (open) {
           ws.send(data, err => core.emit('error', err));

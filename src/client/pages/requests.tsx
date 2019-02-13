@@ -33,6 +33,7 @@ interface KrasMessageData {
   time: string;
   type: string;
   size: string;
+  origin: string;
 }
 
 interface KrasFeedRequestMessage {
@@ -170,6 +171,7 @@ class RequestsView extends React.Component<RequestsViewProps, RequestsViewState>
               <thead>
                 <tr>
                   <th>#</th>
+                  <th>Origin</th>
                   <th>Time</th>
                   <th>Type</th>
                   <th>Size</th>
@@ -180,6 +182,7 @@ class RequestsView extends React.Component<RequestsViewProps, RequestsViewState>
                 {messages.map((msg, i) => (
                   <tr key={msg.id}>
                     <th scope="row">{messages.length - i}</th>
+                    <td>{msg.origin}</td>
                     <td>{toTime(msg.time)}</td>
                     <td>{msg.type}</td>
                     <td>{msg.size}</td>

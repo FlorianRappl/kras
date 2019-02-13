@@ -43,6 +43,21 @@ interface RequestViewProps {
   };
 }
 
+function getString(content: string | { type: 'Buffer'; data: Array<number> }) {
+  if (typeof content !== 'string') {
+    switch (content.type) {
+      case 'Buffer':
+        if (typeof Uint16Array !== 'undefined') {
+          return String.fromCharCode.apply(null, new Uint16Array(content.data));
+        }
+      default:
+        return '';
+    }
+  }
+
+  return content;
+}
+
 const RequestView: React.SFC<RequestViewProps> = ({ data }) => (
   <Protect condition={!!data.id}>
     {!!data.id && (
@@ -67,6 +82,7 @@ const RequestView: React.SFC<RequestViewProps> = ({ data }) => (
           { label: 'HTTP response redirect URL', value: data.response.redirectUrl },
           { label: 'HTTP response headers', value: data.response.headers },
           { label: 'HTTP response status', value: `${data.response.status.code} ${data.response.status.text}` },
+          { label: 'HTTP response body', value: getString(data.response.content) },
         ]}
       />
     )}

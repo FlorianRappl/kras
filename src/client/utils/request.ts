@@ -20,7 +20,7 @@ export function feedUrl(url: string) {
 }
 
 let token: string = undefined;
-let middleware: ((req: RequestInit) => void) = undefined;
+let middleware: (req: RequestInit) => void = undefined;
 
 function isAuth(res: Response) {
   return res.status !== 401 && res.status !== 403;

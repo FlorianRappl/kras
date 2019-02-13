@@ -17,12 +17,16 @@ export interface RecordedError {
   request: KrasRequest;
 }
 
-export interface RecordedMessage {
-  id: string;
-  time: Date;
+export interface WebSocketMessage {
   content: string;
   from: string;
   to: string;
+  remote: boolean;
+}
+
+export interface RecordedMessage extends WebSocketMessage {
+  id: string;
+  time: Date;
 }
 
 export interface KrasRecorder extends EventEmitter {

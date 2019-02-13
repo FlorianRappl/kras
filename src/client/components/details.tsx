@@ -38,8 +38,10 @@ const Field: React.SFC<FieldProps> = ({ label, value }) => (
             <Badge color="secondary">{key}</Badge> {value[key]}
           </p>
         ))
-      ) : (
+      ) : typeof value === 'string' ? (
         <p>{value}</p>
+      ) : (
+        value
       )}
     </Col>
   </Row>
