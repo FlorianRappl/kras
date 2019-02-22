@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.8.1
+
+- Added `buildKrasWithCli` helper
+
 ## 0.8.0
 
 - Improved re-usability of CLI in library

@@ -87,12 +87,18 @@ export function readKrasConfig(options?: ConfigurationOptions, file?: string) {
     options,
     readConfiguration(homedir(), krasrc),
     readConfiguration(dir, krasrc),
-    readConfiguration(dir, file),
+    readConfiguration(dir, file !== krasrc && file),
   );
 }
 
 export function buildKras(config?: Partial<KrasConfiguration>) {
   return new MockServer(buildConfiguration(config));
+}
+
+export function buildKrasWithCli(config: KrasConfiguration) {
+  const server = buildKras(config);
+  connectToCli(server, config.api !== false);
+  return server;
 }
 
 export function runKras(config?: Partial<KrasConfiguration>) {
@@ -115,17 +121,14 @@ export function runWithKras(cb: KrasRunner, config?: KrasRuntimeConfiguration) {
   return withKras(config)(cb);
 }
 
-export function runFromCli(options: ConfigurationOptions, rcfile: string) {
-  const config = readKrasConfig(options, rcfile !== krasrc && rcfile);
-  const server = buildKras(config);
-
+export function connectToCli(server: MockServer, canManage = true) {
   server.on('open', svc => {
     const port = chalk.green(svc.port);
     const protocol = svc.protocol;
     const server = `${protocol}://localhost:${port}`;
     console.log(`Server listening at port ${port} (${protocol.toUpperCase()}).`);
 
-    if (config.api !== false) {
+    if (canManage) {
       const manage = svc.routes[0] || '/manage';
       console.log(`Management app: ${server}${manage}`);
     }
@@ -188,7 +191,11 @@ export function runFromCli(options: ConfigurationOptions, rcfile: string) {
       console.log(`${chalk.bgWhite(chalk.black('INF'))} ${chalk.white(msg)}`);
     }
   });
+}
 
+export function runFromCli(options: ConfigurationOptions, rcfile: string) {
+  const config = readKrasConfig(options, rcfile);
+  const server = buildKrasWithCli(config);
   console.log(`Starting kras v${version} ...`);
   server.start();
   return server;

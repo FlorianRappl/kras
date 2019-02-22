@@ -32,7 +32,7 @@ const argv = require('yargs')
   .describe('h', 'Shows the argument descriptions')
   .epilog(`Copyright (c) 2018 ${author}`).argv;
 
-  runFromCli(
+runFromCli(
   {
     port: argv.p,
     name: argv.n,
