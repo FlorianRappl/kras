@@ -4,6 +4,8 @@ import { existsSync } from 'fs';
 export const rootDir = resolve(__dirname, '..', '..', '..');
 export const currentDir = process.cwd();
 
+export const krasrc = '.krasrc';
+
 function optional(p: string) {
   try {
     if (existsSync(projectFile)) {

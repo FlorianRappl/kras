@@ -1,10 +1,8 @@
 #!/usr/bin/env node
 
-import chalk from 'chalk';
-import { buildKras, readKrasConfig, krasrc } from './kras';
-import { resolve } from 'path';
+import { runFromCli } from './kras-server';
 import { defaultConfig } from './core/config';
-import { author, currentDir, version } from './core/info';
+import { author, krasrc } from './core/info';
 
 const argv = require('yargs')
   .usage('Usage: $0 [options]')
@@ -34,107 +32,15 @@ const argv = require('yargs')
   .describe('h', 'Shows the argument descriptions')
   .epilog(`Copyright (c) 2018 ${author}`).argv;
 
-function info(message: string) {
-  return message && message.length > 50 ? message.substr(0, 47) + ' ...' : message;
-}
-
-function isDebug(logLevel: string) {
-  // level is debug, i.e., strongest level already
-  return logLevel === 'debug';
-}
-
-function isInfo(logLevel: string) {
-  // level is not error, i.e., at least info is given
-  return server.logLevel !== 'error';
-}
-
-function isError(logLevel: string) {
-  // no matter what the level is, the minimum level is always error
-  return true;
-}
-
-const options = {
-  port: argv.p,
-  name: argv.n,
-  logs: argv.l,
-  cert: argv.cert,
-  key: argv.key,
-  dir: argv.d,
-  skipApi: argv.skipApi,
-};
-
-const config = readKrasConfig(options, argv.c !== krasrc && argv.c);
-const server = buildKras(config);
-
-server.on('open', svc => {
-  const port = chalk.green(svc.port);
-  const protocol = svc.protocol;
-  const server = `${protocol}://localhost:${port}`;
-  console.log(`Server listening at port ${port} (${protocol.toUpperCase()}).`);
-
-  if (config.api !== false) {
-    const manage = svc.routes[0] || '/manage';
-    console.log(`Management app: ${server}${manage}`);
-  }
-});
-
-server.on('close', svc => {
-  console.log(`Connection to server closed.`);
-});
-
-server.on('user-connected', msg => {
-  if (isDebug(server.logLevel)) {
-    console.log(`${chalk.green('WS')} + ${chalk.white(info(msg.id))}`);
-  }
-});
-
-server.on('user-disconnected', msg => {
-  if (isDebug(server.logLevel)) {
-    console.log(`${chalk.green('WS')} - ${chalk.white(info(msg.id))}`);
-  }
-});
-
-server.on('message', msg => {
-  if (isDebug(server.logLevel)) {
-    console.log(`${chalk.green('WS')} << ${chalk.white(info(msg.content))}`);
-  }
-});
-
-server.on('broadcast', msg => {
-  if (isInfo(server.logLevel)) {
-    console.log(`${chalk.green('WS')} >> ${chalk.white(info(msg.content))}`);
-  }
-});
-
-server.on('missing', req => {
-  if (isError(server.logLevel)) {
-    console.log(`${chalk.yellow(req.method)} ${chalk.gray(req.target)}${chalk.white(req.url)}`);
-  }
-});
-
-server.on('request', req => {
-  if (isDebug(server.logLevel)) {
-    console.log(`${chalk.green(req.method)} ${chalk.gray(req.target)}${chalk.white(req.url)}`);
-  }
-});
-
-server.on('error', msg => {
-  if (isError(server.logLevel)) {
-    console.log(`${chalk.red('ERR')} ${chalk.white(msg)}`);
-  }
-});
-
-server.on('debug', msg => {
-  if (isDebug(server.logLevel)) {
-    console.log(`${chalk.yellow('DBG')} ${chalk.white(msg)}`);
-  }
-});
-
-server.on('info', msg => {
-  if (isInfo(server.logLevel)) {
-    console.log(`${chalk.bgWhite(chalk.black('INF'))} ${chalk.white(msg)}`);
-  }
-});
-
-console.log(`Starting kras v${version} ...`);
-server.start();
+  runFromCli(
+  {
+    port: argv.p,
+    name: argv.n,
+    logs: argv.l,
+    cert: argv.cert,
+    key: argv.key,
+    dir: argv.d,
+    skipApi: argv.skipApi,
+  },
+  argv.c,
+);
