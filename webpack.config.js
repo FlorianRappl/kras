@@ -9,22 +9,6 @@ const port = process.env.PORT || 8080;
 const dist = path.join(__dirname, 'dist', 'client');
 const src = path.join(__dirname, 'src', 'client');
 
-function getPlugins(plugins = []) {
-  if (production) {
-    plugins.push(
-      new webpack.optimize.UglifyJsPlugin({
-        compress: {
-          warnings: false,
-          screw_ie8: true,
-        },
-      }),
-      new webpack.optimize.OccurrenceOrderPlugin()
-    );
-  }
-
-  return plugins;
-}
-
 function getEntrySources(sources = []) {
   if (develop) {
     sources.push(`webpack-dev-server/client?http://0.0.0.0:${port}`);
@@ -39,6 +23,8 @@ module.exports = {
   entry: {
     main: getEntrySources([path.join(src, 'index.tsx')]),
   },
+
+  mode: develop ? 'development' : 'production',
 
   output: {
     path: dist,
@@ -75,7 +61,7 @@ module.exports = {
     ],
   },
 
-  plugins: getPlugins([
+  plugins: [
     new HtmlWebpackPlugin({
       minify: {
         collapseWhitespace: true,
@@ -89,5 +75,5 @@ module.exports = {
     new webpack.DefinePlugin({
       'process.env.NODE_ENV': JSON.stringify(env),
     }),
-  ]),
+  ],
 };
