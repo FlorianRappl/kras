@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.8.0
+
+- Improved re-usability of CLI in library
+- Restructured library exports
+- Updated dependencies
+
 ## 0.7.3
 
 - Updated outdated dependencies
