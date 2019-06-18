@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.8.2
+
+- Updated dependencies due to WS-2019-0063 
+- Updated dependencies due to WS-2019-0064
+- Updated dependencies due to WS-2018-0590 
+
 ## 0.8.1
 
 - Added `buildKrasWithCli` helper
