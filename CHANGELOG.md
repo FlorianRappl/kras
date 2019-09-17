@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.8.3
+
+- Updated dependencies due to CVE-2019-10746
+- Updated dependencies due to CVE-2019-10747
+
 ## 0.8.2
 
 - Updated dependencies due to WS-2019-0063 

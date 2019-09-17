@@ -1,6 +1,6 @@
 {
   "name": "kras",
-  "version": "0.8.2",
+  "version": "0.8.3",
   "description": "Efficient server proxying and mocking in Node.js.",
   "main": "dist/server/kras.js",
   "types": "dist/server/kras.d.ts",
@@ -74,7 +74,7 @@
     "html-webpack-plugin": "^3.2.0",
     "jest": "^24.8.0",
     "jest-enzyme": "^7.0.2",
-    "mixin-deep": "^2.0.0",
+    "mixin-deep": "^2.0.1",
     "nodemon": "^1.19.1",
     "prettier": "^1.18.2",
     "react": "^16.8.6",
