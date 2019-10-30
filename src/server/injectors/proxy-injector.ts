@@ -40,58 +40,69 @@ function releaseFrom(buffer: Array<BufferEntry>, ws: WebSocket) {
 
 export default class ProxyInjector implements KrasInjector {
   private readonly sessions: WebSocketSessions = {};
-  private readonly options: KrasInjectorConfig & ProxyInjectorConfig;
   private readonly core: EventEmitter;
-  private readonly map: {
-    [target: string]: string;
-  };
+  private readonly connectors: Array<{
+    target: string;
+    address: string;
+  }>;
+
+  public config: KrasInjectorConfig & ProxyInjectorConfig;
 
   constructor(options: KrasInjectorConfig & ProxyInjectorConfig, config: KrasConfiguration, core: EventEmitter) {
-    this.options = options;
-    this.map = config.map;
+    this.config = options;
+    this.connectors = Object.keys(config.map)
+      .filter(target => config.map[target] !== false)
+      .map(target => ({
+        target,
+        address: config.map[target] as string,
+      }));
     this.core = core;
 
     core.on('user-connected', e => {
-      const url = this.map[e.target] + e.url;
-      let open = false;
-      const buffer: Array<BufferEntry> = [];
-      const ws = new WebSocket(url, e.ws.protocol, {
-        rejectUnauthorized: false,
-      });
-      ws.on('open', () => {
-        open = true;
+      const [target] = this.connectors.filter(m => m.target === e.target);
 
-        if (buffer.length) {
-          releaseFrom(buffer, ws);
-        }
-      });
-      ws.on('close', e => {
-        open = false;
-        core.emit('ws-closed', { reason: e });
-      });
-      ws.on('message', data => {
-        core.emit('message', { content: data, from: url, to: e.id, remote: true });
-        e.ws.send(data, (err: Error) => core.emit('error', err));
-      });
-      e.ws.on('message', (data: WebSocket.Data) => {
-        core.emit('message', { content: data, to: url, from: e.id, remote: false });
+      if (target) {
+        let open = false;
+        const url = target.address + e.url;
+        const buffer: Array<BufferEntry> = [];
+        const ws = new WebSocket(url, e.ws.protocol, {
+          rejectUnauthorized: false,
+        });
+        ws.on('open', () => {
+          open = true;
 
-        if (open) {
-          ws.send(data, err => core.emit('error', err));
-        } else {
-          buffer.push({
-            time: Date.now(),
-            data,
-          });
-        }
-      });
-      ws.on('error', err => core.emit('error', err));
-      this.sessions[e.id] = ws;
+          if (buffer.length) {
+            releaseFrom(buffer, ws);
+          }
+        });
+        ws.on('close', e => {
+          open = false;
+          core.emit('ws-closed', { reason: e });
+        });
+        ws.on('message', data => {
+          core.emit('message', { content: data, from: url, to: e.id, remote: true });
+          e.ws.send(data, (err: Error) => core.emit('error', err));
+        });
+        e.ws.on('message', (data: WebSocket.Data) => {
+          core.emit('message', { content: data, to: url, from: e.id, remote: false });
+
+          if (open) {
+            ws.send(data, err => core.emit('error', err));
+          } else {
+            buffer.push({
+              time: Date.now(),
+              data,
+            });
+          }
+        });
+        ws.on('error', err => core.emit('error', err));
+        this.sessions[e.id] = ws;
+      }
     });
 
     core.on('user-disconnected', e => {
       const ws = this.sessions[e.id];
-      ws.close();
+      ws && ws.close();
       delete this.sessions[e.id];
     });
   }
@@ -99,12 +110,12 @@ export default class ProxyInjector implements KrasInjector {
   getOptions(): KrasInjectorOptions {
     const options: KrasInjectorOptions = {};
 
-    for (const target of Object.keys(this.map)) {
+    for (const { target, address } of this.connectors) {
       options[target] = {
-        description: `Determines where to proxy to if local URL starts with ${target}.`,
+        description: `Determines where to proxy to if local URL starts with "${target}".`,
         title: `Target: ${target}`,
         type: 'text',
-        value: this.map[target],
+        value: address,
       };
     }
 
@@ -112,8 +123,12 @@ export default class ProxyInjector implements KrasInjector {
   }
 
   setOptions(options: DynamicProxyInjectorConfig): void {
-    for (const target of Object.keys(options)) {
-      this.map[target] = options[target];
+    for (const item of this.connectors) {
+      const address = options[item.target];
+
+      if (address !== undefined) {
+        item.address = address;
+      }
     }
   }
 
@@ -122,41 +137,42 @@ export default class ProxyInjector implements KrasInjector {
   }
 
   get active() {
-    return this.options.active;
+    return this.config.active;
   }
 
   set active(value: boolean) {
-    this.options.active = value;
+    this.config.active = value;
   }
 
   handle(req: KrasRequest): Promise<KrasAnswer> | KrasAnswer {
-    return new Promise<KrasAnswer>(resolve => {
-      const target = this.map[req.target];
+    const [target] = this.connectors.filter(m => m.target === req.target);
+
+    if (target) {
       const name = this.name;
       const label = {
         name,
-        host: {
-          name: target,
-        },
+        host: target,
       };
-      proxyRequest(
-        {
-          headers: req.headers,
-          url: target + req.url,
-          method: req.method,
-          body: req.content,
-          agentOptions: this.options.agentOptions,
-          proxy: this.options.proxy,
-        },
-        (err, ans) => {
-          if (err) {
-            this.core.emit('error', err);
-          }
+      return new Promise<KrasAnswer>(resolve =>
+        proxyRequest(
+          {
+            headers: req.headers,
+            url: target.address + req.url,
+            method: req.method,
+            body: req.content,
+            agentOptions: this.config.agentOptions,
+            proxy: this.config.proxy,
+          },
+          (err, ans) => {
+            if (err) {
+              this.core.emit('error', err);
+            }
 
-          resolve(ans);
-        },
-        label,
+            resolve(ans);
+          },
+          label,
+        ),
       );
-    });
+    }
   }
 }

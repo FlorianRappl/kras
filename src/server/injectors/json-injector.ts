@@ -38,12 +38,13 @@ export interface DynamicJsonInjectorConfig {
 
 export default class JsonInjector implements KrasInjector {
   private readonly files: JsonFiles = {};
-  private readonly options: KrasInjectorConfig & JsonInjectorConfig;
   private readonly watcher: Watcher;
+
+  public config: KrasInjectorConfig & JsonInjectorConfig;
 
   constructor(options: KrasInjectorConfig & JsonInjectorConfig, config: { directory: string }) {
     const directory = options.directory || config.directory;
-    this.options = options;
+    this.config = options;
 
     this.watcher = watch(directory, '**/*.json', (ev, fileName) => {
       switch (ev) {
@@ -63,7 +64,7 @@ export default class JsonInjector implements KrasInjector {
         description: `If active randomizes the selected response. Only applicable in case where multiple responses are found for a given request.`,
         title: `Randomize Response`,
         type: 'checkbox',
-        value: this.options.randomize || false,
+        value: this.config.randomize || false,
       },
       directories: editDirectoryOption(this.watcher.directories),
       files: editEntryOption(this.files, ({ request }) => `${request.method} ${request.url}`),
@@ -71,7 +72,7 @@ export default class JsonInjector implements KrasInjector {
   }
 
   setOptions(options: DynamicJsonInjectorConfig): void {
-    this.options.randomize = options.randomize;
+    this.config.randomize = options.randomize;
 
     for (const file of options.files) {
       const entries = this.files[file.name];
@@ -95,11 +96,11 @@ export default class JsonInjector implements KrasInjector {
   }
 
   get active() {
-    return this.options.active;
+    return this.config.active;
   }
 
   set active(value: boolean) {
-    this.options.active = value;
+    this.config.active = value;
   }
 
   private load(fileName: string) {
@@ -136,7 +137,7 @@ export default class JsonInjector implements KrasInjector {
           const request = entry.request;
 
           if (compareRequests(request, req)) {
-            const rand = this.options.randomize;
+            const rand = this.config.randomize;
             const response = find(entry.response, rand);
             const name = this.name;
             return fromJson(

@@ -16,8 +16,8 @@ import {
   KrasRequest,
   Headers,
   KrasInjectorOptions,
-  Dict,
   KrasAnswer,
+  KrasConfiguration,
 } from '../types';
 
 function delay<T>(value: T, time: number) {
@@ -105,16 +105,23 @@ export interface DynamicHarInjectorConfig {
 
 export default class HarInjector implements KrasInjector {
   private readonly files: HarFiles = {};
-  private readonly options: KrasInjectorConfig & HarInjectorConfig;
-  private readonly map: {
-    [target: string]: string;
-  };
   private readonly watcher: Watcher;
+  private readonly connectors: Array<{
+    target: string;
+    address: string;
+  }>;
 
-  constructor(options: KrasInjectorConfig & HarInjectorConfig, config: { directory: string; map: Dict<string> }) {
+  public config: KrasInjectorConfig & HarInjectorConfig;
+
+  constructor(options: KrasInjectorConfig & HarInjectorConfig, config: KrasConfiguration) {
     const directory = options.directory || config.directory;
-    this.options = options;
-    this.map = config.map;
+    this.config = options;
+    this.connectors = Object.keys(config.map)
+      .filter(target => config.map[target] !== false)
+      .map(target => ({
+        target,
+        address: config.map[target] as string,
+      }));
 
     this.watcher = watch(directory, '**/*.har', (ev, fileName) => {
       switch (ev) {
@@ -134,7 +141,7 @@ export default class HarInjector implements KrasInjector {
         description: `If active delays the responses with the time it took according to the HAR.`,
         title: `Delay Responses`,
         type: 'checkbox',
-        value: this.options.delay || false,
+        value: this.config.delay || false,
       },
       directories: editDirectoryOption(this.watcher.directories),
       files: editEntryOption(this.files, ({ request }) => `${request.method} ${request.url}`),
@@ -142,7 +149,7 @@ export default class HarInjector implements KrasInjector {
   }
 
   setOptions(options: DynamicHarInjectorConfig): void {
-    this.options.delay = options.delay;
+    this.config.delay = options.delay;
 
     for (const file of options.files) {
       const entries = this.files[file.name];
@@ -166,11 +173,11 @@ export default class HarInjector implements KrasInjector {
   }
 
   get active() {
-    return this.options.active;
+    return this.config.active;
   }
 
   set active(value: boolean) {
-    this.options.active = value;
+    this.config.active = value;
   }
 
   private load(fileName: string) {
@@ -178,8 +185,8 @@ export default class HarInjector implements KrasInjector {
   }
 
   private findTarget(url: string) {
-    for (const target of Object.keys(this.map)) {
-      if (url.indexOf(this.map[target]) !== -1) {
+    for (const { target, address } of this.connectors) {
+      if (url.indexOf(address) === 0) {
         return target;
       }
     }
@@ -233,7 +240,7 @@ export default class HarInjector implements KrasInjector {
                   entry: i,
                 },
               }),
-              this.options.delay && entry.time,
+              this.config.delay && entry.time,
             );
           }
         }

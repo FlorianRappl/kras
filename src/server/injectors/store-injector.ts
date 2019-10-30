@@ -19,13 +19,14 @@ interface StoreRequestEntry {
 }
 
 export default class StoreInjector implements KrasInjector {
-  private readonly options: KrasInjectorConfig & StoreInjectorConfig;
   private readonly db: JsonStore<StoreRequestEntry>;
+
+  public config: KrasInjectorConfig & StoreInjectorConfig;
 
   constructor(options: KrasInjectorConfig & StoreInjectorConfig, config: { directory: string }) {
     const directory = options.directory || config.directory;
     const today = new Date().toJSON().substr(0, 10);
-    this.options = options;
+    this.config = options;
     this.db = open<StoreRequestEntry>(resolve(directory, options.filename || `unknown-requests-${today}.json`));
   }
 
@@ -53,11 +54,11 @@ export default class StoreInjector implements KrasInjector {
   }
 
   get active() {
-    return this.options.active;
+    return this.config.active;
   }
 
   set active(value: boolean) {
-    this.options.active = value;
+    this.config.active = value;
   }
 
   handle(request: KrasRequest) {

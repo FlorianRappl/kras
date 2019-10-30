@@ -6,13 +6,29 @@ export interface AppConfiguration {
   logLevel: LogLevel;
 }
 
+export interface WebServerConfigurationMap {
+  [target: string]: string | boolean;
+}
+
 export interface WebServerConfiguration extends AppConfiguration {
-  map: {
-    [target: string]: string;
-  };
+  map: WebServerConfigurationMap;
   ssl: SslConfiguration;
   ws: boolean | Dict<any>;
   port: number;
+}
+
+export interface KrasAuthSimpleAccount {
+  username: string;
+  password: string;
+}
+
+export interface KrasAuth {
+  provider: 'simple';
+  accounts: Array<KrasAuthSimpleAccount>;
+}
+
+export interface KrasConfigurationInjectors {
+  [name: string]: KrasInjectorConfig;
 }
 
 export interface KrasConfiguration extends WebServerConfiguration {
@@ -20,17 +36,7 @@ export interface KrasConfiguration extends WebServerConfiguration {
   client: string;
   directory: string;
   api: string | false;
-  auth:
-    | undefined
-    | {
-        provider: 'simple';
-        accounts: Array<{
-          username: string;
-          password: string;
-        }>;
-      };
+  auth: undefined | KrasAuth;
   middlewares: Array<KrasMiddlewareDefinition>;
-  injectors: {
-    [name: string]: KrasInjectorConfig;
-  };
+  injectors: KrasConfigurationInjectors;
 }

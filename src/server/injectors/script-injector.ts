@@ -64,13 +64,14 @@ export function tryEvaluate(script: ScriptFileEntry) {
 
 export default class ScriptInjector implements KrasInjector {
   private readonly files: ScriptFiles = {};
-  private readonly options: KrasInjectorConfig & ScriptInjectorConfig;
   private readonly core: EventEmitter;
   private readonly watcher: Watcher;
 
+  public config: KrasInjectorConfig & ScriptInjectorConfig;
+
   constructor(options: KrasInjectorConfig & ScriptInjectorConfig, config: { directory: string }, core: EventEmitter) {
     const directory = options.directory || config.directory;
-    this.options = options;
+    this.config = options;
     this.core = core;
 
     this.watcher = watch(directory, '**/*.js', (ev, fileName) => {
@@ -93,7 +94,7 @@ export default class ScriptInjector implements KrasInjector {
         description: 'The options available to all script files via the context argument.',
         title: 'Extended Configuration',
         type: 'json',
-        value: JSON.stringify(this.options.extended || {}, undefined, 2),
+        value: JSON.stringify(this.config.extended || {}, undefined, 2),
       },
     };
   }
@@ -108,7 +109,7 @@ export default class ScriptInjector implements KrasInjector {
       }
     }
 
-    this.options.extended = JSON.parse(options.extended || '{}');
+    this.config.extended = JSON.parse(options.extended || '{}');
     this.watcher.directories = options.directories;
   }
 
@@ -117,11 +118,11 @@ export default class ScriptInjector implements KrasInjector {
   }
 
   get active() {
-    return this.options.active;
+    return this.config.active;
   }
 
   set active(value: boolean) {
-    this.options.active = value;
+    this.config.active = value;
   }
 
   private load(fileName: string) {
@@ -157,7 +158,7 @@ export default class ScriptInjector implements KrasInjector {
               name: fileName,
             },
           });
-        const extended = this.options.extended || {};
+        const extended = this.config.extended || {};
         const ctx = {
           $server: this.core,
           ...extended,

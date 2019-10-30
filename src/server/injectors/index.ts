@@ -1,25 +1,16 @@
-import { resolve } from 'path';
+import { existsSync } from 'fs';
+import { resolve, basename } from 'path';
 import { EventEmitter } from 'events';
 import { Request, Response } from 'express';
 import { parse } from 'url';
 import { fromMissing } from '../helpers';
 import { injectorDebug, injectorConfig, injectorMain } from '../core/info';
-import {
-  KrasConfiguration,
-  KrasServer,
-  KrasAnswer,
-  KrasInjector,
-  KrasResponse,
-  KrasInjectorConfig,
-  KrasRequest,
-} from '../types';
 import HarInjector from './har-injector';
 import JsonInjector from './json-injector';
 import ProxyInjector from './proxy-injector';
 import ScriptInjector from './script-injector';
 import StoreInjector from './store-injector';
-
-export { ScriptInjector, ProxyInjector, HarInjector, StoreInjector, JsonInjector };
+import { KrasConfiguration, KrasServer, KrasAnswer, KrasInjector, KrasInjectorConfig, KrasRequest } from '../types';
 
 const specialHeaders = ['origin', 'content-type'];
 
@@ -48,6 +39,10 @@ function sendResponse(req: KrasRequest, ans: KrasAnswer, res: Response) {
   }
 }
 
+function normalizeTarget(head: string) {
+  return head.endsWith('/') ? head.substr(0, head.length - 1) : head;
+}
+
 function getTarget(targets: Array<string>, url: string) {
   for (const target of targets) {
     if (url.startsWith(target)) {
@@ -59,15 +54,11 @@ function getTarget(targets: Array<string>, url: string) {
     }
   }
 
-  if (targets.indexOf('/') !== -1) {
-    return '';
-  }
-
   return undefined;
 }
 
-function normalize(targets: Array<string>, req: Request): KrasRequest {
-  const target = getTarget(targets, req.originalUrl);
+function normalizeRequest(targets: Array<string>, req: Request): KrasRequest {
+  const target = getTarget(targets, req.originalUrl) || '';
   const url = req.originalUrl.substr(target.length);
   const query = Object.assign({}, req.query);
   const headers = Object.assign({}, req.headers);
@@ -77,7 +68,7 @@ function normalize(targets: Array<string>, req: Request): KrasRequest {
 
   return {
     url,
-    target: target || '/',
+    target,
     query,
     method,
     headers,
@@ -85,15 +76,16 @@ function normalize(targets: Array<string>, req: Request): KrasRequest {
   };
 }
 
-function tryInjectors(injectors: Array<KrasInjector>, req: KrasRequest): Promise<KrasAnswer | void> {
+async function tryInjectors(injectors: Array<KrasInjector>, req: KrasRequest): Promise<KrasAnswer | void> {
   if (injectors.length > 0) {
     const injector = injectors.shift();
-    const response = injector.handle(req);
-
-    return Promise.resolve<KrasResponse>(response).then(ans => ans || tryInjectors(injectors, req));
+    const ignore = injector.config && injector.config.ignore;
+    const ignored = ignore && ignore.some(t => normalizeTarget(t) === req.target);
+    const response = !ignored && (await injector.handle(req));
+    return response || tryInjectors(injectors, req);
   }
 
-  return Promise.resolve(undefined);
+  return undefined;
 }
 
 function handleRequest(server: KrasServer, req: KrasRequest, res: Response) {
@@ -133,13 +125,20 @@ function addInjectorInstance(
   server: KrasServer,
 ) {
   if (Injector) {
-    server.injectors.push(new Injector(options, config, server));
+    const instance = new Injector(options, config, server);
+    server.injectors.push(instance);
   }
 }
 
 export function withInjectors(server: KrasServer, config: KrasConfiguration) {
   const names = Object.keys(config.injectors);
-  const heads = Object.keys(config.map).sort((a, b) => b.length - a.length);
+  const heads = Object.keys(config.map)
+    .map(head => normalizeTarget(head))
+    .sort((a, b) => b.length - a.length);
+  const ignored = Object.keys(config.map)
+    .filter(head => config.map[head] === false)
+    .map(head => normalizeTarget(head));
+  const always = heads.length === 0;
 
   if (injectorDebug) {
     const Injector = findInjector(injectorMain);
@@ -147,7 +146,9 @@ export function withInjectors(server: KrasServer, config: KrasConfiguration) {
   }
 
   for (const name of names) {
+    const isPath = basename(name) !== name && existsSync(name);
     const Injector =
+      (isPath && findInjector(name)) ||
       findInjector(resolve(config.directory, `${name}-injector`)) ||
       findInjector(`kras-${name}-injector`) ||
       findInjector(`${name}-kras-injector`) ||
@@ -159,12 +160,19 @@ export function withInjectors(server: KrasServer, config: KrasConfiguration) {
 
   server.add({
     rate: req => {
-      const hasTarget = getTarget(heads, req.url) !== undefined;
-      return hasTarget ? 1 : 0;
+      if (!always) {
+        const target = getTarget(heads, req.url);
+        const hasTarget = target !== undefined;
+        return hasTarget && !ignored.includes(target) ? 1 : 0;
+      }
+
+      return 1;
     },
     handle: (req, res) => {
-      const entry = normalize(heads, req);
+      const entry = normalizeRequest(heads, req);
       return handleRequest(server, entry, res);
     },
   });
 }
+
+export { ScriptInjector, ProxyInjector, HarInjector, StoreInjector, JsonInjector };

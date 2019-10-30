@@ -24,6 +24,7 @@ export interface KrasInjectorInfo {
 
 export interface KrasInjectorConfig {
   active: boolean;
+  ignore?: Array<string>;
 }
 
 export type KrasResult = KrasAnswer | void;
@@ -36,6 +37,7 @@ export interface KrasRequestHandler {
 
 export interface KrasInjector {
   active: boolean;
+  config: KrasInjectorConfig;
   readonly name: string;
   readonly handle: KrasRequestHandler;
   getOptions(): KrasInjectorOptions;
