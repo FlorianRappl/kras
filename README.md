@@ -14,7 +14,7 @@ The README is supposed to only give you a basic idea what kras *is*. To *truly f
 
 ## Mission Statement
 
-kras is meant to be a swiss army knife for server mocking. It is meant for the development of large web applications that consist of a (decoupled) frontend and backend part (e.g., frontend MVC heavy, like a SPA, backend a (micro) service landscape, potentially behind a gateway).
+kras is meant to be a Swiss army knife for server mocking. It is meant for the development of large web applications that consist of a (decoupled) frontend and backend part (e.g., frontend MVC heavy, like a SPA, backend a (micro) service landscape, potentially behind a gateway).
 
 Some cases where the mocking makes sense:
 

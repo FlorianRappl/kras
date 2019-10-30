@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.9.0
+
+- Updated dependencies
+- Improved the configuration
+
 ## 0.8.3
 
 - Updated dependencies due to CVE-2019-10746
@@ -7,9 +12,9 @@
 
 ## 0.8.2
 
-- Updated dependencies due to WS-2019-0063 
+- Updated dependencies due to WS-2019-0063
 - Updated dependencies due to WS-2019-0064
-- Updated dependencies due to WS-2018-0590 
+- Updated dependencies due to WS-2018-0590
 
 ## 0.8.1
 
@@ -60,7 +65,7 @@
 
 ## 0.6.4
 
-- Updated request to effectively use hoek 4.2.1
+- Updated request to effectively use hook 4.2.1
 - Removed unnecessary console.log
 - Updated documentation
 
