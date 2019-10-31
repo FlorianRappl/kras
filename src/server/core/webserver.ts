@@ -50,11 +50,19 @@ interface WebSocketConnection {
   };
 }
 
-function getWsTargets(mapping: Dict<string>) {
+function getWsTargets(mapping: Dict<string | boolean>) {
   const keys = Object.keys(mapping);
 
   if (keys.length) {
-    const targets = keys.filter(key => mapping[key].match('^wss?://'));
+    const targets = keys.filter(key => {
+      const address = mapping[key];
+
+      if (typeof address === 'string') {
+        return address.match('^wss?://');
+      }
+
+      return address;
+    });
 
     if (targets.length) {
       return targets;

@@ -4,6 +4,8 @@
 
 - Updated dependencies
 - Improved the configuration
+- Allow specifying injectors by fully qualified paths (#21)
+- Improved configuration of map (#20)
 
 ## 0.8.3
 
