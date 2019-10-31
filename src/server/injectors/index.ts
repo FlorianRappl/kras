@@ -79,8 +79,7 @@ function normalizeRequest(targets: Array<string>, req: Request): KrasRequest {
 async function tryInjectors(injectors: Array<KrasInjector>, req: KrasRequest): Promise<KrasAnswer | void> {
   if (injectors.length > 0) {
     const injector = injectors.shift();
-    const ignore = injector.config && injector.config.ignore;
-    const handle = injector.config && injector.config.handle;
+    const { ignore, handle } = injector.config || {};
     const ignored = ignore && ignore.some(t => normalizeTarget(t) === req.target);
     const handled = !handle || handle.some(t => normalizeTarget(t) === req.target);
     const response = !ignored && handled && (await injector.handle(req));

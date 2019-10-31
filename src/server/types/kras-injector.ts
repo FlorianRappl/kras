@@ -23,8 +23,19 @@ export interface KrasInjectorInfo {
 }
 
 export interface KrasInjectorConfig {
+  /**
+   * Determins if the injector is active.
+   */
   active: boolean;
+  /**
+   * Optionally sets the targets to ignore.
+   * Otherwise, no targets are ignored.
+   */
   ignore?: Array<string>;
+  /**
+   * Optionally sets explicitly the targets to handle.
+   * Otherwise, all targeta are handled.
+   */
   handle?: Array<string>;
 }
 
