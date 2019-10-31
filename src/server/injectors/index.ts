@@ -80,8 +80,10 @@ async function tryInjectors(injectors: Array<KrasInjector>, req: KrasRequest): P
   if (injectors.length > 0) {
     const injector = injectors.shift();
     const ignore = injector.config && injector.config.ignore;
+    const handle = injector.config && injector.config.handle;
     const ignored = ignore && ignore.some(t => normalizeTarget(t) === req.target);
-    const response = !ignored && (await injector.handle(req));
+    const handled = !handle || handle.some(t => normalizeTarget(t) === req.target);
+    const response = !ignored && handled && (await injector.handle(req));
     return response || tryInjectors(injectors, req);
   }
 
@@ -126,7 +128,10 @@ function addInjectorInstance(
 ) {
   if (Injector) {
     const instance = new Injector(options, config, server);
-    server.injectors.push(instance);
+
+    if (typeof instance.handle === 'function') {
+      server.injectors.push(instance);
+    }
   }
 }
 
