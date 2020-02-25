@@ -1,4 +1,4 @@
-import chalk from 'chalk';
+import * as chalk from 'chalk';
 import { homedir } from 'os';
 import { resolve } from 'path';
 import { MockServerCore } from './core';

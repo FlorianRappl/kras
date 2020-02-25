@@ -22,7 +22,7 @@ export interface HarResponse {
   redirectURL: string;
   headers: HarHeaders;
   content: {
-    encoding?: string;
+    encoding?: BufferEncoding;
     mimeType: string;
     text?: string;
   };

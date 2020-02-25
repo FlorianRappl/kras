@@ -226,7 +226,7 @@ export class WebServer extends EventEmitter implements BaseKrasServer {
 
   stop() {
     this.emit('close');
-    return new Promise<void>(resolve => this.server.close(resolve));
+    return new Promise<void>(resolve => this.server.close(() => resolve()));
   }
 
   broadcast<T>(msg: T) {
