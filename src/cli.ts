@@ -1,9 +1,11 @@
 #!/usr/bin/env node
 
-import { runFromCli, defaultConfig, author, krasrc } from './server';
+import * as yargs from 'yargs';
+import { runFromCli, defaultConfig, author, krasrc, LogLevel } from './server';
 
-const argv = require('yargs')
+const argv = yargs
   .usage('Usage: $0 [options]')
+  .string('c')
   .alias('c', 'config')
   .describe('c', `Sets the configuration file to use, by default ${krasrc}`)
   .number('p')
@@ -28,17 +30,17 @@ const argv = require('yargs')
   .help('h')
   .alias('h', 'help')
   .describe('h', 'Shows the argument descriptions')
-  .epilog(`Copyright (c) 2018 ${author}`).argv;
+  .epilog(`Copyright (c) 2018 - 2020 ${author}`).argv;
 
 runFromCli(
   {
     port: argv.p,
     name: argv.n,
-    logs: argv.l,
+    logs: argv.l as LogLevel,
     cert: argv.cert,
     key: argv.key,
     dir: argv.d,
-    skipApi: argv.skipApi,
+    skipApi: argv['skip-api'],
   },
   argv.c,
 );
