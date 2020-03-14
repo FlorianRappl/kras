@@ -4,6 +4,7 @@
 
 - Provide kras in a pre-bundled state
 - Updated dependencies
+- Normalized the configuration (removed trailing slash)
 
 ## 0.9.1
 

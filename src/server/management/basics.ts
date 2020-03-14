@@ -28,7 +28,7 @@ function restart() {
 export function configOf(server: KrasServer, config: KrasConfiguration) {
   const pkgFile = resolve(__dirname, '..', '..', '..', 'package.json');
   const pkgInfo = require(pkgFile);
-  return (req: Request, res: Response) => {
+  return (_: Request, res: Response) => {
     res.json({
       directory: config.directory,
       map: config.map,

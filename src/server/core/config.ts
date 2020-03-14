@@ -143,5 +143,14 @@ export const defaultConfig = {
 } as KrasConfiguration;
 
 export function buildConfiguration(config: Partial<ConfigurationFile> = {}): KrasConfiguration {
-  return Object.assign({}, defaultConfig, config);
+  const newConfig = Object.assign({}, defaultConfig, config);
+  const newMap: Record<string, any> = {};
+
+  Object.keys(newConfig.map || {}).forEach(oldKey => {
+    const newKey = oldKey.replace(/\/+$/, '');
+    newMap[newKey] = newConfig.map[oldKey];
+  });
+
+  newConfig.map = newMap;
+  return newConfig;
 }
