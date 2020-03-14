@@ -4,13 +4,14 @@ import { EventEmitter } from 'events';
 import { Request, Response } from 'express';
 import { parse } from 'url';
 import { fromMissing } from '../helpers';
-import { injectorDebug, injectorConfig, injectorMain } from '../core/info';
+import { injectorDebug, injectorConfig, injectorMain } from '../info';
+import { KrasConfiguration, KrasServer, KrasAnswer, KrasInjector, KrasInjectorConfig, KrasRequest } from '../types';
+
 import HarInjector from './har-injector';
 import JsonInjector from './json-injector';
 import ProxyInjector from './proxy-injector';
 import ScriptInjector from './script-injector';
 import StoreInjector from './store-injector';
-import { KrasConfiguration, KrasServer, KrasAnswer, KrasInjector, KrasInjectorConfig, KrasRequest } from '../types';
 
 const specialHeaders = ['origin', 'content-type'];
 

@@ -1,7 +1,7 @@
 import { resolve } from 'path';
 import { existsSync, readFileSync } from 'fs';
+import { rootDir, name, version, currentDir } from '../info';
 import { KrasConfiguration, LogLevel } from '../types';
-import { rootDir, name, version, currentDir } from './info';
 
 export interface ConfigurationOptions {
   name?: string;

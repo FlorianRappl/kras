@@ -1,7 +1,7 @@
-import { resolve } from 'path';
+import { resolve, join } from 'path';
 import { existsSync } from 'fs';
 
-export const rootDir = resolve(__dirname, '..', '..', '..');
+export const rootDir = resolve(__dirname, '..', '..');
 export const currentDir = process.cwd();
 
 export const krasrc = '.krasrc';
@@ -24,8 +24,9 @@ function isInjectorDebug(name: string) {
   );
 }
 
-const packageInfo = require(resolve(rootDir, 'package.json'));
-const projectFile = resolve(currentDir, 'package.json');
+const packageJson = 'package' + '.json';
+const packageInfo = require('../../package.json');
+const projectFile = join(currentDir, packageJson);
 const projectInfo = optional(projectFile) || {};
 
 export const author: string = packageInfo.author;

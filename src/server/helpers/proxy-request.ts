@@ -1,7 +1,6 @@
 import * as request from 'request';
 import { fromNode } from './build-response';
 import { KrasInjectorInfo } from '../types';
-import { Headers } from 'request';
 
 export interface ProxyCallback {
   (err?: Error, foo?: any): void;
@@ -10,7 +9,7 @@ export interface ProxyCallback {
 export interface ProxyRequestOptions {
   url: string;
   method: string;
-  headers: Headers;
+  headers: request.Headers;
   body: string;
   agentOptions?: any;
   proxy?: any;

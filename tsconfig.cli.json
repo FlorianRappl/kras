@@ -2,11 +2,11 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "jsx": "preserve",
-    "sourceMap": true,
-    "outDir": "utils",
-    "declaration": true
+    "sourceMap": false,
+    "outDir": "dist",
+    "declaration": false
   },
   "include": [
-    "utils/index.ts"
+    "src/cli.ts"
   ]
 }

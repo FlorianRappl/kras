@@ -1,5 +1,5 @@
 import { basename } from 'path';
-import { KrasInjectorOption, KrasInjectorOptions, Dict } from '../types';
+import { KrasInjectorOption, Dict } from '../types';
 
 export interface FileInfo {
   active: boolean;

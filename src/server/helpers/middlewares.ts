@@ -1,6 +1,5 @@
-import * as readFile from 'send';
-import { dirname, resolve } from 'path';
-import { KrasServer, KrasConfiguration, KrasServerHandler, KrasMiddleware } from '../types';
+import { resolve } from 'path';
+import { KrasServer, KrasConfiguration, KrasServerHandler } from '../types';
 
 interface RequestHandlerCreator {
   (...args: Array<any>): KrasServerHandler;

@@ -1,7 +1,6 @@
 import * as chokidar from 'chokidar';
 import { statSync, existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'fs';
 import { dirname, join, resolve, sep, relative, isAbsolute } from 'path';
-import { EventEmitter } from 'events';
 
 export function isFile(file: string) {
   return statSync(file).isFile();

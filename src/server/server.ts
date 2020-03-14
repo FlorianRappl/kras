@@ -2,7 +2,7 @@ import * as chalk from 'chalk';
 import { homedir } from 'os';
 import { resolve } from 'path';
 import { MockServerCore } from './core';
-import { version, currentDir, krasrc } from './core/info';
+import { version, currentDir, krasrc } from './info';
 import { buildConfiguration, mergeConfiguration, readConfiguration, ConfigurationOptions } from './core/config';
 import { withInjectors } from './injectors';
 import { withManagement } from './management';

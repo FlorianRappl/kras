@@ -1,8 +1,6 @@
 #!/usr/bin/env node
 
-import { runFromCli } from './kras-server';
-import { defaultConfig } from './core/config';
-import { author, krasrc } from './core/info';
+import { runFromCli, defaultConfig, author, krasrc } from './server';
 
 const argv = require('yargs')
   .usage('Usage: $0 [options]')
