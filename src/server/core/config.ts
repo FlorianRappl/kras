@@ -115,7 +115,7 @@ export const defaultConfig = {
   api: '/manage',
   ws: true,
   map: {
-    '/': 'https://httpbin.org',
+    '': 'https://httpbin.org',
     '/api': 'https://jsonplaceholder.typicode.com',
     '/events': 'ws://demos.kaazing.com/echo',
   },

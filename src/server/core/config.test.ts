@@ -1,5 +1,5 @@
 import { resolve } from 'path';
-import { defaultConfig, buildConfiguration, makePathsAbsolute, mergeConfiguration, readConfiguration } from './config';
+import { defaultConfig, buildConfiguration, makePathsAbsolute, mergeConfiguration } from './config';
 
 describe('Configuration', () => {
   describe('buildConfiguration', () => {
