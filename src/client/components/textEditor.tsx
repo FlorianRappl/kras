@@ -1,13 +1,14 @@
 import * as React from 'react';
 import AceEditor from 'react-ace';
-import 'brace/mode/javascript';
-import 'brace/mode/yaml';
-import 'brace/mode/xml';
-import 'brace/mode/json';
-import 'brace/mode/plain_text';
-import 'brace/theme/tomorrow';
-import 'brace/ext/language_tools';
-import 'brace/ext/searchbox';
+
+import 'ace-builds/src-noconflict/mode-javascript';
+import 'ace-builds/src-noconflict/mode-yaml';
+import 'ace-builds/src-noconflict/mode-xml';
+import 'ace-builds/src-noconflict/mode-json';
+import 'ace-builds/src-noconflict/mode-plain_text';
+import 'ace-builds/src-noconflict/theme-tomorrow';
+import 'ace-builds/src-noconflict/ext-language_tools';
+import 'ace-builds/src-noconflict/ext-searchbox';
 
 const editor = {
   $blockScrolling: Infinity,

@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.10.0
+
+- Provide kras in a pre-bundled state
+- Updated dependencies
+
 ## 0.9.1
 
 - Updated dependencies
