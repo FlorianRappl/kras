@@ -1,5 +1,5 @@
-import { UserCredentials } from '../types';
 import { v4 } from 'uuid';
+import { UserCredentials } from '../types';
 
 const activeTokens: Array<string> = [];
 const maxTokens = 1024;

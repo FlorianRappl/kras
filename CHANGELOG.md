@@ -3,6 +3,7 @@
 ## 0.10.0
 
 - Provide kras in a pre-bundled state
+- Provide kras declarations in a single file
 - Updated dependencies
 - Normalized the configuration (removed trailing slash)
 

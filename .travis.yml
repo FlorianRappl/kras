@@ -14,7 +14,7 @@ before_deploy:
       export BEFORE_DEPLOY_RUN=1;
       git config --local user.name "$git_user";
       git config --local user.email "$git_email";
-      git tag "$(node ./dist/server/kras-cli.js --version)";
+      git tag "$(node ./dist/cli.js --version)";
     fi
 deploy:
   - provider: npm
