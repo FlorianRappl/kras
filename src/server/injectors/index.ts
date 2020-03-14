@@ -15,6 +15,14 @@ import StoreInjector from './store-injector';
 
 const specialHeaders = ['origin', 'content-type'];
 
+const coreInjectors: Record<string, any> = {
+  har: HarInjector,
+  json: JsonInjector,
+  proxy: ProxyInjector,
+  script: ScriptInjector,
+  store: StoreInjector,
+};
+
 function sendResponse(req: KrasRequest, ans: KrasAnswer, res: Response) {
   if (!ans.redirectUrl) {
     const origin = req.headers.origin;
@@ -153,6 +161,7 @@ export function withInjectors(server: KrasServer, config: KrasConfiguration) {
   for (const name of names) {
     const isPath = basename(name) !== name && existsSync(name);
     const Injector =
+      coreInjectors[name] ||
       (isPath && findInjector(name)) ||
       findInjector(resolve(config.directory, `${name}-injector`)) ||
       findInjector(`kras-${name}-injector`) ||
