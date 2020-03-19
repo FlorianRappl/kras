@@ -16,6 +16,10 @@ export interface KrasAnswer {
 
 export interface KrasInjectorInfo {
   name?: string;
+  host?: {
+    target: string;
+    address: string;
+  };
   file?: {
     name: string;
     entry?: number;

@@ -13,9 +13,10 @@ export interface ProxyRequestOptions {
   body: string;
   agentOptions?: any;
   proxy?: any;
+  injector?: KrasInjectorInfo;
 }
 
-export function proxyRequest(req: ProxyRequestOptions, callback: ProxyCallback, injector?: KrasInjectorInfo) {
+export function proxyRequest(req: ProxyRequestOptions, callback: ProxyCallback) {
   return request(
     {
       url: req.url,
@@ -36,7 +37,7 @@ export function proxyRequest(req: ProxyRequestOptions, callback: ProxyCallback, 
       if (err) {
         callback(err);
       } else {
-        callback(undefined, fromNode(ans, body, injector));
+        callback(undefined, fromNode(ans, body, req.injector));
       }
     },
   );

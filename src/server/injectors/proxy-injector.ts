@@ -148,11 +148,6 @@ export default class ProxyInjector implements KrasInjector {
     const [target] = this.connectors.filter(m => m.target === req.target);
 
     if (target) {
-      const name = this.name;
-      const label = {
-        name,
-        host: target,
-      };
       return new Promise<KrasAnswer>(resolve =>
         proxyRequest(
           {
@@ -162,6 +157,10 @@ export default class ProxyInjector implements KrasInjector {
             body: req.content,
             agentOptions: this.config.agentOptions,
             proxy: this.config.proxy,
+            injector: {
+              name: this.name,
+              host: target,
+            },
           },
           (err, ans) => {
             if (err) {
@@ -170,7 +169,6 @@ export default class ProxyInjector implements KrasInjector {
 
             resolve(ans);
           },
-          label,
         ),
       );
     }
