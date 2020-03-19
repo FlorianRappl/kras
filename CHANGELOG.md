@@ -3,6 +3,7 @@
 ## 0.10.1
 
 - Updated dependencies
+- Updated bundled declarations
 
 ## 0.10.0
 
