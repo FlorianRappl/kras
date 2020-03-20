@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.10.2
+
+- Updated dependencies
+- Improved declarations
+
 ## 0.10.1
 
 - Updated dependencies
