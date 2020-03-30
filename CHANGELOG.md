@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.10.3
+
+- Updated dependencies
+- Externalized `bufferutil`
+
 ## 0.10.2
 
 - Updated dependencies
