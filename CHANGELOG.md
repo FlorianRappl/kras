@@ -4,6 +4,7 @@
 
 - Updated dependencies
 - Externalized `bufferutil`
+- Externalized `utf-8-validate`
 
 ## 0.10.2
 
