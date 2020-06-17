@@ -1,5 +1,5 @@
 import { asJson, watch, Watcher, editDirectoryOption, editEntryOption, fromJson, compareRequests } from '../helpers';
-import { KrasInjectorConfig, KrasAnswer, KrasInjector, KrasRequest, KrasInjectorOptions } from '../types';
+import { KrasInjectorConfig, KrasAnswer, KrasInjector, KrasRequest, KrasInjectorOptions, KrasConfiguration } from '../types';
 
 function find(response: KrasAnswer | Array<KrasAnswer>, randomize: boolean) {
   if (Array.isArray(response)) {
@@ -42,8 +42,8 @@ export default class JsonInjector implements KrasInjector {
 
   public config: KrasInjectorConfig & JsonInjectorConfig;
 
-  constructor(options: KrasInjectorConfig & JsonInjectorConfig, config: { directory: string }) {
-    const directory = options.directory || config.directory;
+  constructor(options: KrasInjectorConfig & JsonInjectorConfig, config: KrasConfiguration) {
+    const directory = options.directory || config.sources || config.directory;
     this.config = options;
 
     this.watcher = watch(directory, '**/*.json', (ev, fileName) => {

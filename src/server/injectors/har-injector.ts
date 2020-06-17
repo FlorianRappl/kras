@@ -114,7 +114,7 @@ export default class HarInjector implements KrasInjector {
   public config: KrasInjectorConfig & HarInjectorConfig;
 
   constructor(options: KrasInjectorConfig & HarInjectorConfig, config: KrasConfiguration) {
-    const directory = options.directory || config.directory;
+    const directory = options.directory || config.sources || config.directory;
     this.config = options;
     this.connectors = Object.keys(config.map)
       .filter(target => config.map[target] !== false)

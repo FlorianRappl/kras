@@ -7,6 +7,7 @@ import {
   KrasAnswer,
   KrasInjectorOptions,
   ScriptResponseBuilder,
+  KrasConfiguration,
 } from '../types';
 
 function errorHandler(): undefined {
@@ -69,8 +70,8 @@ export default class ScriptInjector implements KrasInjector {
 
   public config: KrasInjectorConfig & ScriptInjectorConfig;
 
-  constructor(options: KrasInjectorConfig & ScriptInjectorConfig, config: { directory: string }, core: EventEmitter) {
-    const directory = options.directory || config.directory;
+  constructor(options: KrasInjectorConfig & ScriptInjectorConfig, config: KrasConfiguration, core: EventEmitter) {
+    const directory = options.directory || config.sources || config.directory;
     this.config = options;
     this.core = core;
 

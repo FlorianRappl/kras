@@ -31,6 +31,7 @@ export function configOf(server: KrasServer, config: KrasConfiguration) {
   return (_: Request, res: Response) => {
     res.json({
       directory: config.directory,
+      sources: config.sources,
       map: config.map,
       name: config.name,
       version: pkgInfo.version,

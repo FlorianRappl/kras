@@ -17,12 +17,21 @@ function findMiddleware(modulePath: string): RequestHandlerCreator | RequestHand
   }
 }
 
+function findFirstMiddleware(paths: Array<string>) {
+  for (const path of paths) {
+    const creator = findMiddleware(path);
+
+    if (creator) {
+      return creator;
+    }
+  }
+}
+
 function createMiddleware(server: KrasServer, config: KrasConfiguration, source: string, options: Array<any>) {
   const creator =
-    findMiddleware(source) ||
-    findMiddleware(resolve(config.directory, source)) ||
-    findMiddleware(resolve(process.cwd(), source)) ||
-    findMiddleware(resolve(__dirname, source));
+    findFirstMiddleware([source, resolve(config.directory, source)]) ||
+    findFirstMiddleware((config.sources || []).map(dir => resolve(dir, source))) ||
+    findFirstMiddleware([resolve(process.cwd(), source), resolve(__dirname, source)]);
 
   if (typeof creator === 'function') {
     const handler = creator(...options);

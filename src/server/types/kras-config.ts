@@ -35,6 +35,7 @@ export interface KrasConfiguration extends WebServerConfiguration {
   name: string;
   client: string;
   directory: string;
+  sources?: Array<string>;
   api: string | false;
   auth: undefined | KrasAuth;
   middlewares: Array<KrasMiddlewareDefinition>;

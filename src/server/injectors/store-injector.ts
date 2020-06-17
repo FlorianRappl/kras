@@ -1,6 +1,6 @@
 import { resolve } from 'path';
 import { open, JsonStore } from '../helpers';
-import { KrasInjectorOptions, KrasRequest, KrasInjectorConfig, KrasInjector } from '../types';
+import { KrasInjectorOptions, KrasRequest, KrasInjectorConfig, KrasInjector, KrasConfiguration } from '../types';
 
 export interface StoreInjectorConfig {
   directory?: string;
@@ -23,7 +23,7 @@ export default class StoreInjector implements KrasInjector {
 
   public config: KrasInjectorConfig & StoreInjectorConfig;
 
-  constructor(options: KrasInjectorConfig & StoreInjectorConfig, config: { directory: string }) {
+  constructor(options: KrasInjectorConfig & StoreInjectorConfig, config: KrasConfiguration) {
     const directory = options.directory || config.directory;
     const today = new Date().toJSON().substr(0, 10);
     this.config = options;
