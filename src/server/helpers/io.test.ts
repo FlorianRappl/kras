@@ -3,7 +3,7 @@ import * as chokidar from 'chokidar';
 import { resolve } from 'path';
 
 jest.mock('./io', () => ({
-  ...require.requireActual('./io'),
+  ...jest.requireActual('./io'),
   mk: jest.fn(),
 }));
 

@@ -69,8 +69,8 @@ function getTarget(targets: Array<string>, url: string) {
 function normalizeRequest(targets: Array<string>, req: Request): KrasRequest {
   const target = getTarget(targets, req.originalUrl) || '';
   const url = req.originalUrl.substr(target.length);
-  const query = Object.assign({}, req.query);
-  const headers = Object.assign({}, req.headers);
+  const query = Object.assign({}, req.query) as Record<string, string>;
+  const headers = Object.assign({}, req.headers) as Record<string, string>;
   const content = typeof req.body === 'string' ? req.body : '';
   const method = typeof req.method === 'string' ? req.method : 'GET';
   delete query._;

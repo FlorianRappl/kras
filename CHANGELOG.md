@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.11.0
+
+- Updated dependencies
+- Allow arrays for dictionary
+
 ## 0.10.3
 
 - Updated dependencies
