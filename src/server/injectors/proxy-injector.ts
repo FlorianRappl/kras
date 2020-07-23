@@ -145,13 +145,24 @@ export default class ProxyInjector implements KrasInjector {
   }
 
   handle(req: KrasRequest): Promise<KrasAnswer> | KrasAnswer {
+    const defaultHeaders = this.config.defaultHeaders || ["authorization", "accept", "content-type", "cookie", "accept-language", "user-agent", "if-match", "if-range", "if-unmodified-since", "if-none-match", "if-modified-since", "pragma", "range"];
+    const discardHeaders = this.config.discardHeaders || [];
+    const permitHeaders = this.config.permitHeaders || [];
+    const allowHeaders = [...defaultHeaders.filter(header => !discardHeaders.includes(header.toLowerCase())), ...permitHeaders];
+    const headers = allowHeaders.reduce((headers, header) => {
+      header = header.toLowerCase();
+      if(req.headers[header]){
+        headers[header] = req.headers[header];
+      }
+      return headers;
+    }, {});
     const [target] = this.connectors.filter(m => m.target === req.target);
 
     if (target) {
       return new Promise<KrasAnswer>(resolve =>
         proxyRequest(
           {
-            headers: req.headers,
+            headers: headers,
             url: target.address + req.url,
             method: req.method,
             body: req.content,
@@ -161,6 +172,7 @@ export default class ProxyInjector implements KrasInjector {
               name: this.name,
               host: target,
             },
+            followRedirect: req.config.followRedirect || true,
           },
           (err, ans) => {
             if (err) {
