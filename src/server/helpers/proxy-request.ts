@@ -26,12 +26,9 @@ export function proxyRequest(req: ProxyRequestOptions, callback: ProxyCallback) 
       encoding: null,
       proxy: req.proxy,
       agentOptions: req.agentOptions,
-      headers: {
-        ['authorization']: req.headers.authorization,
-        ['accept']: req.headers.accept,
-        ['content-type']: req.headers['content-type'],
-      },
+      headers: req.headers,
       body: req.body,
+      followRedirect: req.followRedirect || true,
     },
     (err, ans, body) => {
       if (err) {
