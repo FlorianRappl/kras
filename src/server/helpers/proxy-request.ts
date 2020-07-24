@@ -2,6 +2,22 @@ import * as request from 'request';
 import { fromNode } from './build-response';
 import { KrasInjectorInfo } from '../types';
 
+export const defaultProxyHeaders = [
+  'authorization',
+  'accept',
+  'content-type',
+  'cookie',
+  'accept-language',
+  'user-agent',
+  'if-match',
+  'if-range',
+  'if-unmodified-since',
+  'if-none-match',
+  'if-modified-since',
+  'pragma',
+  'range',
+];
+
 export interface ProxyCallback {
   (err?: Error, foo?: any): void;
 }
@@ -14,6 +30,7 @@ export interface ProxyRequestOptions {
   agentOptions?: any;
   proxy?: any;
   injector?: KrasInjectorInfo;
+  redirect?: boolean;
 }
 
 export function proxyRequest(req: ProxyRequestOptions, callback: ProxyCallback) {
@@ -28,7 +45,7 @@ export function proxyRequest(req: ProxyRequestOptions, callback: ProxyCallback) 
       agentOptions: req.agentOptions,
       headers: req.headers,
       body: req.body,
-      followRedirect: req.followRedirect || true,
+      followRedirect: req.redirect ?? true,
     },
     (err, ans, body) => {
       if (err) {

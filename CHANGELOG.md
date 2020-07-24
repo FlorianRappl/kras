@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.11.1
+
+- Added options for proxy headers
+
 ## 0.11.0
 
 - Updated dependencies

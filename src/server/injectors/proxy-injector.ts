@@ -1,6 +1,6 @@
 import * as WebSocket from 'ws';
 import { EventEmitter } from 'events';
-import { proxyRequest } from '../helpers';
+import { proxyRequest, defaultProxyHeaders } from '../helpers';
 import {
   KrasInjector,
   KrasAnswer,
@@ -13,10 +13,18 @@ import {
 export interface ProxyInjectorConfig {
   agentOptions?: any;
   proxy?: any;
+  defaultHeaders?: Array<string>;
+  discardHeaders?: Array<string>;
+  permitHeaders?: Array<string>;
+  followRedirect?: boolean;
 }
 
 export interface DynamicProxyInjectorConfig {
   [target: string]: string;
+}
+
+function normalizeHeader(header: string) {
+  return header.toLowerCase();
 }
 
 interface WebSocketSessions {
@@ -145,24 +153,21 @@ export default class ProxyInjector implements KrasInjector {
   }
 
   handle(req: KrasRequest): Promise<KrasAnswer> | KrasAnswer {
-    const defaultHeaders = this.config.defaultHeaders || ["authorization", "accept", "content-type", "cookie", "accept-language", "user-agent", "if-match", "if-range", "if-unmodified-since", "if-none-match", "if-modified-since", "pragma", "range"];
-    const discardHeaders = this.config.discardHeaders || [];
-    const permitHeaders = this.config.permitHeaders || [];
-    const allowHeaders = [...defaultHeaders.filter(header => !discardHeaders.includes(header.toLowerCase())), ...permitHeaders];
-    const headers = allowHeaders.reduce((headers, header) => {
-      header = header.toLowerCase();
-      if(req.headers[header]){
-        headers[header] = req.headers[header];
-      }
+    const defaultHeaders = (this.config.defaultHeaders || defaultProxyHeaders).map(normalizeHeader);
+    const discardHeaders = (this.config.discardHeaders || []).map(normalizeHeader);
+    const permitHeaders = (this.config.permitHeaders || []).map(normalizeHeader);
+    const headerNames = [...defaultHeaders.filter(header => !discardHeaders.includes(header)), ...permitHeaders];
+    const headers = headerNames.reduce((headers, header) => {
+      headers[header] = req.headers[header];
       return headers;
-    }, {});
+    }, {} as Record<string, string | Array<string>>);
     const [target] = this.connectors.filter(m => m.target === req.target);
 
     if (target) {
       return new Promise<KrasAnswer>(resolve =>
         proxyRequest(
           {
-            headers: headers,
+            headers,
             url: target.address + req.url,
             method: req.method,
             body: req.content,
@@ -172,7 +177,7 @@ export default class ProxyInjector implements KrasInjector {
               name: this.name,
               host: target,
             },
-            followRedirect: req.config.followRedirect || true,
+            redirect: this.config.followRedirect,
           },
           (err, ans) => {
             if (err) {

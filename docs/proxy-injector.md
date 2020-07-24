@@ -20,7 +20,33 @@ interface ProxyInjectorConfiguration {
   active?: boolean;
   agentOptions?: any;
   proxy?: any;
+  defaultHeaders?: Array<string>;
+  discardHeaders?: Array<string>;
+  permitHeaders?: Array<string>;
+  followRedirect?: boolean;
 }
 ```
 
 The mapping is already a general configuration, as the targets need to be known as well as their usual counterparts (e.g., to identify the correct URLs in an HAR file). The `agentOptions` can be used to specify more sophisticated options for the proxyed request (e.g., which ciphers to use). The `proxy` option allows us to set a (corporate?) proxy to be used on the local machine (oh the irony - a proxy server that allows setting another proxy ...).
+
+While the `defaultHeaders` provide a way to override the used default set of headers, `permitHeaders` are for explicitly allowing non-default headers and `discardHeaders` may be used to define which headers should never be considered.
+
+If not explicitly specified the default headers are defined to be:
+
+```js
+const defaultProxyHeaders = [
+  'authorization',
+  'accept',
+  'content-type',
+  'cookie',
+  'accept-language',
+  'user-agent',
+  'if-match',
+  'if-range',
+  'if-unmodified-since',
+  'if-none-match',
+  'if-modified-since',
+  'pragma',
+  'range',
+];
+```
