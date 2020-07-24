@@ -4,7 +4,7 @@ function queryEquals(a: KrasRequestQuery, b: KrasRequestQuery) {
   const ak = Object.keys(a);
   const bk = Object.keys(b);
 
-  if (ak.length === bk.length) {
+  if (ak.length <= bk.length) {
     for (const n of ak) {
       if (a[n] !== b[n]) {
         return false;
@@ -22,18 +22,16 @@ function stringEquals(a: string, b: string) {
 }
 
 function pathEquals(a: string, b: string) {
-  const i = a.indexOf('?');
-
-  if (i === b.indexOf('?')) {
-    if (i !== -1) {
-      a = a.substr(0, i);
-      b = b.substr(0, i);
-    }
-
-    return stringEquals(a, b);
+  const ai = a.indexOf('?');
+  const bi = b.indexOf('?');
+  if (ai !== -1) {
+    a = a.substr(0, ai);
+  }
+  if (bi !== -1) {
+    b = b.substr(0, bi);
   }
 
-  return false;
+  return stringEquals(a, b);
 }
 
 export function compareRequests(a: KrasRequest, b: KrasRequest) {
