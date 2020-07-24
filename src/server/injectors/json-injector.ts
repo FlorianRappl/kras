@@ -1,5 +1,9 @@
 import { asJson, watch, Watcher, editDirectoryOption, editEntryOption, fromJson, compareRequests } from '../helpers';
 import { KrasInjectorConfig, KrasAnswer, KrasInjector, KrasRequest, KrasInjectorOptions, KrasConfiguration } from '../types';
+import faker from 'faker';
+import cookie from 'cookie';
+import * as parser from 'accept-language-parser';
+import fakerLocale from '../helpers/faker-locale';
 
 function find(response: KrasAnswer | Array<KrasAnswer>, randomize: boolean) {
   if (Array.isArray(response)) {
@@ -45,6 +49,7 @@ export default class JsonInjector implements KrasInjector {
   constructor(options: KrasInjectorConfig & JsonInjectorConfig, config: KrasConfiguration) {
     const directory = options.directory || config.sources || config.directory;
     this.config = options;
+    this.languageName = config.languageName || 'language';
 
     this.watcher = watch(directory, '**/*.json', (ev, fileName) => {
       switch (ev) {
@@ -140,12 +145,26 @@ export default class JsonInjector implements KrasInjector {
             const rand = this.config.randomize;
             const response = find(entry.response, rand);
             const name = this.name;
+            
+            const cookies = cookie.parse(req.headers.cookie || '');
+            const acceptLanguage = parser.pase(req.headers['accept-language']);
+            let locale = 'en';
+            if(req.query[this.languageName]){
+              locale = req.query[this.languageName];
+            }else if(cookies[this.languageName]){
+              locale = cookies[this.languageName];
+            }else if(acceptLanguage.length && acceptLanguage[0].code){
+              locale = acceptLanguage[0].code;
+            }
+            faker.locale = fakerLocale(locale);
+            const content = faker.fake(response.content);
+            
             return fromJson(
               request.url,
               response.status.code,
               response.status.text,
               response.headers,
-              response.content,
+              content,
               {
                 name,
                 file: {
