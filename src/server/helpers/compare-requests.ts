@@ -6,7 +6,7 @@ function queryEquals(a: KrasRequestQuery, b: KrasRequestQuery) {
 
   if (ak.length === bk.length) {
     for (const n of ak) {
-      if (a[n] !== b[n]) {
+      if ((a[n] !== b[n] && a[n] !== '*') || typeof b[n] === 'undefined') {
         return false;
       }
     }
@@ -36,11 +36,21 @@ function pathEquals(a: string, b: string) {
   return false;
 }
 
+function serializedUrl(a: KrasRequest) {
+  const queryString = Object.keys(a.query)
+    .reduce((keys, k) => {
+      keys.push(`${k}=${a.query[k]}`);
+      return keys;
+    }, [])
+    .join('&');
+  return a.method.toLowerCase() === 'get' && queryString ? `${a.url}?${queryString}` : a.url;
+}
+
 export function compareRequests(a: KrasRequest, b: KrasRequest) {
   return (
     a.method === b.method &&
     (!a.target || !b.target || a.target === b.target) &&
-    pathEquals(a.url, b.url) &&
+    pathEquals(serializedUrl(a), b.url) &&
     queryEquals(a.query, b.query)
   );
 }
