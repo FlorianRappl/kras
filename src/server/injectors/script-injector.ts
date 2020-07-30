@@ -69,11 +69,13 @@ export default class ScriptInjector implements KrasInjector {
   private readonly watcher: Watcher;
 
   public config: KrasInjectorConfig & ScriptInjectorConfig;
+  public krasConfig: KrasConfiguration;
 
   constructor(options: KrasInjectorConfig & ScriptInjectorConfig, config: KrasConfiguration, core: EventEmitter) {
     const directory = options.directory || config.sources || config.directory;
     this.config = options;
     this.core = core;
+    this.krasConfig = config;
 
     this.watcher = watch(directory, '**/*.js', (ev, fileName) => {
       switch (ev) {
@@ -162,6 +164,8 @@ export default class ScriptInjector implements KrasInjector {
         const extended = this.config.extended || {};
         const ctx = {
           $server: this.core,
+          $options: this.config,
+          $config: this.krasConfig,
           ...extended,
         };
         const res = handler(ctx, req, builder);
