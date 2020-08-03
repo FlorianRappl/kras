@@ -30,9 +30,14 @@ export function withBody(callback: (req: Request, res: Response) => void) {
 
 export function corsHandler(req: Request, res: Response) {
   const origin = req.headers.origin;
+  const headers = ['authorization', 'content-type'];
+  const requestHeaders = req.headers['access-control-request-headers'];
+  if (requestHeaders) {
+    headers.push(requestHeaders);
+  }
   res.statusCode = 200;
   res.setHeader('Access-Control-Allow-Origin', origin);
-  res.setHeader('Access-Control-Allow-Headers', 'authorization,content-type');
+  res.setHeader('Access-Control-Allow-Headers', headers.join(','));
   res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE');
   res.setHeader('Access-Control-Allow-Credentials', 'true');
   return res.end();
