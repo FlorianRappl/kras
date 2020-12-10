@@ -3,6 +3,7 @@ logs
 *.log
 npm-debug.log*
 dist/
+utils/fsevents.node
 utils/*.js
 utils/*.js.map
 utils/*.d.ts

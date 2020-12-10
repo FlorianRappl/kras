@@ -4,7 +4,7 @@ function type(obj: any) {
   return Array.isArray(obj) ? 'array' : obj === null ? 'null' : typeof obj;
 }
 
-let randomNumbers = [
+const randomNumbers = [
   0.021768910889510606,
   0.23762323165420307,
   0.9079616118204306,
@@ -106,48 +106,58 @@ let randomNumbers = [
   0.24729465243280668,
   0.8244189715967711,
 ];
+
 function rand() {
-  randomNumbers = randomNumbers.concat(randomNumbers.splice(0, 1));
-  return randomNumbers[0];
+  const value = randomNumbers.shift();
+  randomNumbers.push(value);
+  return value;
 }
 
 // helpers
 const helpers: any = {
-  repeat: (template: any, name = '') => {
+  repeat(template: any, name = '') {
     const matches = name.match(/(\w+)\((\d+)(, *(\d+)?)?\)/);
     const lengthMin = parseInt(matches[2], 10);
     const lengthMax = parseInt(matches[4], 10);
     const length = (lengthMax > lengthMin ? Math.round(rand() * (lengthMax - lengthMin)) : 0) + lengthMin;
-
     const generated = [];
+
     for (let i = 0; i < length; i++) {
       generated.push(generateFromTemplate(template));
     }
+
     return generated;
   },
 };
 
 export function generateFromTemplate(template: any): any {
-  let generated: any;
   switch (type(template)) {
-    case 'array':
-      generated = [];
+    case 'array': {
+      const generated = [];
+
       for (let i = 0; i < template.length; i++) {
         generated[i] = generateFromTemplate(template[0]);
       }
-      break;
 
-    case 'object':
-      generated = {};
+      return generated;
+    }
+
+    case 'object': {
+      const generated: Record<string, any> = {};
+
       for (const p in template) {
         const matches = p.match(/(\w+)\((\d+)(, *(\d+)?)?\)/);
-        const helper: string = (matches && matches[1]) || '';
+        const helper = (matches && matches[1]) || '';
+
         if (helper) {
           return helpers[helper](template[p], p);
         }
+
         generated[p] = generateFromTemplate(template[p]);
       }
-      break;
+
+      return generated;
+    }
 
     case 'string':
       // Convert to normalize json format
@@ -156,14 +166,16 @@ export function generateFromTemplate(template: any): any {
       // 2. {{helpers.randomize(['blue', 'brown'])}} -> {{helpers.randomize(["blue", "brown"])}}
       // 3. {{random.number({min: 1, max: 5, precision: 0.01})}} -> {{random.number({"min": 1, "max": 5, "precision": 0.01})}}
       // With the official support of single quotes, then can be removed: ttps://github.com/Marak/faker.js/issues/643
-      template = template.replace(/(?<=(\{\{[^(\[{]+\())([\[{][^\]}]+[\]}])/ig, (parameter: string) => JSON.stringify(eval(`(${parameter})`)))
-      generated = faker.fake(template);
-      break;
+      template = template.replace(/(?<=(\{\{[^(\[{]+\())([\[{][^\]}]+[\]}])/gi, (parameter: string) =>
+        // tslint:disable-next-line
+        JSON.stringify(eval(`(${parameter})`)),
+      );
+
+      return faker.fake(template);
+
     case 'number':
     case 'boolean':
     default:
-      generated = template;
-      break;
+      return template;
   }
-  return generated;
 }

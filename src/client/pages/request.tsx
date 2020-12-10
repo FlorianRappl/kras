@@ -48,6 +48,7 @@ function getString(content: string | { type: 'Buffer'; data: Array<number> }) {
     switch (content.type) {
       case 'Buffer':
         if (typeof Uint16Array !== 'undefined') {
+          // tslint:disable-next-line
           return String.fromCharCode.apply(null, new Uint16Array(content.data));
         }
       default:

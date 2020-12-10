@@ -156,7 +156,7 @@ export default class JsonInjector implements KrasInjector {
       faker.setLocale(fakerLocale(locale) || locale);
       // Ignore Buffer content
       if (Buffer.isBuffer(content)) return content;
-      if(typeof content === 'string'){
+      if (typeof content === 'string') {
         content = JSON.parse(content);
       }
       const templateJson = generateFromTemplate(content);
