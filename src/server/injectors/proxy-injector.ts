@@ -1,6 +1,6 @@
 import * as WebSocket from 'ws';
 import { EventEmitter } from 'events';
-import { proxyRequest, defaultProxyHeaders } from '../helpers';
+import { proxyRequest, defaultProxyHeaders, getPort, isEncrypted } from '../helpers';
 import {
   KrasInjector,
   KrasAnswer,
@@ -13,9 +13,11 @@ import {
 export interface ProxyInjectorConfig {
   agentOptions?: any;
   proxy?: any;
+  xfwd?: boolean;
   defaultHeaders?: Array<string>;
   discardHeaders?: Array<string>;
   permitHeaders?: Array<string>;
+  injectHeaders?: Record<string, string>;
   followRedirect?: boolean;
 }
 
@@ -46,6 +48,25 @@ function releaseFrom(buffer: Array<BufferEntry>, ws: WebSocket) {
   }
 }
 
+function integrateXfwd(
+  headers: Record<string, string | Array<string>>,
+  protocol: string,
+  req: { remoteAddress: string; port: string; encrypted: boolean },
+) {
+  const values: Record<string, string> = {
+    for: req.remoteAddress,
+    port: req.port,
+    proto: req.encrypted ? `${protocol}s` : protocol,
+  };
+
+  Object.keys(values).forEach(key => {
+    const forwardKey = `x-forwarded-${key}`;
+    const forward = headers[forwardKey] || '';
+    const sep = forward ? ',' : '';
+    headers[forwardKey] = forward + sep + values[key];
+  });
+}
+
 export default class ProxyInjector implements KrasInjector {
   private readonly sessions: WebSocketSessions = {};
   private readonly core: EventEmitter;
@@ -73,8 +94,20 @@ export default class ProxyInjector implements KrasInjector {
         let open = false;
         const url = target.address + e.url;
         const buffer: Array<BufferEntry> = [];
+        const headers: Record<string, string> = {};
+
+        if (this.config.xfwd) {
+          const req = e.req;
+          integrateXfwd(headers, 'ws', {
+            remoteAddress: req.connection.remoteAddress || req.socket.remoteAddress,
+            port: getPort(req),
+            encrypted: isEncrypted(req),
+          });
+        }
+
         const ws = new WebSocket(url, e.ws.protocol, {
           rejectUnauthorized: false,
+          headers,
         });
         ws.on('open', () => {
           open = true;
@@ -156,12 +189,22 @@ export default class ProxyInjector implements KrasInjector {
     const defaultHeaders = (this.config.defaultHeaders || defaultProxyHeaders).map(normalizeHeader);
     const discardHeaders = (this.config.discardHeaders || []).map(normalizeHeader);
     const permitHeaders = (this.config.permitHeaders || []).map(normalizeHeader);
-    const headerNames = [...defaultHeaders.filter(header => !discardHeaders.includes(header)), ...permitHeaders];
+    const injectHeaders = this.config.injectHeaders || {};
+    const headerNames = [
+      ...defaultHeaders.filter(header => !discardHeaders.includes(header)),
+      ...permitHeaders,
+      ...Object.keys(injectHeaders),
+    ];
     const headers = headerNames.reduce((headers, header) => {
-      headers[header] = req.headers[header];
+      headers[header] = injectHeaders[header] ?? req.headers[header];
       return headers;
     }, {} as Record<string, string | Array<string>>);
     const [target] = this.connectors.filter(m => m.target === req.target);
+
+    if (this.config.xfwd) {
+      integrateXfwd(headers, 'http', req);
+      headers['x-forwarded-host'] = headers['x-forwarded-host'] || headers['host'] || '';
+    }
 
     if (target) {
       return new Promise<KrasAnswer>(resolve =>

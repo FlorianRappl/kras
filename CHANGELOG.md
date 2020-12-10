@@ -3,6 +3,8 @@
 ## 0.12.0
 
 - Support generator in json-injector
+- Added `injectHeaders` option to the proxy injector
+- Added `xfwd` option to the proxy injector
 - Updated dependencies
 
 ## 0.11.1

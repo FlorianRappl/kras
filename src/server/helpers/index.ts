@@ -3,6 +3,7 @@ export * from './build-response';
 export * from './compare-requests';
 export * from './files';
 export * from './fluent';
+export * from './http';
 export * from './io';
 export * from './json-store';
 export * from './middlewares';

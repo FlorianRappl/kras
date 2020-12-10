@@ -3,7 +3,7 @@ import { resolve, basename } from 'path';
 import { EventEmitter } from 'events';
 import { Request, Response } from 'express';
 import { parse } from 'url';
-import { fromMissing } from '../helpers';
+import { fromMissing, isEncrypted, getPort } from '../helpers';
 import { injectorDebug, injectorConfig, injectorMain } from '../info';
 import { KrasConfiguration, KrasServer, KrasAnswer, KrasInjector, KrasInjectorConfig, KrasRequest } from '../types';
 
@@ -77,6 +77,9 @@ function normalizeRequest(targets: Array<string>, req: Request): KrasRequest {
 
   return {
     url,
+    encrypted: isEncrypted(req),
+    port: getPort(req),
+    remoteAddress: req.connection.remoteAddress || req.socket.remoteAddress,
     target,
     query,
     method,

@@ -1,4 +1,4 @@
-import { KrasRequestQuery, KrasRequest } from '../types';
+import { KrasRequestQuery, BasicKrasRequest } from '../types';
 
 function queryEquals(a: KrasRequestQuery, b: KrasRequestQuery) {
   const ak = Object.keys(a);
@@ -36,7 +36,7 @@ function pathEquals(a: string, b: string) {
   return false;
 }
 
-function serializedUrl(a: KrasRequest) {
+function serializedUrl(a: BasicKrasRequest) {
   const queryString = Object.keys(a.query)
     .reduce((keys, k) => {
       keys.push(`${k}=${a.query[k]}`);
@@ -46,7 +46,7 @@ function serializedUrl(a: KrasRequest) {
   return a.method.toLowerCase() === 'get' && queryString ? `${a.url}?${queryString}` : a.url;
 }
 
-export function compareRequests(a: KrasRequest, b: KrasRequest) {
+export function compareRequests(a: BasicKrasRequest, b: BasicKrasRequest) {
   return (
     a.method === b.method &&
     (!a.target || !b.target || a.target === b.target) &&
