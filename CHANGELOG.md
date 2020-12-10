@@ -3,6 +3,7 @@
 ## 0.12.0
 
 - Support generator in json-injector
+- Updated dependencies
 
 ## 0.11.1
 
