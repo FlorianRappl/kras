@@ -1,5 +1,17 @@
 import { asJson, watch, Watcher, editDirectoryOption, editEntryOption, fromJson, compareRequests } from '../helpers';
-import { KrasInjectorConfig, KrasAnswer, KrasInjector, KrasRequest, KrasInjectorOptions, KrasConfiguration } from '../types';
+import {
+  KrasInjectorConfig,
+  KrasAnswer,
+  KrasInjector,
+  KrasRequest,
+  KrasInjectorOptions,
+  KrasConfiguration,
+} from '../types';
+import * as faker from 'faker';
+import * as cookie from 'cookie';
+import * as parser from 'accept-language-parser';
+import fakerLocale from '../helpers/faker-locale';
+import { generateFromTemplate } from '../helpers/generate-from-template';
 
 function find(response: KrasAnswer | Array<KrasAnswer>, randomize: boolean) {
   if (Array.isArray(response)) {
@@ -23,6 +35,8 @@ interface JsonFiles {
 export interface JsonInjectorConfig {
   directory?: string | Array<string>;
   randomize?: boolean;
+  generator?: boolean;
+  generatorLocaleName?: string;
 }
 
 export interface DynamicJsonInjectorConfig {
@@ -125,6 +139,31 @@ export default class JsonInjector implements KrasInjector {
   dispose() {
     this.watcher.close();
   }
+  contentProcess(req: KrasRequest, content: string | Buffer) {
+    if (this.config.generator) {
+      const localeName = this.config.generatorLocaleName || 'language';
+      const cookies = cookie.parse(req.headers.cookie || '');
+      const acceptLanguage = parser.parse(req.headers['accept-language']);
+      let locale = 'en';
+      if (req.query[localeName]) {
+        locale = req.query[localeName];
+      } else if (cookies[localeName]) {
+        locale = cookies[localeName];
+      } else if (acceptLanguage.length && acceptLanguage[0].code) {
+        locale = acceptLanguage[0].code;
+      }
+      // Convert like: en, en-US to en_US
+      faker.setLocale(fakerLocale(locale) || locale);
+      // Ignore Buffer content
+      if (Buffer.isBuffer(content)) return content;
+      if(typeof content === 'string'){
+        content = JSON.parse(content);
+      }
+      const templateJson = generateFromTemplate(content);
+      return JSON.stringify(templateJson);
+    }
+    return content;
+  }
 
   handle(req: KrasRequest): Promise<KrasAnswer> | KrasAnswer {
     for (const fileName of Object.keys(this.files)) {
@@ -140,20 +179,15 @@ export default class JsonInjector implements KrasInjector {
             const rand = this.config.randomize;
             const response = find(entry.response, rand);
             const name = this.name;
-            return fromJson(
-              request.url,
-              response.status.code,
-              response.status.text,
-              response.headers,
-              response.content,
-              {
-                name,
-                file: {
-                  name: fileName,
-                  entry: i,
-                },
+            const content = this.contentProcess(req, response.content);
+
+            return fromJson(request.url, response.status.code, response.status.text, response.headers, content, {
+              name,
+              file: {
+                name: fileName,
+                entry: i,
               },
-            );
+            });
           }
         }
       }
