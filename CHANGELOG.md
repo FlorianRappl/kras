@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.12.0
+
+- Support generator in json-injector
+
 ## 0.11.1
 
 - Added options for proxy headers
