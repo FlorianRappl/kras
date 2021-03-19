@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.12.2
+
+- Improved stability of web socket connections
+- Updated dependencies
+
 ## 0.12.1
 
 - Fixed a bug preventing changes to root proxy targets in the UI
