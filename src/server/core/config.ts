@@ -2,6 +2,7 @@ import { resolve } from 'path';
 import { existsSync, readFileSync } from 'fs';
 import { rootDir, name, version, currentDir } from '../info';
 import { KrasConfiguration, LogLevel } from '../types';
+import * as chalk from 'chalk';
 
 export interface ConfigurationOptions {
   name?: string;
@@ -56,7 +57,8 @@ export function readConfiguration(dir: string, file: string): ConfigurationFile 
           return config;
         }
       } catch (e) {
-        console.error(`Error reading configuration from ${file} in ${dir}: ${e}`);
+        const msg = `Error reading configuration from ${file} in ${dir}: ${e}`;
+        throw new Error(`${chalk.red('ERR')} ${chalk.white(msg)}`);
       }
     }
   }
