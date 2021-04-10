@@ -4,6 +4,7 @@ import { Application, Request, Response } from 'express';
 import { createServer as createHttpServer, Server as HttpServer } from 'http';
 import { createServer as createHttpsServer, Server as HttpsServer } from 'https';
 import { text } from 'body-parser';
+import * as multer from 'multer';
 import { EventEmitter } from 'events';
 import { readSsl } from './readSsl';
 import { corsHandler } from './proxy';
@@ -96,9 +97,13 @@ export class WebServer extends EventEmitter implements BaseKrasServer {
     this.server = ssl ? createHttpsServer(ssl, this.app) : createHttpServer(this.app);
     this.wsOptions = typeof config.ws === 'object' ? config.ws : undefined;
     this.ws = !!config.ws;
+    const upload = multer({ storage: multer.memoryStorage(), limits: { files: 5, fileSize: 10 * 1024 * 1024 } });
+    this.app.use(upload.any());
     this.app.use(
       text({
-        type: '*/*',
+        type: (req: any) => {
+          return !(req.headers['content-type'] && req.headers['content-type'].search('multipart/form-data') !== -1);
+        },
         limit: '50mb',
       }),
     );
