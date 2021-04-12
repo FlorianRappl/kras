@@ -136,7 +136,7 @@ export function generateFromTemplate(template: any): any {
       const generated = [];
 
       for (let i = 0; i < template.length; i++) {
-        generated[i] = generateFromTemplate(template[0]);
+        generated[i] = generateFromTemplate(template[i]);
       }
 
       return generated;
@@ -159,20 +159,24 @@ export function generateFromTemplate(template: any): any {
       return generated;
     }
 
-    case 'string':
-      // Convert to normalize json format
-      // e.g.
-      // 1. {{random.number({'min': 1, 'max': 5, 'precision': 0.01})}} -> {{random.number({"min": 1, "max": 5, "precision": 0.01})}}
-      // 2. {{helpers.randomize(['blue', 'brown'])}} -> {{helpers.randomize(["blue", "brown"])}}
-      // 3. {{random.number({min: 1, max: 5, precision: 0.01})}} -> {{random.number({"min": 1, "max": 5, "precision": 0.01})}}
-      // With the official support of single quotes, then can be removed: ttps://github.com/Marak/faker.js/issues/643
-      template = template.replace(/(?<=(\{\{[^(\[{]+\())([\[{][^\]}]+[\]}])/gi, (parameter: string) =>
-        // tslint:disable-next-line
-        JSON.stringify(eval(`(${parameter})`)),
-      );
+    case 'string': {
+      if (template.match(/\{\{.+\}\}/)) {
+        // Convert to normalize json format
+        // e.g.
+        // 1. {{random.number({'min': 1, 'max': 5, 'precision': 0.01})}} -> {{random.number({"min": 1, "max": 5, "precision": 0.01})}}
+        // 2. {{helpers.randomize(['blue', 'brown'])}} -> {{helpers.randomize(["blue", "brown"])}}
+        // 3. {{random.number({min: 1, max: 5, precision: 0.01})}} -> {{random.number({"min": 1, "max": 5, "precision": 0.01})}}
+        // With the official support of single quotes, then can be removed: https://github.com/Marak/faker.js/issues/643
+        template = template.replace(/(?<=(\{\{[^(\[{]+\())([\[{][^\]}]+[\]}])/gi, (parameter: string) =>
+          // tslint:disable-next-line
+          JSON.stringify(eval(`(${parameter})`)),
+        );
 
-      return faker.fake(template);
+        return faker.fake(template);
+      }
 
+      return template;
+    }
     case 'number':
     case 'boolean':
     default:
