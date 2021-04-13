@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.12.3
+
+- Improved configuration file error notification
+
 ## 0.12.2
 
 - Improved stability of web socket connections
