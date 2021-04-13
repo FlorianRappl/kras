@@ -52,11 +52,11 @@ class InjectorsView extends React.Component<InjectorsViewProps, InjectorsViewSta
   private saveChanges(injector: KrasInjector, options: KrasInjectorOptions) {
     const { injectors } = this.state;
     const data: { [x: string]: any } = {};
+    const optionNames = Object.keys(options).filter(name => name[0] !== '_');
 
-    for (const option of Object.keys(options)) {
-      if (option && option[0] !== '_') {
-        data[option] = options[option].value;
-      }
+    for (const optionName of optionNames) {
+      const option = options[optionName];
+      data[optionName] = option.value;
     }
 
     request({

@@ -109,6 +109,7 @@ export default class ProxyInjector implements KrasInjector {
           rejectUnauthorized: false,
           headers,
         });
+        ws.on('error', err => core.emit('error', err));
         ws.on('open', () => {
           open = true;
 
@@ -136,7 +137,6 @@ export default class ProxyInjector implements KrasInjector {
             });
           }
         });
-        ws.on('error', err => core.emit('error', err));
         this.sessions[e.id] = ws;
       }
     });
