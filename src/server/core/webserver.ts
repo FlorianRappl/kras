@@ -1,5 +1,6 @@
 import * as express from 'express';
 import * as expressWs from 'express-ws';
+import type { Server as WebSocketServer } from 'ws';
 import { Application, Request, Response } from 'express';
 import { createServer as createHttpServer, Server as HttpServer } from 'http';
 import { createServer as createHttpsServer, Server as HttpsServer } from 'https';
@@ -142,6 +143,15 @@ export class WebServer extends EventEmitter implements BaseKrasServer {
       this.emit('info', 'Turned on WebSocket support');
       this.sockets = expressWs(this.app, this.server, {
         wsOptions: this.wsOptions,
+      });
+      const wsServer = (this.sockets.getWss() as WebSocketServer);
+      wsServer.on('connection', socket => {
+        socket.on('error', (err) => {
+          this.emit('error', `Problem with the WS socket connection: ${err}`);
+        });
+      });
+      wsServer.on('error', err => {
+        this.emit('error', `Error with WS server: ${err}`);
       });
     }
   }
