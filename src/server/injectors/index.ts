@@ -6,7 +6,7 @@ import { parse } from 'url';
 import { fromMissing, isEncrypted, getPort } from '../helpers';
 import { injectorDebug, injectorConfig, injectorMain } from '../info';
 import { KrasConfiguration, KrasServer, KrasAnswer, KrasInjector, KrasInjectorConfig, KrasRequest } from '../types';
-
+import * as FormData from 'form-data';
 import HarInjector from './har-injector';
 import JsonInjector from './json-injector';
 import ProxyInjector from './proxy-injector';
@@ -71,7 +71,26 @@ function normalizeRequest(targets: Array<string>, req: Request): KrasRequest {
   const url = req.originalUrl.substr(target.length);
   const query = Object.assign({}, req.query) as Record<string, string>;
   const headers = Object.assign({}, req.headers) as Record<string, string>;
-  const content = typeof req.body === 'string' ? req.body : '';
+  let content: any;
+  if (req.headers['content-type'] && req.headers['content-type'].search('multipart/form-data') !== -1) {
+    let formData = new FormData();
+    typeof req.body === 'object' &&
+      Object.keys(req.body).map((field: any) => {
+        return formData.append(field, req.body[field]);
+      });
+    req.files &&
+      req.files.length &&
+      Array.prototype.map.call(req.files, (file: any) => {
+        return formData.append(file.fieldname, file.buffer, {
+          filename: file.originalname,
+        });
+      });
+    headers['content-type'] = formData.getHeaders()['content-type'];
+    content = formData;
+  } else {
+    content = typeof req.body === 'string' ? req.body : '';
+  }
+
   const method = typeof req.method === 'string' ? req.method : 'GET';
   delete query._;
 

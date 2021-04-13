@@ -2,6 +2,7 @@
 
 ## 0.12.3
 
+- Add support for 'multipart/form-data' file upload
 - Improved configuration file error notification
 
 ## 0.12.2
