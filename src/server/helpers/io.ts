@@ -127,10 +127,10 @@ export function watch(
   callback: (type: string, file: string) => void,
 ): Watcher {
   if (Array.isArray(directory)) {
-    const ws = directory.map(dir => watchSingle(dir, pattern, callback));
+    const ws = directory.map((dir) => watchSingle(dir, pattern, callback));
     return {
       get directories() {
-        return ws.map(w => w.directory);
+        return ws.map((w) => w.directory);
       },
       set directories(value: Array<string>) {
         const added: Array<SingleWatcher> = [];
@@ -170,7 +170,7 @@ export function watch(
         ws.push(...added);
       },
       close() {
-        ws.forEach(w => w.close());
+        ws.forEach((w) => w.close());
       },
     };
   } else if (typeof directory === 'string') {

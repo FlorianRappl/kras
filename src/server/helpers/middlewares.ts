@@ -30,7 +30,7 @@ function findFirstMiddleware(paths: Array<string>) {
 function createMiddleware(server: KrasServer, config: KrasConfiguration, source: string, options: Array<any>) {
   const creator =
     findFirstMiddleware([source, resolve(config.directory, source)]) ||
-    findFirstMiddleware((config.sources || []).map(dir => resolve(dir, source))) ||
+    findFirstMiddleware((config.sources || []).map((dir) => resolve(dir, source))) ||
     findFirstMiddleware([resolve(process.cwd(), source), resolve(__dirname, source)]);
 
   if (typeof creator === 'function') {

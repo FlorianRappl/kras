@@ -14,9 +14,9 @@ export function getAuth(server: KrasServer, config: KrasConfiguration): ProtectH
   const provider = auth && providers[auth.provider];
 
   if (provider) {
-    return server => {
+    return (server) => {
       const connectToFeed = server.feed;
-      server.feed = handler => {
+      server.feed = (handler) => {
         connectToFeed((ws, req) => {
           const { token } = parse(req.url, true).query;
 
@@ -49,7 +49,7 @@ export function getAuth(server: KrasServer, config: KrasConfiguration): ProtectH
     };
   }
 
-  return server => server;
+  return (server) => server;
 }
 
 export function userLogin(server: KrasServer, config: KrasConfiguration): KrasServerHandler {

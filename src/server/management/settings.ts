@@ -13,20 +13,20 @@ export function readSettings(server: KrasServer) {
   return (req: Request, res: Response) => {
     res.json({
       ws: server.ws,
-      middlewares: server.middlewares.map(middleware =>
+      middlewares: server.middlewares.map((middleware) =>
         tryRead(() => ({
           options: middleware.options,
           source: middleware.source,
         })),
       ),
       injectors: server.injectors
-        .map(injector =>
+        .map((injector) =>
           tryRead(() => ({
             active: injector.active,
             name: injector.name,
           })),
         )
-        .filter(injector => injector !== undefined),
+        .filter((injector) => injector !== undefined),
     });
   };
 }

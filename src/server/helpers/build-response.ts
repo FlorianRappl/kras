@@ -87,7 +87,7 @@ function buildResponse(state: Partial<ResponseState>): KrasAnswer {
 export function fromNode(ans: NodeResponse, body: Buffer, injector?: KrasInjectorInfo) {
   const headers: Headers = {};
 
-  Object.keys(ans.headers).forEach(name => {
+  Object.keys(ans.headers).forEach((name) => {
     const value = ans.headers[name];
     headers[name] = Array.isArray(value) ? value.join() : value;
   });

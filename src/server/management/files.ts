@@ -28,7 +28,7 @@ export function saveFile(server: KrasServer) {
     const file = Buffer.from(name, 'base64').toString();
     const content = req.body;
 
-    setContent(file, content, err => {
+    setContent(file, content, (err) => {
       if (err) {
         server.emit('error', err);
       }

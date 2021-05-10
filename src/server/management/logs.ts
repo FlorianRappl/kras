@@ -27,7 +27,7 @@ export function liveLogs(server: KrasServer) {
     }
   };
 
-  server.on('logged', item => {
+  server.on('logged', (item) => {
     broadcast(item);
   });
 

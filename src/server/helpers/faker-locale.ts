@@ -1,5 +1,5 @@
 // https://github.com/idflood/SocialLocale/blob/master/src/sociallocale.js
-export default function(locale: string) {
+export default function (locale: string) {
   const parts = locale.split('-');
 
   // The first element is the language code

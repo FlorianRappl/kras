@@ -36,7 +36,7 @@ export function makePathsAbsolute(baseDir: string, config: ConfigurationFile) {
         if (typeof directory === 'string') {
           injector.directory = resolve(baseDir, directory);
         } else if (Array.isArray(directory)) {
-          injector.directory = directory.map(dir => resolve(baseDir, dir));
+          injector.directory = directory.map((dir) => resolve(baseDir, dir));
         }
       }
     }
@@ -148,7 +148,7 @@ export function buildConfiguration(config: Partial<ConfigurationFile> = {}): Kra
   const newConfig = Object.assign({}, defaultConfig, config);
   const newMap: Record<string, any> = {};
 
-  Object.keys(newConfig.map || {}).forEach(oldKey => {
+  Object.keys(newConfig.map || {}).forEach((oldKey) => {
     const newKey = oldKey.replace(/\/+$/, '');
     newMap[newKey] = newConfig.map[oldKey];
   });

@@ -117,8 +117,8 @@ export default class HarInjector implements KrasInjector {
     const directory = options.directory || config.sources || config.directory;
     this.config = options;
     this.connectors = Object.keys(config.map)
-      .filter(target => config.map[target] !== false)
-      .map(target => ({
+      .filter((target) => config.map[target] !== false)
+      .map((target) => ({
         target,
         address: config.map[target] as string,
       }));
@@ -181,7 +181,7 @@ export default class HarInjector implements KrasInjector {
   }
 
   private load(fileName: string) {
-    this.files[fileName] = findEntries(asJson(fileName)).map(entry => this.transformEntry(entry));
+    this.files[fileName] = findEntries(asJson(fileName)).map((entry) => this.transformEntry(entry));
   }
 
   private findTarget(url: string) {

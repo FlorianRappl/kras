@@ -2,17 +2,17 @@ import { mapReverse, filterReverse } from './index';
 
 describe('Helpers', () => {
   it('mapReverse should work with an empty array', () => {
-    const result = mapReverse([], item => item);
+    const result = mapReverse([], (item) => item);
     expect(result).toEqual([]);
   });
 
   it('mapReverse should work with identity selector', () => {
-    const result = mapReverse([1, 2, 3, 4, 5], item => item);
+    const result = mapReverse([1, 2, 3, 4, 5], (item) => item);
     expect(result).toEqual([5, 4, 3, 2, 1]);
   });
 
   it('mapReverse should work with any selector', () => {
-    const result = mapReverse([1, 2, 3, 4, 5], item => item * item);
+    const result = mapReverse([1, 2, 3, 4, 5], (item) => item * item);
     expect(result).toEqual([25, 16, 9, 4, 1]);
   });
 
@@ -27,22 +27,22 @@ describe('Helpers', () => {
   });
 
   it('filterReverse should work with an empty array', () => {
-    const result = filterReverse([], item => false);
+    const result = filterReverse([], (item) => false);
     expect(result).toEqual([]);
   });
 
   it('filterReverse should work with false selector', () => {
-    const result = filterReverse([1, 2, 3, 4, 5], item => false);
+    const result = filterReverse([1, 2, 3, 4, 5], (item) => false);
     expect(result).toEqual([]);
   });
 
   it('filterReverse should work with true selector', () => {
-    const result = filterReverse([1, 2, 3, 4, 5], item => true);
+    const result = filterReverse([1, 2, 3, 4, 5], (item) => true);
     expect(result).toEqual([5, 4, 3, 2, 1]);
   });
 
   it('filterReverse should work with custom selector', () => {
-    const result = filterReverse([1, 2, 3, 4, 5], item => item % 2 === 1);
+    const result = filterReverse([1, 2, 3, 4, 5], (item) => item % 2 === 1);
     expect(result).toEqual([5, 3, 1]);
   });
 

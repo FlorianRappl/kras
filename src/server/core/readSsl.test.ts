@@ -2,7 +2,7 @@ import { readSsl } from './readSsl';
 import * as fs from 'fs';
 
 jest.mock('fs', () => ({
-  readFileSync: jest.fn().mockImplementation(name => `${name}_content`),
+  readFileSync: jest.fn().mockImplementation((name) => `${name}_content`),
 }));
 
 describe('readSsl', () => {

@@ -42,9 +42,7 @@ function findHook(hooks: Array<KrasServerHook>, req: Request) {
 }
 
 interface WebSocketConnection {
-  getWss(
-    target?: Array<string>,
-  ): {
+  getWss(target?: Array<string>): {
     clients: Set<{
       send(data: string): void;
     }>;
@@ -56,7 +54,7 @@ function getWsTargets(mapping: Dict<string | boolean>) {
   const keys = Object.keys(mapping);
 
   if (keys.length) {
-    const targets = keys.filter(key => {
+    const targets = keys.filter((key) => {
       const address = mapping[key];
 
       if (typeof address === 'string') {
@@ -108,7 +106,7 @@ export class WebServer extends EventEmitter implements BaseKrasServer {
         limit: '50mb',
       }),
     );
-    this.targets.forEach(target =>
+    this.targets.forEach((target) =>
       this.app.ws(target, (ws, req) => {
         const url = req.url.replace('/.websocket', '').substr(target.length);
         const id = Date.now() % 100000000;
@@ -149,13 +147,13 @@ export class WebServer extends EventEmitter implements BaseKrasServer {
       this.sockets = expressWs(this.app, this.server, {
         wsOptions: this.wsOptions,
       });
-      const wsServer = (this.sockets.getWss() as WebSocketServer);
-      wsServer.on('connection', socket => {
+      const wsServer = this.sockets.getWss() as WebSocketServer;
+      wsServer.on('connection', (socket) => {
         socket.on('error', (err) => {
           this.emit('error', `Problem with the WS socket connection: ${err}`);
         });
       });
-      wsServer.on('error', err => {
+      wsServer.on('error', (err) => {
         this.emit('error', `Error with WS server: ${err}`);
       });
     }
@@ -227,7 +225,7 @@ export class WebServer extends EventEmitter implements BaseKrasServer {
       return corsHandler(req, res);
     });
 
-    return new Promise<void>(resolve => {
+    return new Promise<void>((resolve) => {
       this.server.listen(this.port, () => {
         this.emit('open', {
           port: this.port,
@@ -241,7 +239,7 @@ export class WebServer extends EventEmitter implements BaseKrasServer {
 
   stop() {
     this.emit('close');
-    return new Promise<void>(resolve => this.server.close(() => resolve()));
+    return new Promise<void>((resolve) => this.server.close(() => resolve()));
   }
 
   broadcast<T>(msg: T) {
@@ -258,7 +256,7 @@ export class WebServer extends EventEmitter implements BaseKrasServer {
       if (socket) {
         const clients = socket.clients;
         this.emit('debug', `Broadcasting to ${clients.size} client(s)`);
-        clients.forEach(client => client.send(data));
+        clients.forEach((client) => client.send(data));
       }
     }
   }

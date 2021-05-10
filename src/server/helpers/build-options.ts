@@ -48,7 +48,7 @@ export function editFileOption(files: Dict<FileInfo>): KrasInjectorOption {
     description: `Toggle or modify the found files without using an external text editor.`,
     title: 'Found Files',
     type: 'file',
-    value: Object.keys(files).map(fileName => getFile(files, fileName)),
+    value: Object.keys(files).map((fileName) => getFile(files, fileName)),
   };
 }
 
@@ -57,6 +57,6 @@ export function editEntryOption<T extends FileInfo>(files: Dict<Array<T>>, desc:
     description: `Modify the found files without using an external text editor or toggle their entries.`,
     title: 'Found Files & Entries',
     type: 'entry',
-    value: Object.keys(files).map(fileName => getEntry(files, fileName, desc)),
+    value: Object.keys(files).map((fileName) => getEntry(files, fileName, desc)),
   };
 }

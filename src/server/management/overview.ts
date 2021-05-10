@@ -79,15 +79,15 @@ export function liveData(server: KrasServer) {
     }
   };
 
-  server.recorder.on('recorded-request', item => {
+  server.recorder.on('recorded-request', (item) => {
     broadcast('request', convertRequest(item));
   });
 
-  server.recorder.on('recorded-message', item => {
+  server.recorder.on('recorded-message', (item) => {
     broadcast('message', convertMessage(item));
   });
 
-  server.recorder.on('recorded-miss', item => {
+  server.recorder.on('recorded-miss', (item) => {
     broadcast('error', convertMiss(item));
   });
 

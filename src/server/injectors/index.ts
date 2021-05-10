@@ -111,8 +111,8 @@ async function tryInjectors(injectors: Array<KrasInjector>, req: KrasRequest): P
   if (injectors.length > 0) {
     const injector = injectors.shift();
     const { ignore, handle } = injector.config || { ignore: undefined, handle: undefined };
-    const ignored = ignore && ignore.some(t => normalizeTarget(t) === req.target);
-    const handled = !handle || handle.some(t => normalizeTarget(t) === req.target);
+    const ignored = ignore && ignore.some((t) => normalizeTarget(t) === req.target);
+    const handled = !handle || handle.some((t) => normalizeTarget(t) === req.target);
     const response = !ignored && handled && (await injector.handle(req));
     return response || tryInjectors(injectors, req);
   }
@@ -121,11 +121,11 @@ async function tryInjectors(injectors: Array<KrasInjector>, req: KrasRequest): P
 }
 
 function handleRequest(server: KrasServer, req: KrasRequest, res: Response) {
-  const injectors = server.injectors.filter(injector => injector.active);
+  const injectors = server.injectors.filter((injector) => injector.active);
 
   server.emit('request', req);
 
-  tryInjectors(injectors, req).then(ans => {
+  tryInjectors(injectors, req).then((ans) => {
     if (!ans) {
       server.emit('missing', req);
       ans = fromMissing(req.url);
@@ -168,11 +168,11 @@ function addInjectorInstance(
 export function withInjectors(server: KrasServer, config: KrasConfiguration) {
   const names = Object.keys(config.injectors);
   const heads = Object.keys(config.map)
-    .map(head => normalizeTarget(head))
+    .map((head) => normalizeTarget(head))
     .sort((a, b) => b.length - a.length);
   const ignored = Object.keys(config.map)
-    .filter(head => config.map[head] === false)
-    .map(head => normalizeTarget(head));
+    .filter((head) => config.map[head] === false)
+    .map((head) => normalizeTarget(head));
   const always = heads.length === 0;
 
   if (injectorDebug) {
@@ -195,7 +195,7 @@ export function withInjectors(server: KrasServer, config: KrasConfiguration) {
   }
 
   server.add({
-    rate: req => {
+    rate: (req) => {
       if (!always) {
         const target = getTarget(heads, req.url);
         const hasTarget = target !== undefined;

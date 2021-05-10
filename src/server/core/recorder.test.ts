@@ -33,7 +33,7 @@ describe('Recorder', () => {
     const A: any = {};
     let count = 0;
 
-    recorder.addListener('recorded-request', item => {
+    recorder.addListener('recorded-request', (item) => {
       count = recorder.requests.length;
       expect(item.request).toBe(A);
     });
@@ -46,7 +46,7 @@ describe('Recorder', () => {
     const A: any = {};
     let count = 0;
 
-    recorder.addListener('recorded-miss', item => {
+    recorder.addListener('recorded-miss', (item) => {
       count = recorder.errors.length;
       expect(item.request).toBe(A);
     });
@@ -59,7 +59,7 @@ describe('Recorder', () => {
     const A: any = { content: {} };
     let count = 0;
 
-    recorder.addListener('recorded-message', item => {
+    recorder.addListener('recorded-message', (item) => {
       count = recorder.messages.length;
       expect(item.content).toBe(A.content);
     });

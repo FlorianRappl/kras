@@ -17,7 +17,7 @@ describe('JsonStore', () => {
   it('select all with filter gets some items', () => {
     const store = open('foo');
     asJson.mockImplementation(() => [1, 2, 3, 4]);
-    const results = store.select(item => item < 3);
+    const results = store.select((item) => item < 3);
     expect(results).toEqual([1, 2]);
   });
 
@@ -25,7 +25,7 @@ describe('JsonStore', () => {
     const store = open('foo');
     store.switchTo('bar');
     let result: string;
-    asJson.mockImplementation(name => {
+    asJson.mockImplementation((name) => {
       result = name;
       return [];
     });
@@ -51,7 +51,7 @@ describe('JsonStore', () => {
     toFile.mockImplementation((file, result) => {
       stored = result;
     });
-    store.delete(item => item === 4);
+    store.delete((item) => item === 4);
     expect(stored).toEqual([1, 2, 3]);
   });
 
@@ -62,7 +62,7 @@ describe('JsonStore', () => {
     toFile.mockImplementation((file, result) => {
       stored = result;
     });
-    store.delete(item => item === 5);
+    store.delete((item) => item === 5);
     expect(stored).toEqual([1, 2, 3, 4]);
   });
 
@@ -73,7 +73,7 @@ describe('JsonStore', () => {
     toFile.mockImplementation((file, result) => {
       stored = true;
     });
-    store.delete(item => item === 5);
+    store.delete((item) => item === 5);
     expect(stored).toBe(false);
   });
 });

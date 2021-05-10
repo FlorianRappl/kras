@@ -59,7 +59,7 @@ function integrateXfwd(
     proto: req.encrypted ? `${protocol}s` : protocol,
   };
 
-  Object.keys(values).forEach(key => {
+  Object.keys(values).forEach((key) => {
     const forwardKey = `x-forwarded-${key}`;
     const forward = headers[forwardKey] || '';
     const sep = forward ? ',' : '';
@@ -80,15 +80,15 @@ export default class ProxyInjector implements KrasInjector {
   constructor(options: KrasInjectorConfig & ProxyInjectorConfig, config: KrasConfiguration, core: EventEmitter) {
     this.config = options;
     this.connectors = Object.keys(config.map)
-      .filter(target => config.map[target] !== false)
-      .map(target => ({
+      .filter((target) => config.map[target] !== false)
+      .map((target) => ({
         target,
         address: config.map[target] as string,
       }));
     this.core = core;
 
-    core.on('user-connected', e => {
-      const [target] = this.connectors.filter(m => m.target === e.target);
+    core.on('user-connected', (e) => {
+      const [target] = this.connectors.filter((m) => m.target === e.target);
 
       if (target) {
         let open = false;
@@ -109,7 +109,7 @@ export default class ProxyInjector implements KrasInjector {
           rejectUnauthorized: false,
           headers,
         });
-        ws.on('error', err => core.emit('error', err));
+        ws.on('error', (err) => core.emit('error', err));
         ws.on('open', () => {
           open = true;
 
@@ -117,11 +117,11 @@ export default class ProxyInjector implements KrasInjector {
             releaseFrom(buffer, ws);
           }
         });
-        ws.on('close', e => {
+        ws.on('close', (e) => {
           open = false;
           core.emit('ws-closed', { reason: e });
         });
-        ws.on('message', data => {
+        ws.on('message', (data) => {
           core.emit('message', { content: data, from: url, to: e.id, remote: true });
           e.ws.send(data, (err: Error) => core.emit('error', err));
         });
@@ -129,7 +129,7 @@ export default class ProxyInjector implements KrasInjector {
           core.emit('message', { content: data, to: url, from: e.id, remote: false });
 
           if (open) {
-            ws.send(data, err => core.emit('error', err));
+            ws.send(data, (err) => core.emit('error', err));
           } else {
             buffer.push({
               time: Date.now(),
@@ -141,7 +141,7 @@ export default class ProxyInjector implements KrasInjector {
       }
     });
 
-    core.on('user-disconnected', e => {
+    core.on('user-disconnected', (e) => {
       const ws = this.sessions[e.id];
       ws && ws.close();
       delete this.sessions[e.id];
@@ -191,7 +191,7 @@ export default class ProxyInjector implements KrasInjector {
     const permitHeaders = (this.config.permitHeaders || []).map(normalizeHeader);
     const injectHeaders = this.config.injectHeaders || {};
     const headerNames = [
-      ...defaultHeaders.filter(header => !discardHeaders.includes(header)),
+      ...defaultHeaders.filter((header) => !discardHeaders.includes(header)),
       ...permitHeaders,
       ...Object.keys(injectHeaders),
     ];
@@ -199,7 +199,7 @@ export default class ProxyInjector implements KrasInjector {
       headers[header] = injectHeaders[header] ?? req.headers[header];
       return headers;
     }, {} as Record<string, string | Array<string>>);
-    const [target] = this.connectors.filter(m => m.target === req.target);
+    const [target] = this.connectors.filter((m) => m.target === req.target);
 
     if (this.config.xfwd) {
       integrateXfwd(headers, 'http', req);
@@ -207,7 +207,7 @@ export default class ProxyInjector implements KrasInjector {
     }
 
     if (target) {
-      return new Promise<KrasAnswer>(resolve =>
+      return new Promise<KrasAnswer>((resolve) =>
         proxyRequest(
           {
             headers,
