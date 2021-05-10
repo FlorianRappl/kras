@@ -1,6 +1,6 @@
 {
   "name": "kras",
-  "version": "0.12.3",
+  "version": "0.13.0",
   "description": "Efficient server proxying and mocking in Node.js.",
   "main": "dist/server/index.js",
   "types": "dist/server/index.d.ts",
@@ -36,6 +36,7 @@
   "contributors": [],
   "license": "MIT",
   "dependencies": {
+    "kras-management-portal": "^0.13.0",
     "yargs": "^15.4.1"
   },
   "peerDependencies": {

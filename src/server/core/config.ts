@@ -1,8 +1,26 @@
-import { resolve } from 'path';
+import { resolve, dirname } from 'path';
 import { existsSync, readFileSync } from 'fs';
 import { rootDir, name, version, currentDir } from '../info';
 import { KrasConfiguration, LogLevel } from '../types';
 import * as chalk from 'chalk';
+
+function getClient(path: string) {
+  if (!existsSync(path)) {
+    const indexPath = resolve(path, 'index.html');
+
+    if (existsSync(indexPath)) {
+      return indexPath;
+    }
+
+    try {
+      const mainPath = require.resolve(path);
+      const mainDir = dirname(mainPath);
+      return resolve(mainDir, 'index.html');
+    } catch {}
+  }
+
+  return path;
+}
 
 export interface ConfigurationOptions {
   name?: string;
@@ -108,7 +126,7 @@ export const defaultConfig = {
   name: `${name} v${version}`,
   port: 9000,
   directory: resolve(currentDir, 'mocks'),
-  client: resolve(rootDir, 'dist', 'client', 'index.html'),
+  client: 'kras-management-portal',
   ssl: {
     cert: resolve(rootDir, 'cert', 'server.crt'),
     key: resolve(rootDir, 'cert', 'server.key'),
@@ -153,6 +171,7 @@ export function buildConfiguration(config: Partial<ConfigurationFile> = {}): Kra
     newMap[newKey] = newConfig.map[oldKey];
   });
 
+  newConfig.client = getClient(newConfig.client);
   newConfig.map = newMap;
   return newConfig;
 }
