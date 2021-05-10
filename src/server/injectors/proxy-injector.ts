@@ -203,7 +203,7 @@ export default class ProxyInjector implements KrasInjector {
 
     if (this.config.xfwd) {
       integrateXfwd(headers, 'http', req);
-      headers['x-forwarded-host'] = headers['x-forwarded-host'] || headers['host'] || '';
+      headers['x-forwarded-host'] = headers['x-forwarded-host'] || headers.host || '';
     }
 
     if (target) {

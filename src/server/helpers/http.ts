@@ -5,6 +5,6 @@ export function isEncrypted(req: any) {
 }
 
 export function getPort(req: Request) {
-  var res = req.headers.host ? req.headers.host.match(/:(\d+)/) : '';
+  const res = req.headers.host ? req.headers.host.match(/:(\d+)/) : '';
   return res ? res[1] : isEncrypted(req) ? '443' : '80';
 }

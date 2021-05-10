@@ -73,7 +73,7 @@ function normalizeRequest(targets: Array<string>, req: Request): KrasRequest {
   const headers = Object.assign({}, req.headers) as Record<string, string>;
   let content: any;
   if (req.headers['content-type'] && req.headers['content-type'].search('multipart/form-data') !== -1) {
-    let formData = new FormData();
+    const formData = new FormData();
     typeof req.body === 'object' &&
       Object.keys(req.body).map((field: any) => {
         return formData.append(field, req.body[field]);
