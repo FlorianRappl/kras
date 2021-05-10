@@ -1,26 +1,8 @@
-import { resolve, dirname } from 'path';
+import { resolve } from 'path';
 import { existsSync, readFileSync } from 'fs';
 import { rootDir, name, version, currentDir } from '../info';
 import { KrasConfiguration, LogLevel } from '../types';
 import * as chalk from 'chalk';
-
-function getClient(path: string) {
-  if (!existsSync(path)) {
-    const indexPath = resolve(path, 'index.html');
-
-    if (existsSync(indexPath)) {
-      return indexPath;
-    }
-
-    try {
-      const mainPath = require.resolve(path);
-      const mainDir = dirname(mainPath);
-      return resolve(mainDir, 'index.html');
-    } catch {}
-  }
-
-  return path;
-}
 
 export interface ConfigurationOptions {
   name?: string;
@@ -171,7 +153,6 @@ export function buildConfiguration(config: Partial<ConfigurationFile> = {}): Kra
     newMap[newKey] = newConfig.map[oldKey];
   });
 
-  newConfig.client = getClient(newConfig.client);
   newConfig.map = newMap;
   return newConfig;
 }
