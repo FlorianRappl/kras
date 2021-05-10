@@ -1,15 +1,13 @@
 module.exports = {
-  setupFiles: ['./test/setup.ts'],
   transform: {
-    '^.+\\.(ts|tsx?)$': 'ts-jest',
+    '^.+\\.ts$': 'ts-jest',
   },
   testURL: 'http://localhost',
-  snapshotSerializers: ['enzyme-to-json/serializer'],
-  testRegex: '(/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$',
-  moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json'],
+  testRegex: '(/__tests__/.*|(\\.|/)(test|spec))\\.(js|ts)$',
+  moduleFileExtensions: ['ts', 'js', 'json'],
   globals: {
     'ts-jest': {
-      diagnostics: false
+      diagnostics: false,
     },
   },
 };

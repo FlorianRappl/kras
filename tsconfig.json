@@ -16,7 +16,6 @@
   ],
   "exclude": [
     "node_modules/**/*",
-    "src/client/**/*.test.tsx",
-    "src/server/**/*.test.ts"
+    "src/**/*.test.ts"
   ]
 }
