@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.13.0
+
+- Extracted the frontend to the `kras-management-portal` package
+- Made the frontend easily exchangeable via the `.krasrc`
+
 ## 0.12.3
 
 - Added support for `multipart/form-data` file upload
