@@ -1,6 +1,6 @@
 # kras
 
-[![Build Status](https://travis-ci.org/FlorianRappl/kras.svg?branch=master)](https://travis-ci.org/FlorianRappl/kras)
+[![Build Status](https://github.com/FlorianRappl/kras/actions/workflows/node.js.yml/badge.svg)](https://github.com/FlorianRappl/kras/actions)
 [![npm](https://img.shields.io/npm/v/kras.svg)](https://www.npmjs.com/package/kras)
 [![node](https://img.shields.io/node/v/kras.svg)](https://www.npmjs.com/package/kras)
 [![GitHub tag](https://img.shields.io/github/tag/FlorianRappl/kras.svg)](https://github.com/FlorianRappl/kras/releases)

@@ -1,0 +1,80 @@
+name: Build Management
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [develop]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: "14.x"
+          registry-url: "https://registry.npmjs.org"
+      - name: Lint Package
+        run: npm run lint
+      - name: Test Package
+        run: npm run test
+      - name: Verify Building Package
+        run: npm run build
+
+  pre_release:
+    runs-on: ubuntu-latest
+
+    needs: build
+
+    if: ${{ github.ref == 'refs/heads/develop' && github.event_name == ‘push’ }}
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: "14.x"
+          registry-url: "https://registry.npmjs.org"
+      - name: Make Pre-Version
+        run: npm version $(node -e "console.log(require('./package.json').version)")-pre.${{ github.run_number }}
+      - name: Build Package
+        run: npm run build
+      - name: Publish Package
+        run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+
+  release:
+    runs-on: ubuntu-latest
+
+    needs: build
+
+    if: ${{ github.ref == 'refs/heads/main' && github.event_name == ‘push’ }}
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: "14.x"
+          registry-url: "https://registry.npmjs.org"
+      - name: Build Package
+        run: npm run build
+      - name: Publish Package
+        run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+      - name: Create tag for release
+        uses: actions/github-script@v3
+        with:
+          github-token: ${{ github.token }}
+          script: |
+            github.git.createRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: `refs/tags/v${require('./package.json').version}`,
+              sha: context.sha
+            })
