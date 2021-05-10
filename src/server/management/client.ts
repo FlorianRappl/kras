@@ -3,11 +3,15 @@ import { existsSync } from 'fs';
 import { Request, Response } from 'express';
 import { KrasConfiguration, KrasServer } from '../types';
 
+// this only exists to trick "ncc" -> otherwise it tries to resolve it
+// directly at compile-time
+const indexHtml = [0].map(() => 'index.html').pop();
+
 function getClient(cwd: string, path: string) {
   const fullPath = resolve(cwd, path);
 
   if (!existsSync(fullPath)) {
-    const indexPath = resolve(fullPath, 'index.html');
+    const indexPath = resolve(fullPath, indexHtml);
 
     if (existsSync(indexPath)) {
       return indexPath;
@@ -18,7 +22,7 @@ function getClient(cwd: string, path: string) {
         paths: [__dirname, process.cwd(), cwd],
       });
       const mainDir = dirname(mainPath);
-      return resolve(mainDir, 'index.html');
+      return resolve(mainDir, indexHtml);
     } catch {}
   }
 
