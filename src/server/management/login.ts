@@ -1,7 +1,7 @@
+import * as providers from '../auth';
 import { Request, Response } from 'express';
 import { parse } from 'url';
 import { KrasServer, KrasConfiguration, KrasServerHandler, KrasServerMethods } from '../types';
-import * as providers from '../auth';
 
 const bearer = 'Bearer ';
 

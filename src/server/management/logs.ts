@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
-import { KrasServer, KrasWebSocket } from '../types';
 import { filterReverse } from '../helpers';
+import { KrasServer, KrasWebSocket } from '../types';
 
 const maxEntries = 50;
 
