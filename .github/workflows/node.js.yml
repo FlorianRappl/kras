@@ -43,7 +43,7 @@ jobs:
       - name: Install Dependencies
         run: npm install
       - name: Make Pre-Version
-        run: npm version $(node -e "console.log(require('./package.json').version)")-pre.${{ github.run_number }}
+        run: npm version $(node -e "console.log(require('./package.json').version)")-pre.${{ github.run_number }} --no-git-tag-version
       - name: Build Package
         run: npm run build
       - name: Publish Package
