@@ -81,6 +81,6 @@ jobs:
             github.git.createRef({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              ref: `refs/tags/v${require('./package.json').version}`,
+              ref: `refs/tags/v${require(require('path').resolve(process.env.GITHUB_WORKSPACE, 'package.json')).version}`,
               sha: context.sha
             })
