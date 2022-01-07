@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.13.1
+
+- Added support for POST requests with query strings (#48)
+- Updated dependencies
+
 ## 0.13.0
 
 - Extracted the frontend to the `kras-management-portal` package
