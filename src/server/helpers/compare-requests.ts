@@ -43,7 +43,9 @@ function serializedUrl(a: BasicKrasRequest) {
       return keys;
     }, [])
     .join('&');
-  return a.method.toLowerCase() === 'get' && queryString ? `${a.url}?${queryString}` : a.url;
+  return (a.method.toLowerCase() === 'get' || a.method.toLowerCase() === 'post') && queryString
+    ? `${a.url}?${queryString}`
+    : a.url;
 }
 
 export function compareRequests(a: BasicKrasRequest, b: BasicKrasRequest) {
