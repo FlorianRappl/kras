@@ -30,7 +30,7 @@ const argv = yargs
   .help('h')
   .alias('h', 'help')
   .describe('h', 'Shows the argument descriptions')
-  .epilog(`Copyright (c) 2018 - 2021 ${author}`).argv;
+  .epilog(`Copyright (c) 2018 - 2022 ${author}`).argv;
 
 runFromCli(
   {

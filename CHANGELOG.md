@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.13.2
+
+- Updated license year
+
 ## 0.13.1
 
 - Added support for POST requests with query strings (#48)
