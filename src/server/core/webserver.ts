@@ -96,7 +96,11 @@ export class WebServer extends EventEmitter implements BaseKrasServer {
     this.server = ssl ? createHttpsServer(ssl, this.app) : createHttpServer(this.app);
     this.wsOptions = typeof config.ws === 'object' ? config.ws : undefined;
     this.ws = !!config.ws;
-    const upload = multer({ storage: multer.memoryStorage(), limits: { files: 5, fileSize: 10 * 1024 * 1024 } });
+    const fileSizeLimit = (process.env.FILE_SIZE_LIMIT && parseInt(process.env.FILE_SIZE_LIMIT, 10)) || 10;
+    const upload = multer({
+      storage: multer.memoryStorage(),
+      limits: { files: 5, fileSize: fileSizeLimit * 1024 * 1024 },
+    });
     this.app.use(upload.any());
     this.app.use(
       text({
