@@ -2,6 +2,7 @@
 
 ## 0.13.2
 
+- Added configurable file size limit (#50)
 - Updated license year
 
 ## 0.13.1

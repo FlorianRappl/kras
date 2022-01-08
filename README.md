@@ -77,6 +77,8 @@ The `.krasrc` is a simple JSON format. An example is the following configuration
   "name": "kras",
   "port": 9000,
   "directory": ".",
+  "uploadLimit": 10,
+  "logLevel": "error",
   "ssl": {
     "cert": "cert/server.crt",
     "key": "cert/server.key"

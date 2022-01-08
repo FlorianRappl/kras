@@ -113,6 +113,7 @@ export const defaultConfig = {
     cert: resolve(rootDir, 'cert', 'server.crt'),
     key: resolve(rootDir, 'cert', 'server.key'),
   },
+  uploadLimit: parseInt(process.env.FILE_SIZE_LIMIT, 10) || 10, // default: 10 MB
   logLevel: 'error',
   api: '/manage',
   ws: true,

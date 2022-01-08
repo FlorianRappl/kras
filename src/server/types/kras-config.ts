@@ -14,6 +14,7 @@ export interface WebServerConfiguration extends AppConfiguration {
   map: WebServerConfigurationMap;
   ssl: SslConfiguration;
   ws: boolean | Dict<any>;
+  uploadLimit: number;
   port: number;
 }
 
