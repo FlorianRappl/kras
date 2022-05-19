@@ -46,10 +46,7 @@ runFromCli(
     skipApi: argv['skip-api'],
     initial: {
       map: argv.map,
-      injectorDirs: [
-        argv.d,
-        process.cwd(),
-      ],
+      injectorDirs: [argv.d, process.cwd()],
       injectors: {
         script: {
           active: true,

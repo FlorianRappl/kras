@@ -188,7 +188,7 @@ describe('Configuration', () => {
                 active: false,
               },
             },
-          }
+          },
         },
         {
           name: 'A',
