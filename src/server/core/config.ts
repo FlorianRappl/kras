@@ -77,7 +77,21 @@ function mergeObjects<T>(
     const value = select(source);
 
     if (value && typeof value === 'object') {
-      Object.assign(obj, value);
+      Object.keys(value).forEach((key) => {
+        const oldItem = obj[key];
+        const newItem = value[key];
+
+        if (newItem === undefined) {
+          delete obj[key];
+        } else if (typeof oldItem === 'object') {
+          obj[key] = {
+            ...oldItem,
+            ...newItem,
+          };
+        } else {
+          obj[key] = newItem;
+        }
+      });
     }
   }
 }
@@ -86,6 +100,7 @@ function mergeArrays<T>(
   target: Partial<KrasConfiguration>,
   sources: Array<Partial<KrasConfiguration>>,
   select: (config: Partial<KrasConfiguration>) => Array<T>,
+  compare: (item1: T, item2: T) => boolean,
 ) {
   const arr = select(target);
 
@@ -93,6 +108,16 @@ function mergeArrays<T>(
     const value = select(source);
 
     if (value && Array.isArray(value)) {
+      for (let i = arr.length; i--; ) {
+        const a = arr[i];
+
+        for (const b of value) {
+          if (compare(a, b)) {
+            arr.splice(i, 1);
+          }
+        }
+      }
+
       arr.push(...value);
     }
   }
@@ -141,8 +166,18 @@ export function mergeConfiguration(
 
   mergeObjects(result, sources, (m) => m.injectors);
   mergeObjects(result, sources, (m) => m.map);
-  mergeArrays(result, sources, (m) => m.sources);
-  mergeArrays(result, sources, (m) => m.middlewares);
+  mergeArrays(
+    result,
+    sources,
+    (m) => m.sources,
+    (a, b) => a === b,
+  );
+  mergeArrays(
+    result,
+    sources,
+    (m) => m.middlewares,
+    (a, b) => a.source === b.source,
+  );
 
   return result;
 }

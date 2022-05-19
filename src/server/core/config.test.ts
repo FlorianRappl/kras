@@ -126,5 +126,78 @@ describe('Configuration', () => {
         sources: [],
       });
     });
+
+    it('should merge multiple configs w.r.t. injectors correctly', () => {
+      const config = mergeConfiguration(
+        {},
+        {
+          name: 'A',
+        },
+        {
+          name: 'B',
+          injectors: {
+            a: {},
+            c: {
+              active: false,
+            },
+            d: {},
+          },
+        },
+        {
+          name: 'C',
+          injectors: {
+            b: {},
+            c: {
+              active: true,
+            },
+            d: undefined,
+          },
+        },
+      );
+      expect(config).toEqual({
+        name: 'C',
+        injectors: {
+          a: {},
+          b: {},
+          c: {
+            active: true,
+          },
+        },
+        map: {},
+        middlewares: [],
+        sources: [],
+      });
+    });
+
+    it('should merge multiple configs w.r.t. map correctly', () => {
+      const config = mergeConfiguration(
+        {},
+        {
+          name: 'A',
+          map: {
+            '/': 'foo',
+            '/q': 'x',
+          },
+        },
+        {
+          name: 'B',
+          map: {
+            '/': '',
+            '/bar': 'bar',
+          },
+        },
+      );
+      expect(config).toEqual({
+        name: 'B',
+        injectors: {},
+        map: {
+          '/': '',
+          '/q': 'x',
+          '/bar': 'bar',
+        },
+        middlewares: [],
+        sources: [],
+      });
+    });
   });
 });
