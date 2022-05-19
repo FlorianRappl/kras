@@ -59,7 +59,7 @@ export class MockServer extends MockServerCore implements KrasServer {
     super(config);
 
     this.logLevel = config.logLevel || 'error';
-    this.on('error', e => this.log('error', e));
+    this.on('error', (e) => this.log('error', e));
 
     if (config.api === false) {
       this.recorder.disable();
@@ -90,9 +90,9 @@ export function readKrasConfig(options?: ConfigurationOptions, ...files: Array<s
   const dir = options.dir ? resolve(currentDir, options.dir) : currentDir;
   const configurations = files
     .filter(Boolean)
-    .map(file => resolve(dir, file))
+    .map((file) => resolve(dir, file))
     .filter(isUnique)
-    .map(path => readConfiguration(path));
+    .map((path) => readConfiguration(path));
   return mergeConfiguration(options, ...configurations);
 }
 
@@ -127,7 +127,7 @@ export function runWithKras(cb: KrasRunner, config?: KrasRuntimeConfiguration) {
 }
 
 export function connectToCli(server: MockServer, canManage = true) {
-  server.on('open', svc => {
+  server.on('open', (svc) => {
     const port = chalk.green(svc.port);
     const protocol = svc.protocol;
     const server = `${protocol}://localhost:${port}`;
@@ -139,59 +139,59 @@ export function connectToCli(server: MockServer, canManage = true) {
     }
   });
 
-  server.on('close', svc => {
+  server.on('close', (svc) => {
     console.log(`Connection to server closed.`);
   });
 
-  server.on('user-connected', msg => {
+  server.on('user-connected', (msg) => {
     if (isDebug(server.logLevel)) {
       console.log(`${chalk.green('WS')} + ${chalk.white(info(msg.id))}`);
     }
   });
 
-  server.on('user-disconnected', msg => {
+  server.on('user-disconnected', (msg) => {
     if (isDebug(server.logLevel)) {
       console.log(`${chalk.green('WS')} - ${chalk.white(info(msg.id))}`);
     }
   });
 
-  server.on('message', msg => {
+  server.on('message', (msg) => {
     if (isDebug(server.logLevel)) {
       console.log(`${chalk.green('WS')} << ${chalk.white(info(msg.content))}`);
     }
   });
 
-  server.on('broadcast', msg => {
+  server.on('broadcast', (msg) => {
     if (isInfo(server.logLevel)) {
       console.log(`${chalk.green('WS')} >> ${chalk.white(info(msg.content))}`);
     }
   });
 
-  server.on('missing', req => {
+  server.on('missing', (req) => {
     if (isError(server.logLevel)) {
       console.log(`${chalk.yellow(req.method)} ${chalk.gray(req.target)}${chalk.white(req.url)}`);
     }
   });
 
-  server.on('request', req => {
+  server.on('request', (req) => {
     if (isDebug(server.logLevel)) {
       console.log(`${chalk.green(req.method)} ${chalk.gray(req.target)}${chalk.white(req.url)}`);
     }
   });
 
-  server.on('error', msg => {
+  server.on('error', (msg) => {
     if (isError(server.logLevel)) {
       console.log(`${chalk.red('ERR')} ${chalk.white(msg)}`);
     }
   });
 
-  server.on('debug', msg => {
+  server.on('debug', (msg) => {
     if (isDebug(server.logLevel)) {
       console.log(`${chalk.yellow('DBG')} ${chalk.white(msg)}`);
     }
   });
 
-  server.on('info', msg => {
+  server.on('info', (msg) => {
     if (isInfo(server.logLevel)) {
       console.log(`${chalk.bgWhite(chalk.black('INF'))} ${chalk.white(msg)}`);
     }

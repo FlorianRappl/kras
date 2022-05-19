@@ -38,7 +38,7 @@ export function makePathsAbsolute(baseDir: string, config: ConfigurationFile) {
         if (typeof directory === 'string') {
           injector.directory = resolve(baseDir, directory);
         } else if (Array.isArray(directory)) {
-          injector.directory = directory.map(dir => resolve(baseDir, dir));
+          injector.directory = directory.map((dir) => resolve(baseDir, dir));
         }
       }
     }
@@ -139,10 +139,10 @@ export function mergeConfiguration(
     result.port = options.port;
   }
 
-  mergeObjects(result, sources, m => m.injectors);
-  mergeObjects(result, sources, m => m.map);
-  mergeArrays(result, sources, m => m.sources);
-  mergeArrays(result, sources, m => m.middlewares);
+  mergeObjects(result, sources, (m) => m.injectors);
+  mergeObjects(result, sources, (m) => m.map);
+  mergeArrays(result, sources, (m) => m.sources);
+  mergeArrays(result, sources, (m) => m.middlewares);
 
   return result;
 }
@@ -171,7 +171,7 @@ export function buildConfiguration(config: Partial<ConfigurationFile> = {}): Kra
   const newConfig = Object.assign({}, defaultConfig, config);
   const newMap: Record<string, any> = {};
 
-  Object.keys(newConfig.map || {}).forEach(oldKey => {
+  Object.keys(newConfig.map || {}).forEach((oldKey) => {
     const newKey = oldKey.replace(/\/+$/, '');
     newMap[newKey] = newConfig.map[oldKey];
   });
