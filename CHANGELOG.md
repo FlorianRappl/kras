@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.14.0
+
+- Allow specifying multiple input files for using `readKrasConfig`
+- Removed automatic use of global krasrc file in programmatic API
+- Improved merging of kras configurations
+- Updated dependencies
+
 ## 0.13.2
 
 - Added configurable file size limit (#50)

@@ -26,6 +26,9 @@ const argv = yargs
   .choices('l', ['info', 'debug', 'error'])
   .boolean('skip-api')
   .describe('skip-api', 'If set avoids creating the management API endpoint')
+  .option('map', {})
+  .describe('map', 'Sets the different mappings, e.g., "--map./=https://httpbin.org"; can be used multiple times')
+  .default('map', {})
   .version()
   .help('h')
   .alias('h', 'help')
@@ -41,6 +44,28 @@ runFromCli(
     key: argv.key,
     dir: argv.d,
     skipApi: argv['skip-api'],
+    initial: {
+      map: argv.map,
+      injectors: {
+        script: {
+          active: true,
+        },
+        har: {
+          active: true,
+          delay: false,
+        },
+        json: {
+          active: true,
+          randomize: true,
+        },
+        proxy: {
+          active: true,
+        },
+        store: {
+          active: false,
+        },
+      },
+    },
   },
   argv.c,
 );

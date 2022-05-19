@@ -38,9 +38,14 @@ export interface KrasInjectorConfig {
   ignore?: Array<string>;
   /**
    * Optionally sets explicitly the targets to handle.
-   * Otherwise, all targeta are handled.
+   * Otherwise, all targets are handled.
    */
   handle?: Array<string>;
+  /**
+   * Defines some additional configurations which are then
+   * handled by the specific injector.
+   */
+  [config: string]: any;
 }
 
 export type KrasResult = KrasAnswer | void;

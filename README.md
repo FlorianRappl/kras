@@ -56,18 +56,37 @@ The following animation shows the first-time experience, where the default confi
 
 ## Configuration
 
-kras uses configuration files and command line options to be properly configured. The configuration files are named `.krasrc` and are looked up in the following order: home directory, local directory, via the command line specified configuration file. Configuration options are merged from left to right.
+kras uses configuration files and command line options to be properly configured. The configuration files are named `.krasrc` and are looked up in the following order:
+
+1. home directory
+2. local directory
+3. via the command line specified configuration file
+
+Configuration options are in general flat merged from left to right. Special properties, such as `middlewares`, `injectors`, `map`, or `sources` are merged (one-level deep) and not overwritten.
+
+```sh
+npx kras --help
+```
 
 If specified the command line options have higher precedence. The following options exist.
 
 ```plain
-  -c, --config  Sets the configuration file to use, by default .krasrc  [string]
-  -p, --port    Sets the port of the server, by default 9000            [number]
-  -n, --name    Sets the name of the server, by default kras v0.1.3     [string]
-  -d, --dir     Sets the base directory of the server, by default ...   [string]
-  --cert        Sets the certificate of the server, by default ...      [string]
-  --key         Sets the key of the server, by default ...              [string]
-  --skip-api    Sets the management API to be inaccessible              [toggle]
+  -c, --config     Sets the configuration file to use, by default .krasrc
+                                                                        [string]
+  -p, --port       Sets the port of the server, by default 9000         [number]
+  -n, --name       Sets the name of the server, by default kras v0.14.0 [string]
+  -d, --dir        Sets the base directory of the server, by default
+                   /home/rapplf/Code/Piral/kras/mocks                   [string]
+  --cert           Sets the certificate of the server, by default
+                   /home/rapplf/Code/Piral/kras/cert/server.crt         [string]
+  --key            Sets the key of the server, by default
+                   /home/rapplf/Code/Piral/kras/cert/server.key         [string]
+  -l, --log-level  Sets the log level of the application, by default error
+                                             [choices: "info", "debug", "error"]
+  --skip-api       If set avoids creating the management API endpoint  [boolean]
+  --map            Sets the different mappings, e.g.,
+                   "--map./=https://httpbin.org"; can be used multiple times
+                                                                   [default: {}]
 ```
 
 The `.krasrc` is a simple JSON format. An example is the following configuration:
@@ -113,6 +132,14 @@ The `.krasrc` is a simple JSON format. An example is the following configuration
   }
 }
 ```
+
+Pretty much everything can also be configured from the CLI, e.g.:
+
+```sh
+npx kras --map./=https://httpbin.org --map./api=https://jsonplaceholder.typicode.com --map./events=ws://demos.kaazing.com/echo
+```
+
+For more information regarding the CLI options use `--help` as written above.
 
 Directory paths are always resolved to an absolute with respect to the location of the containing configuration file. The injector sections are actually dynamic settings that are transported as-is to the respective injector. An injector is just a request handler, which may know how to get an answer to the current request.
 

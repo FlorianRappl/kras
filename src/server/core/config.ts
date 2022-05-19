@@ -1,7 +1,7 @@
-import { resolve } from 'path';
+import { resolve, dirname } from 'path';
 import { existsSync, readFileSync } from 'fs';
 import { rootDir, name, version, currentDir } from '../info';
-import { KrasConfiguration, LogLevel } from '../types';
+import { Dict, KrasConfiguration, LogLevel } from '../types';
 import * as chalk from 'chalk';
 
 export interface ConfigurationOptions {
@@ -12,6 +12,8 @@ export interface ConfigurationOptions {
   cert?: string;
   key?: string;
   skipApi?: boolean;
+  initial?: Partial<KrasConfiguration>;
+  required?: Partial<KrasConfiguration>;
 }
 
 export interface ConfigurationFile {
@@ -36,72 +38,113 @@ export function makePathsAbsolute(baseDir: string, config: ConfigurationFile) {
         if (typeof directory === 'string') {
           injector.directory = resolve(baseDir, directory);
         } else if (Array.isArray(directory)) {
-          injector.directory = directory.map((dir) => resolve(baseDir, dir));
+          injector.directory = directory.map(dir => resolve(baseDir, dir));
         }
       }
     }
   }
 }
 
-export function readConfiguration(dir: string, file: string): ConfigurationFile {
-  if (file) {
-    const p = resolve(dir, file);
+export function readConfiguration(path: string): ConfigurationFile {
+  if (path && existsSync(path)) {
+    const dir = dirname(path);
 
-    if (existsSync(p)) {
-      try {
-        const content = readFileSync(p, 'utf8');
-        const config = JSON.parse(content);
+    try {
+      const content = readFileSync(path, 'utf8');
+      const config = JSON.parse(content);
 
-        if (config) {
-          makePathsAbsolute(dir, config);
-          return config;
-        }
-      } catch (e) {
-        const msg = `Error reading configuration from ${file} in ${dir}: ${e}`;
-        throw new Error(`${chalk.red('ERR')} ${chalk.white(msg)}`);
+      if (config) {
+        makePathsAbsolute(dir, config);
+        return config;
       }
+    } catch (e) {
+      const msg = `Error reading configuration from "${path}" in "${dir}": ${e}`;
+      throw new Error(`${chalk.red('ERR')} ${chalk.white(msg)}`);
     }
   }
 
   return {};
 }
 
-export function mergeConfiguration(
-  options?: ConfigurationOptions,
-  ...configs: Array<ConfigurationFile>
-): KrasConfiguration {
-  const config: KrasConfiguration = Object.assign({}, ...configs);
+function mergeObjects<T>(
+  target: Partial<KrasConfiguration>,
+  sources: Array<Partial<KrasConfiguration>>,
+  select: (config: Partial<KrasConfiguration>) => Dict<T>,
+) {
+  const obj = select(target);
 
-  if (options) {
-    if (options.cert !== undefined || options.key !== undefined) {
-      config.ssl = {
-        cert: options.cert || (config.ssl && config.ssl.cert),
-        key: options.key || (config.ssl && config.ssl.key),
-      };
-    }
+  for (const source of sources) {
+    const value = select(source);
 
-    if (options.skipApi) {
-      config.api = false;
-    }
-
-    if (options.logs) {
-      config.logLevel = options.logs;
-    }
-
-    if (options.dir) {
-      config.directory = options.dir;
-    }
-
-    if (options.name) {
-      config.name = options.name;
-    }
-
-    if (options.port) {
-      config.port = options.port;
+    if (value && typeof value === 'object') {
+      Object.assign(obj, value);
     }
   }
+}
 
-  return config;
+function mergeArrays<T>(
+  target: Partial<KrasConfiguration>,
+  sources: Array<Partial<KrasConfiguration>>,
+  select: (config: Partial<KrasConfiguration>) => Array<T>,
+) {
+  const arr = select(target);
+
+  for (const source of sources) {
+    const value = select(source);
+
+    if (value && Array.isArray(value)) {
+      arr.push(...value);
+    }
+  }
+}
+
+export function mergeConfiguration(
+  options: ConfigurationOptions = {},
+  ...configs: Array<ConfigurationFile>
+): KrasConfiguration {
+  const { initial = {}, required = {} } = options;
+  const empty: Partial<KrasConfiguration> = {
+    map: {},
+    sources: [],
+    injectors: {},
+    middlewares: [],
+  };
+  const sources = [initial, ...configs, required, empty];
+  const result: KrasConfiguration = Object.assign({}, ...sources);
+
+  if (options.cert !== undefined || options.key !== undefined) {
+    result.ssl = {
+      cert: options.cert || (result.ssl && result.ssl.cert),
+      key: options.key || (result.ssl && result.ssl.key),
+    };
+  }
+
+  if (options.skipApi) {
+    result.api = false;
+  }
+
+  if (options.logs) {
+    result.logLevel = options.logs;
+  }
+
+  if (options.dir) {
+    result.directory = options.dir;
+  }
+
+  if (options.name) {
+    result.name = options.name;
+  }
+
+  if (options.port) {
+    result.port = options.port;
+  }
+
+  mergeObjects(result, sources, m => m.injectors);
+  mergeObjects(result, sources, m => m.map);
+  mergeArrays(result, sources, m => m.sources);
+  mergeArrays(result, sources, m => m.middlewares);
+
+  return result;
 }
 
 export const defaultConfig = {
@@ -117,39 +160,18 @@ export const defaultConfig = {
   logLevel: 'error',
   api: '/manage',
   ws: true,
-  map: {
-    '': 'https://httpbin.org',
-    '/api': 'https://jsonplaceholder.typicode.com',
-    '/events': 'ws://demos.kaazing.com/echo',
-  },
+  map: {},
   auth: undefined,
   middlewares: [],
-  injectors: {
-    script: {
-      active: true,
-    },
-    har: {
-      active: true,
-      delay: false,
-    },
-    json: {
-      active: true,
-      randomize: true,
-    },
-    proxy: {
-      active: true,
-    },
-    store: {
-      active: false,
-    },
-  },
+  sources: [],
+  injectors: {},
 } as KrasConfiguration;
 
 export function buildConfiguration(config: Partial<ConfigurationFile> = {}): KrasConfiguration {
   const newConfig = Object.assign({}, defaultConfig, config);
   const newMap: Record<string, any> = {};
 
-  Object.keys(newConfig.map || {}).forEach((oldKey) => {
+  Object.keys(newConfig.map || {}).forEach(oldKey => {
     const newKey = oldKey.replace(/\/+$/, '');
     newMap[newKey] = newConfig.map[oldKey];
   });

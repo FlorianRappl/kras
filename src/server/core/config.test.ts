@@ -71,7 +71,12 @@ describe('Configuration', () => {
         dir: undefined,
         port: undefined,
       });
-      expect(config).toEqual({});
+      expect(config).toEqual({
+        injectors: {},
+        map: {},
+        middlewares: [],
+        sources: [],
+      });
     });
 
     it('should work with a single configuration and no options', () => {
@@ -91,6 +96,10 @@ describe('Configuration', () => {
       expect(config).toEqual({
         name: 'foo',
         directory: 'bar',
+        injectors: {},
+        map: {},
+        middlewares: [],
+        sources: [],
       });
     });
 
@@ -111,6 +120,10 @@ describe('Configuration', () => {
       expect(config).toEqual({
         name: 'Aff',
         directory: 'Boo',
+        injectors: {},
+        map: {},
+        middlewares: [],
+        sources: [],
       });
     });
   });
