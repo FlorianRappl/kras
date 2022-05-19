@@ -67,11 +67,10 @@ export function readConfiguration(path: string): ConfigurationFile {
 }
 
 function mergeObjects<T>(
-  target: Partial<KrasConfiguration>,
   sources: Array<Partial<KrasConfiguration>>,
   select: (config: Partial<KrasConfiguration>) => Dict<T>,
 ) {
-  const obj = select(target);
+  const obj: Dict<T> = {};
 
   for (const source of sources) {
     const value = select(source);
@@ -94,15 +93,16 @@ function mergeObjects<T>(
       });
     }
   }
+
+  return obj;
 }
 
 function mergeArrays<T>(
-  target: Partial<KrasConfiguration>,
   sources: Array<Partial<KrasConfiguration>>,
   select: (config: Partial<KrasConfiguration>) => Array<T>,
   compare: (item1: T, item2: T) => boolean,
 ) {
-  const arr = select(target);
+  const arr: Array<T> = [];
 
   for (const source of sources) {
     const value = select(source);
@@ -121,6 +121,8 @@ function mergeArrays<T>(
       arr.push(...value);
     }
   }
+
+  return arr;
 }
 
 export function mergeConfiguration(
@@ -128,14 +130,7 @@ export function mergeConfiguration(
   ...configs: Array<ConfigurationFile>
 ): KrasConfiguration {
   const { initial = {}, required = {} } = options;
-  const empty: Partial<KrasConfiguration> = {
-    map: {},
-    sources: [],
-    injectors: {},
-    middlewares: [],
-    injectorDirs: [],
-  };
-  const sources = [initial, ...configs, required, empty];
+  const sources = [initial, ...configs, required];
   const result: KrasConfiguration = Object.assign({}, ...sources);
 
   if (options.cert !== undefined || options.key !== undefined) {
@@ -165,22 +160,19 @@ export function mergeConfiguration(
     result.port = options.port;
   }
 
-  mergeObjects(result, sources, (m) => m.injectors);
-  mergeObjects(result, sources, (m) => m.map);
-  mergeArrays(
-    result,
+  result.injectors = mergeObjects(sources, (m) => m.injectors);
+  result.map = mergeObjects(sources, (m) => m.map);
+  result.sources = mergeArrays(
     sources,
     (m) => m.sources,
     (a, b) => a === b,
   );
-  mergeArrays(
-    result,
+  result.injectorDirs = mergeArrays(
     sources,
     (m) => m.injectorDirs,
     (a, b) => a === b,
   );
-  mergeArrays(
-    result,
+  result.middlewares = mergeArrays(
     sources,
     (m) => m.middlewares,
     (a, b) => a.source === b.source,
