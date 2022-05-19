@@ -76,6 +76,7 @@ describe('Configuration', () => {
         map: {},
         middlewares: [],
         sources: [],
+        injectorDirs: [],
       });
     });
 
@@ -100,6 +101,7 @@ describe('Configuration', () => {
         map: {},
         middlewares: [],
         sources: [],
+        injectorDirs: [],
       });
     });
 
@@ -124,6 +126,7 @@ describe('Configuration', () => {
         map: {},
         middlewares: [],
         sources: [],
+        injectorDirs: [],
       });
     });
 
@@ -166,6 +169,68 @@ describe('Configuration', () => {
         map: {},
         middlewares: [],
         sources: [],
+        injectorDirs: [],
+      });
+    });
+
+    it('should merge multiple configs with an initial config correctly', () => {
+      const config = mergeConfiguration(
+        {
+          initial: {
+            injectors: {
+              a: {
+                active: true,
+              },
+              b: {
+                active: false,
+              },
+              c: {
+                active: false,
+              },
+            },
+          }
+        },
+        {
+          name: 'A',
+        },
+        {
+          name: 'B',
+          injectors: {
+            a: {},
+            c: {
+              active: false,
+            },
+            d: {},
+          },
+        },
+        {
+          name: 'C',
+          injectors: {
+            b: {},
+            c: {
+              active: true,
+            },
+            d: undefined,
+          },
+        },
+      );
+      expect(config).toEqual({
+        name: 'C',
+        injectors: {
+          a: {
+            active: true,
+          },
+          b: {
+            active: false,
+          },
+          c: {
+            active: true,
+          },
+        },
+        map: {},
+        middlewares: [],
+        sources: [],
+        injectorDirs: [],
       });
     });
 
@@ -197,6 +262,7 @@ describe('Configuration', () => {
         },
         middlewares: [],
         sources: [],
+        injectorDirs: [],
       });
     });
   });

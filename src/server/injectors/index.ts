@@ -1,3 +1,4 @@
+import * as FormData from 'form-data';
 import { existsSync } from 'fs';
 import { resolve, basename } from 'path';
 import { EventEmitter } from 'events';
@@ -6,7 +7,7 @@ import { parse } from 'url';
 import { fromMissing, isEncrypted, getPort } from '../helpers';
 import { injectorDebug, injectorConfig, injectorMain } from '../info';
 import { KrasConfiguration, KrasServer, KrasAnswer, KrasInjector, KrasInjectorConfig, KrasRequest } from '../types';
-import * as FormData from 'form-data';
+
 import HarInjector from './har-injector';
 import JsonInjector from './json-injector';
 import ProxyInjector from './proxy-injector';
@@ -49,7 +50,7 @@ function sendResponse(req: KrasRequest, ans: KrasAnswer, res: Response) {
 }
 
 function normalizeTarget(head: string) {
-  return head.endsWith('/') ? head.substr(0, head.length - 1) : head;
+  return head.endsWith('/') ? head.substring(0, head.length - 1) : head;
 }
 
 function getTarget(targets: Array<string>, url: string) {
@@ -150,6 +151,19 @@ function findInjector(modulePath: string): KrasInjectorClass {
   }
 }
 
+function findInjectorIn(paths: Array<string>, name: string) {
+  for (const path of paths) {
+    const target = resolve(path, name);
+    const Injector = findInjector(target);
+
+    if (Injector) {
+      return Injector;
+    }
+  }
+
+  return undefined;
+}
+
 function addInjectorInstance(
   Injector: KrasInjectorClass,
   options: KrasInjectorConfig,
@@ -182,16 +196,15 @@ export function withInjectors(server: KrasServer, config: KrasConfiguration) {
 
   for (const name of names) {
     const isPath = basename(name) !== name && existsSync(name);
+    const options = config.injectors[name];
     const Injector =
       coreInjectors[name] ||
       (isPath && findInjector(name)) ||
-      findInjector(resolve(config.directory, `${name}-injector`)) ||
+      findInjectorIn(config.injectorDirs, `${name}-injector`) ||
       findInjector(`kras-${name}-injector`) ||
       findInjector(`${name}-kras-injector`) ||
-      findInjector(`${name}-injector`) ||
-      findInjector(resolve(process.cwd(), `${name}-injector`)) ||
-      findInjector(resolve(__dirname, `${name}-injector`));
-    addInjectorInstance(Injector, config.injectors[name], config, server);
+      findInjector(`${name}-injector`);
+    addInjectorInstance(Injector, options, config, server);
   }
 
   server.add({

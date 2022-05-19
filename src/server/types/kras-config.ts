@@ -40,5 +40,6 @@ export interface KrasConfiguration extends WebServerConfiguration {
   api: string | false;
   auth: undefined | KrasAuth;
   middlewares: Array<KrasMiddlewareDefinition>;
+  injectorDirs?: Array<string>;
   injectors: KrasConfigurationInjectors;
 }

@@ -133,6 +133,7 @@ export function mergeConfiguration(
     sources: [],
     injectors: {},
     middlewares: [],
+    injectorDirs: [],
   };
   const sources = [initial, ...configs, required, empty];
   const result: KrasConfiguration = Object.assign({}, ...sources);
@@ -175,6 +176,12 @@ export function mergeConfiguration(
   mergeArrays(
     result,
     sources,
+    (m) => m.injectorDirs,
+    (a, b) => a === b,
+  );
+  mergeArrays(
+    result,
+    sources,
     (m) => m.middlewares,
     (a, b) => a.source === b.source,
   );
@@ -198,6 +205,7 @@ export const defaultConfig = {
   map: {},
   auth: undefined,
   middlewares: [],
+  injectorDirs: [],
   sources: [],
   injectors: {},
 } as KrasConfiguration;
