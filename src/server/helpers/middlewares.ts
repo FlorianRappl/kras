@@ -1,15 +1,12 @@
 import { resolve } from 'path';
 import { KrasServer, KrasConfiguration, KrasServerHandler } from '../types';
 
-interface RequestHandlerCreator {
+interface MiddlewarePackage {
   (...args: Array<any>): KrasServerHandler;
-}
-
-interface RequestHandlerInitializer {
   setup?(server: KrasServer, config: KrasConfiguration): void;
 }
 
-function findMiddleware(modulePath: string): RequestHandlerCreator | RequestHandlerInitializer {
+function findMiddleware(modulePath: string): MiddlewarePackage {
   try {
     return require(modulePath);
   } catch (e) {
@@ -25,27 +22,39 @@ function findFirstMiddleware(paths: Array<string>) {
       return creator;
     }
   }
+
+  return undefined;
 }
 
-function createMiddleware(server: KrasServer, config: KrasConfiguration, source: string, options: Array<any>) {
+function createMiddleware(
+  server: KrasServer,
+  config: KrasConfiguration,
+  baseDir: string,
+  source: string,
+  options: Array<any>,
+) {
   const creator =
-    findFirstMiddleware([source, resolve(config.directory, source)]) ||
+    findFirstMiddleware([source, resolve(baseDir, source)]) ||
     findFirstMiddleware((config.sources || []).map((dir) => resolve(dir, source))) ||
     findFirstMiddleware([resolve(process.cwd(), source), resolve(__dirname, source)]);
 
-  if (typeof creator === 'function') {
-    const handler = creator(...options);
-
-    if (typeof handler === 'function') {
-      return {
-        options,
-        source,
-        active: true,
-        handler,
-      };
+  if (creator) {
+    if (typeof creator.setup === 'function') {
+      creator.setup(server, config);
     }
-  } else if (creator && typeof creator.setup === 'function') {
-    creator.setup(server, config);
+
+    if (typeof creator === 'function') {
+      const handler = creator(...options);
+
+      if (typeof handler === 'function') {
+        return {
+          options,
+          source,
+          active: true,
+          handler,
+        };
+      }
+    }
   }
 
   return undefined;
@@ -66,8 +75,9 @@ export function withMiddlewares(server: KrasServer, config: KrasConfiguration) {
 
   for (const definition of middlewareDefinitions) {
     const source = definition.source;
+    const baseDir = definition.baseDir || config.directory;
     const options = definition.options || [];
-    const middleware = createMiddleware(server, config, source, options);
+    const middleware = createMiddleware(server, config, baseDir, source, options);
 
     if (middleware) {
       server.middlewares.push(middleware);

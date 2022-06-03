@@ -73,3 +73,7 @@ More detailed information can be found in the [proxy injector documentation](pro
 ### Custom Injectors
 
 It is also possible to write custom injectors - or get new injectors from NPM. Details on writing and publishing injectors can be found in [the injector documentation](injectors.md).
+
+## Middleware
+
+If you just want to change things then a middleware can be the right solution. You'll find examples and details in [the middleware documentation](middleware.md).

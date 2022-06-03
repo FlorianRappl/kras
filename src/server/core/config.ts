@@ -34,13 +34,36 @@ export function makePathsAbsolute(baseDir: string, config: ConfigurationFile) {
       for (const name of Object.keys(config.injectors)) {
         const injector = config.injectors[name];
         const directory = injector.directory;
+        const localDir = injector.baseDir;
 
         if (typeof directory === 'string') {
           injector.directory = resolve(baseDir, directory);
         } else if (Array.isArray(directory)) {
           injector.directory = directory.map((dir) => resolve(baseDir, dir));
         }
+
+        if (typeof localDir === 'string') {
+          injector.baseDir = resolve(baseDir, localDir);
+        } else {
+          injector.baseDir = baseDir;
+        }
       }
+    }
+
+    if (Array.isArray(config.middlewares)) {
+      for (const middleware of config.middlewares) {
+        const localDir = middleware.baseDir;
+
+        if (typeof localDir === 'string') {
+          middleware.baseDir = resolve(baseDir, localDir);
+        } else {
+          middleware.baseDir = baseDir;
+        }
+      }
+    }
+
+    if (Array.isArray(config.sources)) {
+      config.sources = config.sources.map((dir) => resolve(baseDir, dir));
     }
   }
 }

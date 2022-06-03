@@ -42,6 +42,11 @@ export interface KrasInjectorConfig {
    */
   handle?: Array<string>;
   /**
+   * Optionally sets the base dir of the injector, i.e.,
+   * the directory where the injector could be found.
+   */
+  baseDir?: string;
+  /**
    * Defines some additional configurations which are then
    * handled by the specific injector.
    */

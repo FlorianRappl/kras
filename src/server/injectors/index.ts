@@ -151,7 +151,9 @@ function findInjector(modulePath: string): KrasInjectorClass {
   }
 }
 
-function findInjectorIn(paths: Array<string>, name: string) {
+function findInjectorIn(injectorDir: Array<string> | string, name: string) {
+  const paths = Array.isArray(injectorDir) ? injectorDir : typeof injectorDir === 'string' ? [injectorDir] : [];
+
   for (const path of paths) {
     const target = resolve(path, name);
     const Injector = findInjector(target);
@@ -201,6 +203,7 @@ export function withInjectors(server: KrasServer, config: KrasConfiguration) {
       coreInjectors[name] ||
       (isPath && findInjector(name)) ||
       findInjectorIn(config.injectorDirs, `${name}-injector`) ||
+      findInjectorIn(options.baseDir, `${name}-injector`) ||
       findInjector(`kras-${name}-injector`) ||
       findInjector(`${name}-kras-injector`) ||
       findInjector(`${name}-injector`);

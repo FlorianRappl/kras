@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.14.1
+
+- Fixed issue making the paths in `sources` of a krasrc absolute
+- Improved resolution for injectors and middlewares
+- Added documentation for middlewares feature
+
 ## 0.14.0
 
 - Allow specifying multiple input files for using `readKrasConfig`

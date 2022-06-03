@@ -9,5 +9,6 @@ export interface KrasMiddleware {
 
 export interface KrasMiddlewareDefinition {
   source: string;
+  baseDir?: string;
   options?: Array<any>;
 }
