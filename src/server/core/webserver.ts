@@ -111,7 +111,7 @@ export class WebServer extends EventEmitter implements BaseKrasServer {
       }),
     );
     this.targets.forEach((target) =>
-      this.app.ws(target, (ws, req) => {
+      this.app.ws(`${target}/*`, (ws, req) => {
         const url = req.url.replace('/.websocket', '').substr(target.length);
         const id = Date.now() % 100000000;
         this.emit('user-connected', {

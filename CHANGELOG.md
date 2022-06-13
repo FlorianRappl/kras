@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.14.2
+
+- Fixed issue with WebSocket not being proxied
+
 ## 0.14.1
 
 - Fixed issue making the paths in `sources` of a krasrc absolute
