@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.14.3
+
+- Added forwarding of headers to WebSocket proxies
+
 ## 0.14.2
 
 - Fixed issue with WebSocket not being proxied

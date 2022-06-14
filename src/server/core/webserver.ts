@@ -1,11 +1,11 @@
 import * as express from 'express';
 import * as expressWs from 'express-ws';
+import * as multer from 'multer';
 import type { Server as WebSocketServer } from 'ws';
-import { Application, Request, Response } from 'express';
+import type { Application, Request, Response } from 'express';
 import { createServer as createHttpServer, Server as HttpServer } from 'http';
 import { createServer as createHttpsServer, Server as HttpsServer } from 'https';
 import { text } from 'body-parser';
-import * as multer from 'multer';
 import { EventEmitter } from 'events';
 import { readSsl } from './readSsl';
 import { corsHandler } from './proxy';
