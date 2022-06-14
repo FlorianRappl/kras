@@ -3,6 +3,7 @@
 ## 0.14.3
 
 - Added forwarding of headers to WebSocket proxies
+- Updated dependencies
 
 ## 0.14.2
 
