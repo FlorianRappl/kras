@@ -2,6 +2,7 @@
 
 ## 0.14.3
 
+- Fixed error logging in WebSocket proxies
 - Added forwarding of headers to WebSocket proxies
 - Updated dependencies
 

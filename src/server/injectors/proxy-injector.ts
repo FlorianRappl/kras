@@ -110,7 +110,7 @@ export default class ProxyInjector implements KrasInjector {
           rejectUnauthorized: false,
           headers,
         });
-        ws.on('error', (err) => core.emit('error', err));
+        ws.on('error', (err) => this.logError(err));
         ws.on('open', () => {
           open = true;
 
@@ -124,13 +124,13 @@ export default class ProxyInjector implements KrasInjector {
         });
         ws.on('message', (data) => {
           core.emit('message', { content: data, from: url, to: e.id, remote: true });
-          e.ws.send(data, (err: Error) => core.emit('error', err));
+          e.ws.send(data, (err: Error) => this.logError(err));
         });
         e.ws.on('message', (data: WebSocket.Data) => {
           core.emit('message', { content: data, to: url, from: e.id, remote: false });
 
           if (open) {
-            ws.send(data, (err) => core.emit('error', err));
+            ws.send(data, (err) => this.logError(err));
           } else {
             buffer.push({
               time: Date.now(),
@@ -214,6 +214,12 @@ export default class ProxyInjector implements KrasInjector {
     return headers;
   }
 
+  logError(err: any) {
+    if (err) {
+      this.core.emit('error', err);
+    }
+  }
+
   handle(req: KrasRequest): Promise<KrasAnswer> | KrasAnswer {
     const [target] = this.connectors.filter((m) => m.target === req.target);
 
@@ -236,10 +242,7 @@ export default class ProxyInjector implements KrasInjector {
             redirect: this.config.followRedirect,
           },
           (err, ans) => {
-            if (err) {
-              this.core.emit('error', err);
-            }
-
+            this.logError(err);
             resolve(ans);
           },
         ),
