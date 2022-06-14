@@ -197,7 +197,12 @@ export default class ProxyInjector implements KrasInjector {
       ...Object.keys(injectHeaders),
     ];
     const headers = headerNames.reduce((headers, header) => {
-      headers[header] = injectHeaders[header] ?? req.headers[header];
+      const value = injectHeaders[header] ?? req.headers[header];
+
+      if (value !== undefined) {
+        headers[header] = value;
+      }
+
       return headers;
     }, {} as Record<string, string | Array<string>>);
 
