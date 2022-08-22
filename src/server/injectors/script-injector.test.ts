@@ -15,7 +15,7 @@ describe('ScriptInjector', () => {
       },
       {
         directory: '',
-      },
+      } as any,
       evt,
     );
     expect(io.watch).toHaveBeenCalledTimes(1);
@@ -30,7 +30,7 @@ describe('ScriptInjector', () => {
       },
       {
         directory: '',
-      },
+      } as any,
       evt,
     );
     injector.active = false;
@@ -45,7 +45,7 @@ describe('ScriptInjector', () => {
       },
       {
         directory: '',
-      },
+      } as any,
       evt,
     );
     injector.active = true;

@@ -14,7 +14,7 @@ describe('HarInjector', () => {
       {
         directory: '',
         map: {},
-      },
+      } as any,
     );
     expect(io.watch).toHaveBeenCalledTimes(1);
     expect(injector.active).toBeTruthy();
@@ -28,7 +28,7 @@ describe('HarInjector', () => {
       {
         directory: '',
         map: {},
-      },
+      } as any,
     );
     injector.active = false;
     expect(injector.active).toBeFalsy();
@@ -42,7 +42,7 @@ describe('HarInjector', () => {
       {
         directory: '',
         map: {},
-      },
+      } as any,
     );
     injector.active = true;
     expect(injector.active).toBeTruthy();

@@ -69,4 +69,5 @@ export interface KrasInjector {
   getOptions(): KrasInjectorOptions;
   setOptions(options: Dict<any>): void;
   dispose?(): void;
+  setup?(): void | Promise<void>;
 }

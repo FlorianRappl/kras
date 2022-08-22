@@ -64,11 +64,13 @@ export class MockServer extends MockServerCore implements KrasServer {
     if (config.api === false) {
       this.recorder.disable();
     }
+  }
 
-    withManagement(this, config);
-    withInjectors(this, config);
-    withMiddlewares(this, config);
-    withFiles(this, config);
+  async setup(config: KrasConfiguration) {
+    await withManagement(this, config);
+    await withInjectors(this, config);
+    await withMiddlewares(this, config);
+    await withFiles(this, config);
   }
 
   stop() {
@@ -96,18 +98,21 @@ export function readKrasConfig(options?: ConfigurationOptions, ...files: Array<s
   return mergeConfiguration(options, ...configurations);
 }
 
-export function buildKras(config?: Partial<KrasConfiguration>) {
-  return new MockServer(buildConfiguration(config));
+export async function buildKras(config?: Partial<KrasConfiguration>) {
+  const options = buildConfiguration(config);
+  const server = new MockServer(options);
+  await server.setup(options);
+  return server;
 }
 
-export function buildKrasWithCli(config: KrasConfiguration) {
-  const server = buildKras(config);
+export async function buildKrasWithCli(config: KrasConfiguration) {
+  const server = await buildKras(config);
   connectToCli(server, config.api !== false);
   return server;
 }
 
-export function runKras(config?: Partial<KrasConfiguration>) {
-  const server = buildKras(config);
+export async function runKras(config?: Partial<KrasConfiguration>) {
+  const server = await buildKras(config);
   server.start();
   return server;
 }
@@ -115,8 +120,8 @@ export function runKras(config?: Partial<KrasConfiguration>) {
 export type KrasRuntimeConfiguration = Partial<KrasConfiguration> & KrasHandlerConfiguration;
 
 export function withKras(config?: KrasRuntimeConfiguration) {
-  return (callback: KrasRunner) => {
-    const server = buildKras(config);
+  return async (callback: KrasRunner) => {
+    const server = await buildKras(config);
     configureHandler(server, config);
     return runWith(server, callback);
   };
@@ -198,9 +203,9 @@ export function connectToCli(server: MockServer, canManage = true) {
   });
 }
 
-export function runFromCli(options: ConfigurationOptions, rcfile: string) {
+export async function runFromCli(options: ConfigurationOptions, rcfile: string) {
   const config = readKrasConfig(options, resolve(homedir(), krasrc), resolve(currentDir, krasrc), rcfile);
-  const server = buildKrasWithCli(config);
+  const server = await buildKrasWithCli(config);
   console.log(`Starting kras v${version} ...`);
   server.start();
   return server;

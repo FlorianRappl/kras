@@ -166,7 +166,7 @@ function findInjectorIn(injectorDir: Array<string> | string, name: string) {
   return undefined;
 }
 
-function addInjectorInstance(
+async function addInjectorInstance(
   Injector: KrasInjectorClass,
   options: KrasInjectorConfig,
   config: KrasConfiguration,
@@ -175,13 +175,17 @@ function addInjectorInstance(
   if (Injector) {
     const instance = new Injector(options, config, server);
 
+    if (typeof instance.setup === 'function') {
+      await instance.setup();
+    }
+
     if (typeof instance.handle === 'function') {
       server.injectors.push(instance);
     }
   }
 }
 
-export function withInjectors(server: KrasServer, config: KrasConfiguration) {
+export async function withInjectors(server: KrasServer, config: KrasConfiguration) {
   const names = Object.keys(config.injectors);
   const heads = Object.keys(config.map)
     .map((head) => normalizeTarget(head))
@@ -193,7 +197,7 @@ export function withInjectors(server: KrasServer, config: KrasConfiguration) {
 
   if (injectorDebug) {
     const Injector = findInjector(injectorMain);
-    addInjectorInstance(Injector, injectorConfig, config, server);
+    await addInjectorInstance(Injector, injectorConfig, config, server);
   }
 
   for (const name of names) {
@@ -207,7 +211,7 @@ export function withInjectors(server: KrasServer, config: KrasConfiguration) {
       findInjector(`kras-${name}-injector`) ||
       findInjector(`${name}-kras-injector`) ||
       findInjector(`${name}-injector`);
-    addInjectorInstance(Injector, options, config, server);
+    await addInjectorInstance(Injector, options, config, server);
   }
 
   server.add({

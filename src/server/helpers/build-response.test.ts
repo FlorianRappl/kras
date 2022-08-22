@@ -6,7 +6,7 @@ describe('Build Response', () => {
       const result = fromHar('foo', {
         content: 'bar',
         headers: [],
-      });
+      } as any);
       expect(result.url).toBe('foo');
     });
   });
@@ -22,7 +22,7 @@ describe('Build Response', () => {
     });
 
     it('works with content and has default status code', () => {
-      const result = fromJson('http://google.com', undefined, undefined, {}, 'Foobar');
+      const result = fromJson('http://google.com', undefined as any, undefined as any, {}, 'Foobar');
       expect(result.url).toBe('http://google.com');
       expect(result.status).toEqual({
         code: 200,
@@ -38,8 +38,8 @@ describe('Build Response', () => {
         {
           url: 'foo',
           headers: {},
-        },
-        'Foo',
+        } as any,
+        'Foo' as any,
       );
       expect(result.content).toBe('Foo');
       expect(result.url).toBe('foo');
@@ -58,8 +58,8 @@ describe('Build Response', () => {
             b: 'c',
           },
           statusCode: 400,
-        },
-        'Foo',
+        } as any,
+        'Foo' as any,
       );
       expect(result.url).toBe('http://google.com');
       expect(result.content).toBe('Foo');
@@ -82,7 +82,7 @@ describe('Build Response', () => {
     });
 
     it('is passing through undefined URL to be empty', () => {
-      const result = fromMissing(undefined);
+      const result = fromMissing(undefined as any);
       expect(result.url).toBe('');
     });
   });

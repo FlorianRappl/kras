@@ -1,21 +1,22 @@
-import { KrasConfiguration, KrasServer } from '../types';
+import { clientOf } from './client';
 import { broadcastAt } from './broadcast';
 import { readFile, saveFile } from './files';
-import { errorDetails, messageDetails, overview, requestDetails, liveData } from './overview';
-import { readSettings, saveSettings, downloadSettings } from './settings';
-import { readInjectorsSettings, saveInjectorSettings, readInjectorSettings } from './injectors';
-import { clientOf } from './client';
-import { configOf, updateClient } from './basics';
 import { userLogin, getAuth } from './login';
+import { configOf, updateClient } from './basics';
 import { recentLogsOf, allLogsOf, liveLogs } from './logs';
+import { readSettings, saveSettings, downloadSettings } from './settings';
+import { errorDetails, messageDetails, overview, requestDetails, liveData } from './overview';
+import { readInjectorsSettings, saveInjectorSettings, readInjectorSettings } from './injectors';
+import { KrasConfiguration, KrasServer } from '../types';
 
-export function withManagement(server: KrasServer, config: KrasConfiguration) {
+export async function withManagement(server: KrasServer, config: KrasConfiguration) {
   const api = config.api;
 
   if (api !== false) {
     const protect = getAuth(server, config);
+    const client = await clientOf(server, config);
 
-    server.at(api).get(clientOf(server, config));
+    server.at(api).get(client);
 
     server.at(api, 'login').post(userLogin(server, config));
 

@@ -36,7 +36,7 @@ export function getAuth(server: KrasServer, config: KrasConfiguration): ProtectH
         const header = req.header('authorization');
 
         if (header && header.startsWith(bearer)) {
-          const token = header.substr(bearer.length);
+          const token = header.substring(bearer.length);
           const valid = provider.validateToken(auth, token);
 
           if (valid) {

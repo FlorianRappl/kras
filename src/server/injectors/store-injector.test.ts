@@ -13,7 +13,7 @@ describe('StoreInjector', () => {
       },
       {
         directory: '',
-      },
+      } as any,
     );
     expect(jsonStore.open).toHaveBeenCalledTimes(1);
     expect(injector.active).toBeTruthy();
@@ -26,7 +26,7 @@ describe('StoreInjector', () => {
       },
       {
         directory: '',
-      },
+      } as any,
     );
     injector.active = false;
     expect(injector.active).toBeFalsy();
@@ -39,7 +39,7 @@ describe('StoreInjector', () => {
       },
       {
         directory: '',
-      },
+      } as any,
     );
     injector.active = true;
     expect(injector.active).toBeTruthy();

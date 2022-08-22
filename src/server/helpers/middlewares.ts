@@ -2,8 +2,8 @@ import { resolve } from 'path';
 import { KrasServer, KrasConfiguration, KrasServerHandler } from '../types';
 
 interface MiddlewarePackage {
-  (...args: Array<any>): KrasServerHandler;
-  setup?(server: KrasServer, config: KrasConfiguration): void;
+  (...args: Array<any>): KrasServerHandler | Promise<KrasServerHandler>;
+  setup?(server: KrasServer, config: KrasConfiguration): void | Promise<void>;
 }
 
 function findMiddleware(modulePath: string): MiddlewarePackage {
@@ -26,7 +26,7 @@ function findFirstMiddleware(paths: Array<string>) {
   return undefined;
 }
 
-function createMiddleware(
+async function createMiddleware(
   server: KrasServer,
   config: KrasConfiguration,
   baseDir: string,
@@ -40,11 +40,11 @@ function createMiddleware(
 
   if (creator) {
     if (typeof creator.setup === 'function') {
-      creator.setup(server, config);
+      await creator.setup(server, config);
     }
 
     if (typeof creator === 'function') {
-      const handler = creator(...options);
+      const handler = await creator(...options);
 
       if (typeof handler === 'function') {
         return {
@@ -70,14 +70,14 @@ function integrateMiddlewares(server: KrasServer) {
   }
 }
 
-export function withMiddlewares(server: KrasServer, config: KrasConfiguration) {
+export async function withMiddlewares(server: KrasServer, config: KrasConfiguration) {
   const middlewareDefinitions = config.middlewares || [];
 
   for (const definition of middlewareDefinitions) {
     const source = definition.source;
     const baseDir = definition.baseDir || config.directory;
     const options = definition.options || [];
-    const middleware = createMiddleware(server, config, baseDir, source, options);
+    const middleware = await createMiddleware(server, config, baseDir, source, options);
 
     if (middleware) {
       server.middlewares.push(middleware);

@@ -3,6 +3,7 @@
 ## 0.15.0
 
 - Removed support for Node.js below 12
+- Added support for asynchronous creators (#54)
 - Updated dependencies
 
 ## 0.14.3
