@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.15.0
+
+- Removed support for Node.js below 12
+- Updated dependencies
+
 ## 0.14.3
 
 - Fixed error logging in WebSocket proxies
