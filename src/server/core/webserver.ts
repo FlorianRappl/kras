@@ -101,6 +101,16 @@ export class WebServer extends EventEmitter implements BaseKrasServer {
       storage: multer.memoryStorage(),
       limits: { files: 5, fileSize: sizeInMB * 1024 * 1024 },
     });
+    this.app.use((req, res, next) => {
+      //prepares the req / res system
+      req.addedHeaders = {};
+      req.removedHeaders = [];
+      req.addedQuery = {};
+      req.removedQuery = ['_'];
+      res.middlewares = [];
+      res.prepared = undefined;
+      next();
+    });
     this.app.use(upload.any());
     this.app.use(
       text({

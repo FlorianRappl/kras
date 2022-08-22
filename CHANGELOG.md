@@ -4,6 +4,7 @@
 
 - Removed support for Node.js below 12
 - Added support for asynchronous creators (#54)
+- Added optional `direction` parameter to middlewares (#53)
 - Updated dependencies
 
 ## 0.14.3

@@ -68,3 +68,36 @@ module.exports = function (cookieName) {
   };
 };
 ```
+
+The `setup` and the creator function can both be `async`, i.e., return a `Promise`.
+
+```js
+module.exports = async function (cookieName) {  
+  // do something that needs to be awaited, e.g.,
+  const answerToLife = await computeAnswerToEverything();
+  return (req, res, next) => {
+    res.headers['set-cookie'] = `${cookieName}=${answerToLife}`;
+    next();
+  };
+};
+```
+
+Another thing to consider is the **direction** that the middleware is applied. By default, the middleware is applied in the **incoming direction** (`in`), i.e., *before* the request has been processed by any injector. Like any middleware, it will be processed before the response will be send to the client.
+
+Another option is to change the `direction` to **outgoing** (`out`):
+
+```json
+{
+  "middlewares": [
+    {
+      "source": "some-middleware-package",
+      "options": [],
+      "direction": "out"
+    }
+  ]
+}
+```
+
+Now this will be applied *after* an injector has been hit.
+
+**Note**: Outgoing middleware is not really useful for modifying responses as the response has already been prepared. The main purpose of an outgoing middleware is to close resources or write out details about the request / response.

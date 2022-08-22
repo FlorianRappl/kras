@@ -31,6 +31,7 @@ async function createMiddleware(
   config: KrasConfiguration,
   baseDir: string,
   source: string,
+  direction: 'in' | 'out',
   options: Array<any>,
 ) {
   const creator =
@@ -51,6 +52,7 @@ async function createMiddleware(
           options,
           source,
           active: true,
+          direction,
           handler,
         };
       }
@@ -65,7 +67,27 @@ function integrateMiddlewares(server: KrasServer) {
     const all = server.at('*');
 
     for (const middleware of server.middlewares) {
-      all.any(middleware.handler);
+      all.any((req, res, next) => {
+        if (middleware.active) {
+          if (middleware.direction === 'in') {
+            return middleware.handler(req, res, next);
+          } else if (middleware.direction === 'out') {
+            res.middlewares.push(
+              () =>
+                new Promise<any>((resolve, reject) => {
+                  try {
+                    middleware.handler(req, res, resolve);
+                  } catch (e) {
+                    reject(e);
+                  }
+                }),
+            );
+            return next();
+          }
+        }
+
+        next();
+      });
     }
   }
 }
@@ -77,7 +99,8 @@ export async function withMiddlewares(server: KrasServer, config: KrasConfigurat
     const source = definition.source;
     const baseDir = definition.baseDir || config.directory;
     const options = definition.options || [];
-    const middleware = await createMiddleware(server, config, baseDir, source, options);
+    const direction = definition.direction || 'in';
+    const middleware = await createMiddleware(server, config, baseDir, source, direction, options);
 
     if (middleware) {
       server.middlewares.push(middleware);

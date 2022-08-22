@@ -69,10 +69,24 @@ function getTarget(targets: Array<string>, url: string) {
 
 function normalizeRequest(targets: Array<string>, req: Request): KrasRequest {
   const target = getTarget(targets, req.originalUrl) || '';
-  const url = req.originalUrl.substr(target.length);
-  const query = Object.assign({}, req.query) as Record<string, string>;
-  const headers = Object.assign({}, req.headers) as Record<string, string>;
+  const url = req.originalUrl.substring(target.length);
+
+  const query = Object.assign(
+    {
+      ...req.addedQuery,
+    },
+    req.query,
+  ) as Record<string, string>;
+
+  const headers = Object.assign(
+    {
+      ...req.addedHeaders,
+    },
+    req.headers,
+  ) as Record<string, string>;
+
   let content: any;
+
   if (req.headers['content-type'] && req.headers['content-type'].search('multipart/form-data') !== -1) {
     const formData = new FormData();
     typeof req.body === 'object' &&
@@ -93,7 +107,14 @@ function normalizeRequest(targets: Array<string>, req: Request): KrasRequest {
   }
 
   const method = typeof req.method === 'string' ? req.method : 'GET';
-  delete query._;
+
+  for (const name of req.removedHeaders) {
+    delete headers[name];
+  }
+
+  for (const name of req.removedQuery) {
+    delete query[name];
+  }
 
   return {
     url,
@@ -126,12 +147,18 @@ function handleRequest(server: KrasServer, req: KrasRequest, res: Response) {
 
   server.emit('request', req);
 
-  tryInjectors(injectors, req).then((ans) => {
+  tryInjectors(injectors, req).then(async (ans) => {
+    res.prepared = ans;
+
     if (!ans) {
       server.emit('missing', req);
       ans = fromMissing(req.url);
     } else {
       server.emit('response', ans);
+    }
+
+    for (const middleware of res.middlewares) {
+      await middleware();
     }
 
     sendResponse(req, ans, res);

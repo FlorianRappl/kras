@@ -1,6 +1,22 @@
 import { Request, Response, NextFunction } from 'express';
 import { EventEmitter } from 'events';
 
+declare global {
+  namespace Express {
+    interface Request {
+      addedHeaders: Record<string, string>;
+      removedHeaders: Array<string>;
+      addedQuery: Record<string, string>;
+      removedQuery: Array<string>;
+    }
+
+    interface Response {
+      middlewares: Array<() => Promise<void>>;
+      prepared: any;
+    }
+  }
+}
+
 export interface KrasServerHook {
   handle(req: Request, res: Response): void;
   rate(req: Request): number;
