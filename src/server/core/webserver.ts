@@ -222,7 +222,11 @@ export class WebServer extends EventEmitter implements BaseKrasServer {
     return api;
   }
 
-  start() {
+  async setup() {}
+
+  async start() {
+    await this.setup();
+
     this.app.all('*', (req: Request, res: Response) => {
       if (req.method !== 'OPTIONS') {
         const hook = findHook(this.hooks, req);
@@ -239,7 +243,7 @@ export class WebServer extends EventEmitter implements BaseKrasServer {
       return corsHandler(req, res);
     });
 
-    return new Promise<void>((resolve) => {
+    return await new Promise<void>((resolve) => {
       this.server.listen(this.port, () => {
         this.emit('open', {
           port: this.port,

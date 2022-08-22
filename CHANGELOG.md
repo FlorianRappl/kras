@@ -5,6 +5,7 @@
 - Removed support for Node.js below 12
 - Added support for asynchronous creators (#54)
 - Added optional `direction` parameter to middlewares (#53)
+- Added a deep merge of injector settings (#52)
 - Updated dependencies
 
 ## 0.14.3
