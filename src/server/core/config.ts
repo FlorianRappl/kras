@@ -215,8 +215,8 @@ export const defaultConfig = {
   directory: resolve(currentDir, 'mocks'),
   client: 'kras-management-portal',
   ssl: {
-    cert: resolve(rootDir, 'cert', 'server.crt'),
-    key: resolve(rootDir, 'cert', 'server.key'),
+    cert: 'kras/cert/server.crt',
+    key: 'kras/cert/server.key',
   },
   uploadLimit: parseInt(process.env.FILE_SIZE_LIMIT, 10) || 10, // default: 10 MB
   logLevel: 'error',
