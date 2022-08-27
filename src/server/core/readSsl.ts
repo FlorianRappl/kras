@@ -3,11 +3,10 @@ import { SslConfiguration } from '../types';
 
 function fileReader(path: string) {
   try {
-    return readFileSync(path);
-  } catch (e) {
-    // try to read file from node_modules
-    return readFileSync(require.resolve(path));
-  }
+    path = require.resolve(path);
+  } catch {}
+
+  return readFileSync(path);
 }
 
 export function readSsl(config?: Partial<SslConfiguration>) {
