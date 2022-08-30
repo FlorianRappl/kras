@@ -1,10 +1,13 @@
 import { readFileSync } from 'fs';
+import { isAbsolute } from 'path';
 import { SslConfiguration } from '../types';
 
 function fileReader(path: string) {
-  try {
-    path = require.resolve(path);
-  } catch {}
+  if (!isAbsolute(path)) {
+    try {
+      path = require.resolve(path);
+    } catch {}
+  }
 
   return readFileSync(path);
 }

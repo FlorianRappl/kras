@@ -1,6 +1,6 @@
 import { resolve, dirname } from 'path';
 import { existsSync, readFileSync } from 'fs';
-import { rootDir, name, version, currentDir } from '../info';
+import { name, version, currentDir } from '../info';
 import { Dict, KrasConfiguration, LogLevel } from '../types';
 import * as chalk from 'chalk';
 
@@ -209,14 +209,16 @@ export function mergeConfiguration(
   return result;
 }
 
+const certDir = resolve(__dirname, '../../../cert');
+
 export const defaultConfig = {
   name: `${name} v${version}`,
   port: 9000,
   directory: resolve(currentDir, 'mocks'),
   client: 'kras-management-portal',
   ssl: {
-    cert: 'kras/cert/server.crt',
-    key: 'kras/cert/server.key',
+    cert: resolve(certDir, 'server.crt'),
+    key: resolve(certDir, 'server.key'),
   },
   uploadLimit: parseInt(process.env.FILE_SIZE_LIMIT, 10) || 10, // default: 10 MB
   logLevel: 'error',
