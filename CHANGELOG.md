@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.15.1
+
+- Support for reading certificates from node_modules
+
 ## 0.15.0
 
 - Removed support for Node.js below 12
