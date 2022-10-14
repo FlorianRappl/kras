@@ -101,7 +101,7 @@ export default class ScriptInjector implements KrasInjector {
 
   setOptions(options: DynamicScriptInjectorConfig): void {
     for (const { name, active } of options.files) {
-      const script = this.files.find(f => f.file === name);
+      const script = this.files.find((f) => f.file === name);
 
       if (script && typeof active === 'boolean') {
         script.active = active;

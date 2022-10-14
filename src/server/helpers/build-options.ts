@@ -54,7 +54,10 @@ export function editFileOption(files: Array<FileInfo>): KrasInjectorOption {
   };
 }
 
-export function editEntryOption<T extends FileInfo>(files: Array<Array<T>>, desc: DescribeEntry<T>): KrasInjectorOption {
+export function editEntryOption<T extends FileInfo>(
+  files: Array<Array<T>>,
+  desc: DescribeEntry<T>,
+): KrasInjectorOption {
   return {
     description: `Modify the found files without using an external text editor or toggle their entries.`,
     title: 'Found Files & Entries',
