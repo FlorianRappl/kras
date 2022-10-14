@@ -130,7 +130,9 @@ function watchSingle(
   };
   const deleteFile = (file: string) => {
     const fn = resolve(directory, file);
-    callback('delete', fn, getPosition(fn));
+    const idx = watched.indexOf(fn);
+    idx !== -1 && watched.splice(idx, 1);
+    callback('delete', fn, -1);
   };
   const loadFile = (file: string) => {
     const fn = resolve(directory, file);
@@ -145,7 +147,9 @@ function watchSingle(
       for (const dir of Object.keys(dirs)) {
         for (const file of dirs[dir]) {
           const fn = resolve(directory, dir, file);
-          callback('delete', fn, getPosition(fn));
+          const idx = watched.indexOf(fn);
+          idx !== -1 && watched.splice(idx, 1);
+          callback('delete', fn, -1);
         }
       }
 
