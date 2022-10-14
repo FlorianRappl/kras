@@ -1,7 +1,8 @@
 import { basename } from 'path';
-import { KrasInjectorOption, Dict } from '../types';
+import { KrasInjectorOption } from '../types';
 
 export interface FileInfo {
+  file: string;
   active: boolean;
   error?: string;
 }
@@ -10,23 +11,24 @@ export interface DescribeEntry<T> {
   (item: T, file: string, index: number): string;
 }
 
-function getFile(files: Dict<FileInfo>, fileName: string) {
-  const file = files[fileName];
+function getFile(fileInfo: FileInfo) {
+  const fileName = fileInfo.file;
   return {
     id: Buffer.from(fileName).toString('base64'),
     name: fileName,
     basename: basename(fileName),
-    active: file.active,
-    error: file.error,
+    active: fileInfo.active,
+    error: fileInfo.error,
   };
 }
 
-function getEntry<T extends FileInfo>(files: Dict<Array<T>>, fileName: string, desc: DescribeEntry<T>) {
+function getEntry<T extends FileInfo>(fileInfos: Array<T>, desc: DescribeEntry<T>) {
+  const fileName = fileInfos[0].file;
   return {
     id: Buffer.from(fileName).toString('base64'),
     name: fileName,
     basename: basename(fileName),
-    entries: files[fileName].map((entry, i) => ({
+    entries: fileInfos.map((entry, i) => ({
       active: entry.active,
       error: entry.error,
       description: desc(entry, fileName, i),
@@ -43,20 +45,20 @@ export function editDirectoryOption(directories: Array<string>): KrasInjectorOpt
   };
 }
 
-export function editFileOption(files: Dict<FileInfo>): KrasInjectorOption {
+export function editFileOption(files: Array<FileInfo>): KrasInjectorOption {
   return {
     description: `Toggle or modify the found files without using an external text editor.`,
     title: 'Found Files',
     type: 'file',
-    value: Object.keys(files).map((fileName) => getFile(files, fileName)),
+    value: files.map((fileInfo) => getFile(fileInfo)),
   };
 }
 
-export function editEntryOption<T extends FileInfo>(files: Dict<Array<T>>, desc: DescribeEntry<T>): KrasInjectorOption {
+export function editEntryOption<T extends FileInfo>(files: Array<Array<T>>, desc: DescribeEntry<T>): KrasInjectorOption {
   return {
     description: `Modify the found files without using an external text editor or toggle their entries.`,
     title: 'Found Files & Entries',
     type: 'entry',
-    value: Object.keys(files).map((fileName) => getEntry(files, fileName, desc)),
+    value: files.map((subfiles) => getEntry(subfiles, desc)),
   };
 }

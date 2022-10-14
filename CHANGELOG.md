@@ -3,6 +3,7 @@
 ## 0.15.2
 
 - Support for different hostname bindings (default: `0.0.0.0`)
+- Added ordering of files to be deterministic (#57)
 - Updated dependencies
 
 ## 0.15.1

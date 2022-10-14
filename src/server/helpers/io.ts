@@ -99,11 +99,43 @@ function installWatcher(
 function watchSingle(
   directory: string,
   pattern: string,
-  callback: (type: string, file: string) => void,
+  callback: (type: string, file: string, position: number) => void,
+  watched: Array<string>,
 ): SingleWatcher {
-  const updateFile = (file: string) => callback('update', resolve(directory, file));
-  const deleteFile = (file: string) => callback('delete', resolve(directory, file));
-  const loadFile = (file: string) => callback('create', resolve(directory, file));
+  const getPosition = (fn: string) => {
+    const idx = watched.indexOf(fn);
+
+    if (idx === -1) {
+      let i = 0;
+
+      while (i < watched.length) {
+        const w = watched[i];
+
+        if (w.localeCompare(fn) > 0) {
+          break;
+        }
+
+        i++;
+      }
+
+      watched.splice(i, 0, fn);
+      return i;
+    }
+
+    return idx;
+  };
+  const updateFile = (file: string) => {
+    const fn = resolve(directory, file);
+    callback('update', fn, getPosition(fn));
+  };
+  const deleteFile = (file: string) => {
+    const fn = resolve(directory, file);
+    callback('delete', fn, getPosition(fn));
+  };
+  const loadFile = (file: string) => {
+    const fn = resolve(directory, file);
+    callback('create', fn, getPosition(fn));
+  };
   const w = installWatcher(directory, pattern, loadFile, updateFile, deleteFile);
   return {
     directory,
@@ -112,7 +144,8 @@ function watchSingle(
 
       for (const dir of Object.keys(dirs)) {
         for (const file of dirs[dir]) {
-          callback('delete', resolve(directory, dir, file));
+          const fn = resolve(directory, dir, file);
+          callback('delete', fn, getPosition(fn));
         }
       }
 
@@ -124,10 +157,12 @@ function watchSingle(
 export function watch(
   directory: string | Array<string>,
   pattern: string,
-  callback: (type: string, file: string) => void,
+  callback: (type: string, file: string, position: number) => void,
+  watched: Array<string> = [],
 ): Watcher {
   if (Array.isArray(directory)) {
-    const ws = directory.map((dir) => watchSingle(dir, pattern, callback));
+    const ws = directory.map((dir) => watchSingle(dir, pattern, callback, watched));
+
     return {
       get directories() {
         return ws.map((w) => w.directory);
@@ -163,7 +198,7 @@ export function watch(
           }
 
           if (add) {
-            added.push(watchSingle(v, pattern, callback));
+            added.push(watchSingle(v, pattern, callback, watched));
           }
         }
 
@@ -174,6 +209,6 @@ export function watch(
       },
     };
   } else if (typeof directory === 'string') {
-    return watch([directory], pattern, callback);
+    return watch([directory], pattern, callback, watched);
   }
 }

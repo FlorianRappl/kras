@@ -1,3 +1,8 @@
+import * as faker from 'faker';
+import * as cookie from 'cookie';
+import * as parser from 'accept-language-parser';
+import fakerLocale from '../helpers/faker-locale';
+import { generateFromTemplate } from '../helpers/generate-from-template';
 import { asJson, watch, Watcher, editDirectoryOption, editEntryOption, fromJson, compareRequests } from '../helpers';
 import {
   KrasInjectorConfig,
@@ -7,11 +12,6 @@ import {
   KrasInjectorOptions,
   KrasConfiguration,
 } from '../types';
-import * as faker from 'faker';
-import * as cookie from 'cookie';
-import * as parser from 'accept-language-parser';
-import fakerLocale from '../helpers/faker-locale';
-import { generateFromTemplate } from '../helpers/generate-from-template';
 
 function find(response: KrasAnswer | Array<KrasAnswer>, randomize: boolean) {
   if (Array.isArray(response)) {
@@ -23,14 +23,13 @@ function find(response: KrasAnswer | Array<KrasAnswer>, randomize: boolean) {
 }
 
 interface JsonFileItem {
+  file: string;
   active: boolean;
   request: KrasRequest;
   response: KrasAnswer | Array<KrasAnswer>;
 }
 
-interface JsonFiles {
-  [file: string]: Array<JsonFileItem>;
-}
+type JsonFiles = Array<Array<JsonFileItem>>;
 
 export interface JsonInjectorConfig {
   directory?: string | Array<string>;
@@ -51,7 +50,7 @@ export interface DynamicJsonInjectorConfig {
 }
 
 export default class JsonInjector implements KrasInjector {
-  private readonly files: JsonFiles = {};
+  private readonly files: JsonFiles = [];
   private readonly watcher: Watcher;
 
   public config: KrasInjectorConfig & JsonInjectorConfig;
@@ -60,14 +59,13 @@ export default class JsonInjector implements KrasInjector {
     const directory = options.directory || config.sources || config.directory;
     this.config = options;
 
-    this.watcher = watch(directory, '**/*.json', (ev, fileName) => {
+    this.watcher = watch(directory, '**/*.json', (ev, fileName, position) => {
       switch (ev) {
         case 'create':
         case 'update':
-          return this.load(fileName);
+          return this.load(fileName, position);
         case 'delete':
-          delete this.files[fileName];
-          return;
+          return this.unload(fileName);
       }
     });
   }
@@ -88,15 +86,16 @@ export default class JsonInjector implements KrasInjector {
   setOptions(options: DynamicJsonInjectorConfig): void {
     this.config.randomize = options.randomize;
 
-    for (const file of options.files) {
-      const entries = this.files[file.name];
+    for (const { name, entries } of options.files) {
+      const files = this.files.find((m) => m[0].file === name);
 
       if (entries) {
         for (let i = 0; i < entries.length; i++) {
-          const entry = file.entries[i];
+          const entry = entries[i];
+          const file = files[i];
 
-          if (entry && typeof entry.active === 'boolean') {
-            entries[i].active = entry.active;
+          if (file && typeof entry.active === 'boolean') {
+            file.active = entry.active;
           }
         }
       }
@@ -117,11 +116,20 @@ export default class JsonInjector implements KrasInjector {
     this.config.active = value;
   }
 
-  private load(fileName: string) {
+  private unload(fileName: string) {
+    const index = this.files.findIndex((m) => m[0].file === fileName);
+
+    if (index !== -1) {
+      this.files.splice(index, 1);
+    }
+  }
+
+  private load(fileName: string, position: number) {
     const content = asJson(fileName);
     const items = Array.isArray(content) ? content : [content];
 
     for (const item of items) {
+      item.file = fileName;
       item.active = true;
 
       if (typeof item.request !== 'object') {
@@ -133,12 +141,17 @@ export default class JsonInjector implements KrasInjector {
       }
     }
 
-    this.files[fileName] = items;
+    this.unload(fileName);
+
+    if (items.length > 0) {
+      this.files.splice(position, 0, items);
+    }
   }
 
   dispose() {
     this.watcher.close();
   }
+
   contentProcess(req: KrasRequest, content: string | Buffer) {
     if (this.config.generator) {
       const localeName = this.config.generatorLocaleName || 'language';
@@ -166,30 +179,28 @@ export default class JsonInjector implements KrasInjector {
   }
 
   handle(req: KrasRequest): Promise<KrasAnswer> | KrasAnswer {
-    for (const fileName of Object.keys(this.files)) {
-      const entries = this.files[fileName];
+    let i = 0;
 
-      for (let i = 0; i < entries.length; i++) {
-        const entry = entries[i];
-
-        if (entry.active) {
-          const request = entry.request;
-
+    for (const files of this.files) {
+      for (const { file, active, request, response } of files) {
+        if (active) {
           if (compareRequests(request, req)) {
             const rand = this.config.randomize;
-            const response = find(entry.response, rand);
+            const res = find(response, rand);
             const name = this.name;
-            const content = this.contentProcess(req, response.content);
+            const content = this.contentProcess(req, res.content);
 
-            return fromJson(request.url, response.status.code, response.status.text, response.headers, content, {
+            return fromJson(request.url, res.status.code, res.status.text, res.headers, content, {
               name,
               file: {
-                name: fileName,
+                name: file,
                 entry: i,
               },
             });
           }
         }
+
+        i++;
       }
     }
   }
