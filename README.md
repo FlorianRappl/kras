@@ -74,9 +74,11 @@ If specified the command line options have higher precedence. The following opti
   -c, --config     Sets the configuration file to use, by default .krasrc
                                                                         [string]
   -p, --port       Sets the port of the server, by default 9000         [number]
-  -n, --name       Sets the name of the server, by default kras v0.14.0 [string]
+  -n, --name       Sets the name of the server, by default kras v0.15.2 [string]
   -d, --dir        Sets the base directory of the server, by default
                    /home/rapplf/Code/Piral/kras/mocks                   [string]
+  --host           Sets the host binding of the server, by default 0.0.0.0
+                                                                        [string]
   --cert           Sets the certificate of the server, by default
                    /home/rapplf/Code/Piral/kras/cert/server.crt         [string]
   --key            Sets the key of the server, by default
@@ -87,6 +89,8 @@ If specified the command line options have higher precedence. The following opti
   --map            Sets the different mappings, e.g.,
                    "--map./=https://httpbin.org"; can be used multiple times
                                                                    [default: {}]
+  --version        Show version number                                 [boolean]
+  -h, --help       Shows the argument descriptions                     [boolean]
 ```
 
 The `.krasrc` is a simple JSON format. An example is the following configuration:
@@ -95,6 +99,7 @@ The `.krasrc` is a simple JSON format. An example is the following configuration
 {
   "name": "kras",
   "port": 9000,
+  "host": "0.0.0.0",
   "directory": ".",
   "uploadLimit": 10,
   "logLevel": "error",

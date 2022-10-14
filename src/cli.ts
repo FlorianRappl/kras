@@ -17,6 +17,8 @@ const argv = yargs
   .string('d')
   .alias('d', 'dir')
   .describe('d', `Sets the base directory of the server, by default ${defaultConfig.directory}`)
+  .string('host')
+  .describe('host', `Sets the host binding of the server, by default ${defaultConfig.host}`)
   .string('cert')
   .describe('cert', `Sets the certificate of the server, by default ${defaultConfig.ssl.cert}`)
   .string('key')
@@ -38,6 +40,7 @@ const argv = yargs
 runFromCli(
   {
     port: argv.p,
+    host: argv.host,
     name: argv.n,
     logs: argv.l as LogLevel,
     cert: argv.cert,

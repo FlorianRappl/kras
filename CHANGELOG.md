@@ -1,8 +1,13 @@
 # Changelog
 
+## 0.15.2
+
+- Support for different hostname bindings (default: `0.0.0.0`)
+- Updated dependencies
+
 ## 0.15.1
 
-- Support for reading certificates from node_modules
+- Support for reading certificates from `node_modules`
 
 ## 0.15.0
 
