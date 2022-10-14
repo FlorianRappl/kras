@@ -6,6 +6,7 @@ import * as chalk from 'chalk';
 
 export interface ConfigurationOptions {
   name?: string;
+  host?: string;
   port?: number;
   logs?: LogLevel;
   dir?: string;
@@ -188,6 +189,10 @@ export function mergeConfiguration(
     result.port = options.port;
   }
 
+  if (options.host) {
+    result.host = options.host;
+  }
+
   result.injectors = mergeObjects(sources, (m) => m.injectors);
   result.map = mergeObjects(sources, (m) => m.map);
   result.sources = mergeArrays(
@@ -213,6 +218,7 @@ const certDir = resolve(__dirname, '../../../cert');
 
 export const defaultConfig = {
   name: `${name} v${version}`,
+  host: '0.0.0.0',
   port: 9000,
   directory: resolve(currentDir, 'mocks'),
   client: 'kras-management-portal',

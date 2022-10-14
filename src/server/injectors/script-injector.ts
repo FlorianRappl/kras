@@ -33,8 +33,8 @@ export interface DynamicScriptInjectorConfig {
 }
 
 export interface ScriptFileEntry {
+  file: string;
   active: boolean;
-  file?: string;
   error?: string;
   handler?(
     ctx: ScriptContextData,
@@ -43,9 +43,7 @@ export interface ScriptFileEntry {
   ): KrasAnswer | Promise<KrasAnswer> | undefined;
 }
 
-interface ScriptFiles {
-  [file: string]: ScriptFileEntry;
-}
+type ScriptFiles = Array<ScriptFileEntry>;
 
 export function tryEvaluate(script: ScriptFileEntry) {
   try {
@@ -64,7 +62,7 @@ export function tryEvaluate(script: ScriptFileEntry) {
 }
 
 export default class ScriptInjector implements KrasInjector {
-  private readonly files: ScriptFiles = {};
+  private readonly files: ScriptFiles = [];
   private readonly core: EventEmitter;
   private readonly watcher: Watcher;
 
@@ -77,14 +75,13 @@ export default class ScriptInjector implements KrasInjector {
     this.core = core;
     this.krasConfig = config;
 
-    this.watcher = watch(directory, '**/*.js', (ev, fileName) => {
+    this.watcher = watch(directory, '**/*.js', (ev, fileName, position) => {
       switch (ev) {
         case 'create':
         case 'update':
-          return this.load(fileName);
+          return this.load(fileName, position);
         case 'delete':
-          delete this.files[fileName];
-          return;
+          return this.unload(fileName);
       }
     });
   }
@@ -103,9 +100,8 @@ export default class ScriptInjector implements KrasInjector {
   }
 
   setOptions(options: DynamicScriptInjectorConfig): void {
-    for (const file of options.files) {
-      const script = this.files[file.name];
-      const active = file.active;
+    for (const { name, active } of options.files) {
+      const script = this.files.find((f) => f.file === name);
 
       if (script && typeof active === 'boolean') {
         script.active = active;
@@ -128,19 +124,27 @@ export default class ScriptInjector implements KrasInjector {
     this.config.active = value;
   }
 
-  private load(fileName: string) {
-    const script = this.files[fileName] || {
-      active: true,
-    };
+  private unload(fileName: string) {
+    const index = this.files.findIndex(({ file }) => file === fileName);
 
-    script.file = fileName;
+    if (index !== -1) {
+      this.files.splice(index, 1);
+    }
+  }
+
+  private load(fileName: string, position: number) {
+    const file = this.files.find(({ file }) => file === fileName);
+    const active = file?.active ?? true;
+    const script: ScriptFileEntry = { file: fileName, active };
+
     tryEvaluate(script);
 
     if (script.error) {
       this.core.emit('error', script.error);
     }
 
-    this.files[fileName] = script;
+    this.unload(fileName);
+    this.files.splice(position, 0, script);
   }
 
   dispose() {
@@ -148,17 +152,15 @@ export default class ScriptInjector implements KrasInjector {
   }
 
   handle(req: KrasRequest): Promise<KrasAnswer> | KrasAnswer {
-    for (const fileName of Object.keys(this.files)) {
-      const script = this.files[fileName];
+    for (const { file, active, handler } of this.files) {
       const name = this.name;
 
-      if (script.active) {
-        const handler = script.handler;
+      if (active) {
         const builder = ({ statusCode = 200, statusText = '', headers = {}, content = '' }) =>
           fromJson(req.url, statusCode, statusText, headers, content, {
             name,
             file: {
-              name: fileName,
+              name: file,
             },
           });
         const extended = this.config.extended || {};

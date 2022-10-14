@@ -70,6 +70,7 @@ interface HttpArchive {
 }
 
 interface HarFileEntry {
+  file: string;
   active: boolean;
   request: {
     method: string;
@@ -83,9 +84,7 @@ interface HarFileEntry {
   time: number;
 }
 
-interface HarFiles {
-  [file: string]: Array<HarFileEntry>;
-}
+type HarFiles = Array<Array<HarFileEntry>>;
 
 export interface HarInjectorConfig {
   directory?: string | Array<string>;
@@ -104,7 +103,7 @@ export interface DynamicHarInjectorConfig {
 }
 
 export default class HarInjector implements KrasInjector {
-  private readonly files: HarFiles = {};
+  private readonly files: HarFiles = [];
   private readonly watcher: Watcher;
   private readonly connectors: Array<{
     target: string;
@@ -123,14 +122,13 @@ export default class HarInjector implements KrasInjector {
         address: config.map[target] as string,
       }));
 
-    this.watcher = watch(directory, '**/*.har', (ev, fileName) => {
+    this.watcher = watch(directory, '**/*.har', (ev, fileName, position) => {
       switch (ev) {
         case 'create':
         case 'update':
-          return this.load(fileName);
+          return this.load(fileName, position);
         case 'delete':
-          delete this.files[fileName];
-          return;
+          return this.unload(fileName);
       }
     });
   }
@@ -151,15 +149,16 @@ export default class HarInjector implements KrasInjector {
   setOptions(options: DynamicHarInjectorConfig): void {
     this.config.delay = options.delay;
 
-    for (const file of options.files) {
-      const entries = this.files[file.name];
+    for (const { name, entries } of options.files) {
+      const files = this.files.find((m) => m[0].file === name);
 
       if (entries) {
         for (let i = 0; i < entries.length; i++) {
-          const entry = file.entries[i];
+          const entry = entries[i];
+          const file = files[i];
 
-          if (entry && typeof entry.active === 'boolean') {
-            entries[i].active = entry.active;
+          if (file && typeof entry.active === 'boolean') {
+            file.active = entry.active;
           }
         }
       }
@@ -180,8 +179,23 @@ export default class HarInjector implements KrasInjector {
     this.config.active = value;
   }
 
-  private load(fileName: string) {
-    this.files[fileName] = findEntries(asJson(fileName)).map((entry) => this.transformEntry(entry));
+  private unload(fileName: string) {
+    const index = this.files.findIndex((m) => m[0].file === fileName);
+
+    if (index !== -1) {
+      this.files.splice(index, 1);
+    }
+  }
+
+  private load(fileName: string, position: number) {
+    const content = asJson(fileName);
+    const entries = findEntries(content);
+    const files = entries.map((entry) => this.transformEntry(fileName, entry));
+    this.unload(fileName);
+
+    if (files.length > 0) {
+      this.files.splice(position, 0, files);
+    }
   }
 
   private findTarget(url: string) {
@@ -194,7 +208,7 @@ export default class HarInjector implements KrasInjector {
     return undefined;
   }
 
-  private transformEntry(entry: HttpArchive) {
+  private transformEntry(file: string, entry: HttpArchive) {
     const original = entry.request;
     const response = entry.response;
     const request = {
@@ -209,6 +223,7 @@ export default class HarInjector implements KrasInjector {
     delete request.headers._;
 
     return {
+      file,
       active: true,
       time: entry.time,
       request,
@@ -221,29 +236,28 @@ export default class HarInjector implements KrasInjector {
   }
 
   handle(req: KrasRequest): Promise<KrasAnswer> | KrasAnswer {
-    for (const fileName of Object.keys(this.files)) {
-      const entries = this.files[fileName];
+    let i = 0;
 
-      for (let i = 0; i < entries.length; i++) {
-        const entry = entries[i];
-
-        if (entry.active) {
-          const item = entry.request;
+    for (const files of this.files) {
+      for (const { file, active, time, request, response } of files) {
+        if (active) {
           const name = this.name;
 
-          if (compareRequests(item, req)) {
+          if (compareRequests(request, req)) {
             return delay(
-              fromHar(item.url, entry.response, {
+              fromHar(request.url, response, {
                 name,
                 file: {
-                  name: fileName,
+                  name: file,
                   entry: i,
                 },
               }),
-              this.config.delay && entry.time,
+              this.config.delay && time,
             );
           }
         }
+
+        i++;
       }
     }
   }

@@ -16,6 +16,7 @@ export interface WebServerConfiguration extends AppConfiguration {
   ws: boolean | Dict<any>;
   uploadLimit: number;
   port: number;
+  host: string;
 }
 
 export interface KrasAuthSimpleAccount {
