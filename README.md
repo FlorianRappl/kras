@@ -8,7 +8,7 @@
 
 Efficient server proxying and mocking in Node.js. :muscle:
 
-![kras logo](https://github.com/FlorianRappl/kras/raw/master/logo.png)
+![kras logo](https://github.com/FlorianRappl/kras/raw/main/logo.png)
 
 The README is supposed to only give you a basic idea what kras *is*. To *truly find out* about all the possibilities and details the [getting started](docs/getting-started.md) document will give you the right pointers and pieces of information.
 
