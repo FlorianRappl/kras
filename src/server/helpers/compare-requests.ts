@@ -26,8 +26,8 @@ function pathEquals(a: string, b: string) {
 
   if (i === b.indexOf('?')) {
     if (i !== -1) {
-      a = a.substr(0, i);
-      b = b.substr(0, i);
+      a = a.substring(0, i);
+      b = b.substring(0, i);
     }
 
     return stringEquals(a, b);

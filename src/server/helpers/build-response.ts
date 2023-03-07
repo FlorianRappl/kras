@@ -71,6 +71,7 @@ function buildResponse(state: Partial<ResponseState>): KrasAnswer {
   const redirectUrl = state.redirectUrl;
   const headers = state.headers || {};
   const injector = state.injector || {};
+
   setIfUndefined(headers, 'content-type', 'text/html');
   setIfUndefined(injector, 'name', '(none)');
 
@@ -85,18 +86,11 @@ function buildResponse(state: Partial<ResponseState>): KrasAnswer {
 }
 
 export function fromNode(ans: NodeResponse, body: Buffer, injector?: KrasInjectorInfo) {
-  const headers: Headers = {};
-
-  Object.keys(ans.headers).forEach((name) => {
-    const value = ans.headers[name];
-    headers[name] = Array.isArray(value) ? value.join() : value;
-  });
-
   return buildResponse({
     statusCode: ans.statusCode,
     statusText: ans.statusMessage,
     url: ans.url || ans.request.href,
-    headers,
+    headers: ans.headers,
     content: body,
     injector,
   });
