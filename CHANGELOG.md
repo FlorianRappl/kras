@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.15.3
+
+- Updated dependencies
+
 ## 0.15.2
 
 - Support for different hostname bindings (default: `0.0.0.0`)
