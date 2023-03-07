@@ -1,7 +1,7 @@
 import { IncomingHttpHeaders } from 'http';
 
 export interface KrasRequestQuery {
-  [key: string]: string;
+  [key: string]: string | Array<string>;
 }
 
 export interface BasicKrasRequest {

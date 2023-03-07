@@ -1,8 +1,9 @@
+import * as chalk from 'chalk';
 import { resolve, dirname } from 'path';
 import { existsSync, readFileSync } from 'fs';
 import { name, version, currentDir } from '../info';
+import { deepMerge } from '../helpers';
 import { Dict, KrasConfiguration, LogLevel } from '../types';
-import * as chalk from 'chalk';
 
 export interface ConfigurationOptions {
   name?: string;
@@ -88,25 +89,6 @@ export function readConfiguration(path: string): ConfigurationFile {
   }
 
   return {};
-}
-
-function deepMerge(obj: any, value: any) {
-  Object.keys(value).forEach((key) => {
-    const oldItem = obj[key];
-    const newItem = value[key];
-
-    if (newItem === undefined) {
-      delete obj[key];
-    } else if (Array.isArray(oldItem) && Array.isArray(newItem)) {
-      obj[key] = [...oldItem, ...newItem] as any;
-    } else if (typeof oldItem === 'object') {
-      obj[key] = deepMerge({ ...oldItem }, newItem);
-    } else {
-      obj[key] = newItem;
-    }
-  });
-
-  return obj;
 }
 
 function mergeObjects<T>(

@@ -3,7 +3,16 @@ import * as cookie from 'cookie';
 import * as parser from 'accept-language-parser';
 import fakerLocale from '../helpers/faker-locale';
 import { generateFromTemplate } from '../helpers/generate-from-template';
-import { asJson, watch, Watcher, editDirectoryOption, editEntryOption, fromJson, compareRequests } from '../helpers';
+import {
+  asJson,
+  watch,
+  Watcher,
+  editDirectoryOption,
+  editEntryOption,
+  fromJson,
+  compareRequests,
+  getFirst,
+} from '../helpers';
 import {
   KrasInjectorConfig,
   KrasAnswer,
@@ -158,20 +167,27 @@ export default class JsonInjector implements KrasInjector {
       const cookies = cookie.parse(req.headers.cookie || '');
       const acceptLanguage = parser.parse(req.headers['accept-language']);
       let locale = 'en';
+
       if (req.query[localeName]) {
-        locale = req.query[localeName];
+        locale = getFirst(req.query[localeName]);
       } else if (cookies[localeName]) {
         locale = cookies[localeName];
       } else if (acceptLanguage.length && acceptLanguage[0].code) {
         locale = acceptLanguage[0].code;
       }
+
       // Convert like: en, en-US to en_US
       faker.setLocale(fakerLocale(locale) || locale);
+
       // Ignore Buffer content
-      if (Buffer.isBuffer(content)) return content;
+      if (Buffer.isBuffer(content)) {
+        return content;
+      }
+
       if (typeof content === 'string') {
         content = JSON.parse(content);
       }
+
       const templateJson = generateFromTemplate(content);
       return JSON.stringify(templateJson);
     }

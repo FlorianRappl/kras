@@ -26,4 +26,4 @@ export interface LogEntry {
   data: any;
 }
 
-export type Headers = Dict<string>;
+export type Headers = Dict<string | Array<string>>;

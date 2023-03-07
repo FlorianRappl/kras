@@ -4,9 +4,9 @@ import { EventEmitter } from 'events';
 declare global {
   namespace Express {
     interface Request {
-      addedHeaders: Record<string, string>;
+      addedHeaders: Record<string, string | Array<string>>;
       removedHeaders: Array<string>;
-      addedQuery: Record<string, string>;
+      addedQuery: Record<string, string | Array<string>>;
       removedQuery: Array<string>;
     }
 

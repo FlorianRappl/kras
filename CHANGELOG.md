@@ -2,6 +2,7 @@
 
 ## 0.15.3
 
+- Added possibility to specify multiple headers or query parameters
 - Updated dependencies
 
 ## 0.15.2

@@ -4,7 +4,7 @@ import { resolve, basename } from 'path';
 import { EventEmitter } from 'events';
 import { Request, Response } from 'express';
 import { parse } from 'url';
-import { fromMissing, isEncrypted, getPort } from '../helpers';
+import { fromMissing, isEncrypted, getPort, deepMerge, getLast } from '../helpers';
 import { injectorDebug, injectorConfig, injectorMain } from '../info';
 import { KrasConfiguration, KrasServer, KrasAnswer, KrasInjector, KrasInjectorConfig, KrasRequest } from '../types';
 
@@ -15,6 +15,7 @@ import ScriptInjector from './script-injector';
 import StoreInjector from './store-injector';
 
 const specialHeaders = ['origin', 'content-type'];
+const multipleHeaders = ['set-cookie'];
 
 const coreInjectors: Record<string, any> = {
   har: HarInjector,
@@ -27,11 +28,19 @@ const coreInjectors: Record<string, any> = {
 function sendResponse(req: KrasRequest, ans: KrasAnswer, res: Response) {
   if (!ans.redirectUrl) {
     const origin = req.headers.origin;
-    const type = ans.headers['content-type'];
+    const type = getLast(ans.headers['content-type']);
 
     for (const headerName of Object.keys(ans.headers)) {
       if (specialHeaders.indexOf(headerName) === -1) {
-        res.setHeader(headerName, ans.headers[headerName]);
+        const value = ans.headers[headerName];
+
+        if (Array.isArray(value) && multipleHeaders.includes(headerName)) {
+          for (const item of value) {
+            res.setHeader(headerName, item);
+          }
+        } else {
+          res.setHeader(headerName, value);
+        }
       }
     }
 
@@ -70,20 +79,9 @@ function getTarget(targets: Array<string>, url: string) {
 function normalizeRequest(targets: Array<string>, req: Request): KrasRequest {
   const target = getTarget(targets, req.originalUrl) || '';
   const url = req.originalUrl.substring(target.length);
-
-  const query = Object.assign(
-    {
-      ...req.addedQuery,
-    },
-    req.query,
-  ) as Record<string, string>;
-
-  const headers = Object.assign(
-    {
-      ...req.addedHeaders,
-    },
-    req.headers,
-  ) as Record<string, string>;
+  const headers: Record<string, string | Array<string>> = deepMerge({ ...req.headers }, req.addedHeaders);
+  const query: Record<string, string | Array<string>> = deepMerge({ ...req.query }, req.addedQuery);
+  const method = typeof req.method === 'string' ? req.method : 'GET';
 
   let content: any;
 
@@ -105,8 +103,6 @@ function normalizeRequest(targets: Array<string>, req: Request): KrasRequest {
   } else {
     content = typeof req.body === 'string' ? req.body : '';
   }
-
-  const method = typeof req.method === 'string' ? req.method : 'GET';
 
   for (const name of req.removedHeaders) {
     delete headers[name];

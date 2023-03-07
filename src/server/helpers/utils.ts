@@ -24,3 +24,38 @@ export function filterReverse<T>(
 
   return dest;
 }
+
+export function deepMerge(obj: any, value: any) {
+  Object.keys(value).forEach((key) => {
+    const oldItem = obj[key];
+    const newItem = value[key];
+
+    if (newItem === undefined) {
+      delete obj[key];
+    } else if (Array.isArray(oldItem) && Array.isArray(newItem)) {
+      obj[key] = [...oldItem, ...newItem] as any;
+    } else if (typeof oldItem === 'object') {
+      obj[key] = deepMerge({ ...oldItem }, newItem);
+    } else {
+      obj[key] = newItem;
+    }
+  });
+
+  return obj;
+}
+
+export function getLast(value: string | Array<string>) {
+  if (Array.isArray(value)) {
+    return value[value.length - 1];
+  }
+
+  return value;
+}
+
+export function getFirst(value: string | Array<string>) {
+  if (Array.isArray(value)) {
+    return value[0];
+  }
+
+  return value;
+}
