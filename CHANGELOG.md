@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.15.4
+
+- Fixed issue with bundled `package.json` reference
+
 ## 0.15.3
 
 - Added possibility to specify multiple headers or query parameters
