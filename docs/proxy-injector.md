@@ -53,7 +53,7 @@ const defaultProxyHeaders = [
 ];
 ```
 
-The `xfwd` option will create the following headers:|
+The `xfwd` option will create the following headers:
 - x-forwarded-for
 - x-forwarded-host
 - x-forwarded-port
