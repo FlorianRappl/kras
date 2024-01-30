@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.15.4 (tbd)
+
+- Fixed the `x-forwarded-host` header value
+
 ## 0.15.3
 
 - Added possibility to specify multiple headers or query parameters
