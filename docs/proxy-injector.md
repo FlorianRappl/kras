@@ -20,16 +20,18 @@ interface ProxyInjectorConfiguration {
   active?: boolean;
   agentOptions?: any;
   proxy?: any;
+  xfwd?: boolean;
   defaultHeaders?: Array<string>;
   discardHeaders?: Array<string>;
   permitHeaders?: Array<string>;
+  injectHeaders?: Record<string, string>;
   followRedirect?: boolean;
 }
 ```
 
 The mapping is already a general configuration, as the targets need to be known as well as their usual counterparts (e.g., to identify the correct URLs in an HAR file). The `agentOptions` can be used to specify more sophisticated options for the proxyed request (e.g., which ciphers to use). The `proxy` option allows us to set a (corporate?) proxy to be used on the local machine (oh the irony - a proxy server that allows setting another proxy ...).
 
-While the `defaultHeaders` provide a way to override the used default set of headers, `permitHeaders` are for explicitly allowing non-default headers and `discardHeaders` may be used to define which headers should never be considered.
+While the `defaultHeaders` provide a way to override the used default set of headers, `permitHeaders` are for explicitly allowing non-default headers and `discardHeaders` may be used to define which headers should never be considered, and `injectHeaders` may be used to create or override headers with custom values.
 
 If not explicitly specified the default headers are defined to be:
 
@@ -50,3 +52,11 @@ const defaultProxyHeaders = [
   'range',
 ];
 ```
+
+The `xfwd` option will create the following headers:|
+- x-forwarded-for
+- x-forwarded-host
+- x-forwarded-port
+- x-forwarded-proto
+
+and set the header values as derived from the original request. The `x-forwarded-host` header will contain the request's `host` header value, which may include a port number.
