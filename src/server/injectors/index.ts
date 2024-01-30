@@ -1,4 +1,4 @@
-import * as FormData from 'form-data';
+import FormData from 'form-data';
 import { existsSync } from 'fs';
 import { resolve, basename } from 'path';
 import { EventEmitter } from 'events';
@@ -15,7 +15,6 @@ import ScriptInjector from './script-injector';
 import StoreInjector from './store-injector';
 
 const specialHeaders = ['origin', 'content-type'];
-const multipleHeaders = ['set-cookie'];
 
 const coreInjectors: Record<string, any> = {
   har: HarInjector,
@@ -32,15 +31,7 @@ function sendResponse(req: KrasRequest, ans: KrasAnswer, res: Response) {
 
     for (const headerName of Object.keys(ans.headers)) {
       if (specialHeaders.indexOf(headerName) === -1) {
-        const value = ans.headers[headerName];
-
-        if (Array.isArray(value) && multipleHeaders.includes(headerName)) {
-          for (const item of value) {
-            res.setHeader(headerName, item);
-          }
-        } else {
-          res.setHeader(headerName, value);
-        }
+        res.setHeader(headerName, ans.headers[headerName]);
       }
     }
 

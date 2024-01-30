@@ -1,6 +1,6 @@
-import * as express from 'express';
-import * as expressWs from 'express-ws';
-import * as multer from 'multer';
+import express from 'express';
+import expressWs from 'express-ws';
+import multer from 'multer';
 import type { Server as WebSocketServer } from 'ws';
 import type { Application, Request, Response } from 'express';
 import { createServer as createHttpServer, Server as HttpServer } from 'http';

@@ -1,6 +1,7 @@
-import * as readFile from 'send';
+import readFile from 'send';
 import { resolve, dirname } from 'path';
 import { exists } from 'fs';
+import { distDir } from '../info';
 import { KrasServer, KrasConfiguration } from '../types';
 
 // this only exists to trick "ncc" -> otherwise it tries to resolve it
@@ -23,7 +24,7 @@ export async function getClient(cwd: string, path: string) {
 
     try {
       const mainPath = require.resolve(path, {
-        paths: [__dirname, process.cwd(), cwd],
+        paths: [distDir, process.cwd(), cwd],
       });
       const mainDir = dirname(mainPath);
       return resolve(mainDir, indexHtml);

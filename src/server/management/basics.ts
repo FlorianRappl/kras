@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
-import { resolve } from 'path';
 import { spawn } from 'child_process';
+import { version } from '../info';
 import { KrasServer, KrasConfiguration } from '../types';
 
 const started = new Date();
@@ -26,15 +26,13 @@ function restart() {
 }
 
 export function configOf(server: KrasServer, config: KrasConfiguration) {
-  const pkgFile = resolve(__dirname, '..', '..', '..', 'package.json');
-  const pkgInfo = require(pkgFile);
   return (_: Request, res: Response) => {
     res.json({
       directory: config.directory,
       sources: config.sources,
       map: config.map,
       name: config.name,
-      version: pkgInfo.version,
+      version,
       started: started.toString(),
       mode: 'running',
     });

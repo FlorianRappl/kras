@@ -1,4 +1,5 @@
 import { resolve } from 'path';
+import { rootDir } from '../info';
 import { KrasServer, KrasConfiguration, KrasServerHandler } from '../types';
 
 interface MiddlewarePackage {
@@ -37,7 +38,7 @@ async function createMiddleware(
   const creator =
     findFirstMiddleware([source, resolve(baseDir, source)]) ||
     findFirstMiddleware((config.sources || []).map((dir) => resolve(dir, source))) ||
-    findFirstMiddleware([resolve(process.cwd(), source), resolve(__dirname, source)]);
+    findFirstMiddleware([resolve(process.cwd(), source), resolve(rootDir, source)]);
 
   if (creator) {
     if (typeof creator.setup === 'function') {

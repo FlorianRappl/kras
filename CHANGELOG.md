@@ -1,8 +1,14 @@
 # Changelog
 
-## 0.15.4 (tbd)
+## 0.15.5
 
 - Fixed the `x-forwarded-host` header value
+- Updated dependencies
+- Updated build to use esbuild instead of ncc
+
+## 0.15.4
+
+- Fixed issue with bundled `package.json` reference
 
 ## 0.15.3
 

@@ -1,7 +1,7 @@
 import * as chalk from 'chalk';
 import { resolve, dirname } from 'path';
 import { existsSync, readFileSync } from 'fs';
-import { name, version, currentDir } from '../info';
+import { name, version, currentDir, rootDir } from '../info';
 import { deepMerge } from '../helpers';
 import { Dict, KrasConfiguration, LogLevel } from '../types';
 
@@ -196,7 +196,7 @@ export function mergeConfiguration(
   return result;
 }
 
-const certDir = resolve(__dirname, '../../../cert');
+const certDir = resolve(rootDir, 'cert');
 
 export const defaultConfig = {
   name: `${name} v${version}`,

@@ -1,7 +1,9 @@
 import { resolve, join } from 'path';
 import { existsSync } from 'fs';
 
-export const rootDir = resolve(__dirname, '..', '..');
+export const serverDir = resolve(__dirname);
+export const distDir = resolve(serverDir, '..');
+export const rootDir = resolve(distDir, '..');
 export const currentDir = process.cwd();
 
 export const krasrc = '.krasrc';
