@@ -1,6 +1,21 @@
-import request from 'request';
+import axios, { AxiosResponseHeaders, RawAxiosResponseHeaders, RawAxiosRequestHeaders } from 'axios';
+import { Agent } from 'https';
 import { fromNode } from './build-response';
-import { KrasInjectorInfo } from '../types';
+import { Dict, KrasAnswer, KrasInjectorInfo } from '../types';
+
+function convertHeaders(headers: RawAxiosResponseHeaders | AxiosResponseHeaders) {
+  const result: Dict<string | Array<string>> = {};
+
+  Object.entries(headers).forEach(([name, value]) => {
+    if (Array.isArray(value)) {
+      result[name] = value.map(n => `${n}`);
+    } else {
+      result[name] = `${value}`;
+    }
+  });
+
+  return result;
+}
 
 export const defaultProxyHeaders = [
   'authorization',
@@ -18,14 +33,10 @@ export const defaultProxyHeaders = [
   'range',
 ];
 
-export interface ProxyCallback {
-  (err?: Error, foo?: any): void;
-}
-
 export interface ProxyRequestOptions {
   url: string;
   method: string;
-  headers: request.Headers;
+  headers: RawAxiosRequestHeaders;
   body: string;
   agentOptions?: any;
   proxy?: any;
@@ -33,26 +44,32 @@ export interface ProxyRequestOptions {
   redirect?: boolean;
 }
 
-export function proxyRequest(req: ProxyRequestOptions, callback: ProxyCallback) {
-  return request(
-    {
-      url: req.url,
+export async function proxyRequest(req: ProxyRequestOptions): Promise<KrasAnswer> {
+  const res = await axios.request({
+    url: req.url,
+    httpsAgent: new Agent({
       rejectUnauthorized: false,
-      method: req.method,
-      //tslint:disable-next-line
-      encoding: null,
-      proxy: req.proxy,
-      agentOptions: req.agentOptions,
-      headers: req.headers,
-      body: req.body,
-      followRedirect: req.redirect ?? true,
+      ...req.agentOptions,
+    }),
+    responseType: 'arraybuffer',
+    method: req.method,
+    proxy: req.proxy,
+    headers: req.headers,
+    data: req.body,
+    maxRedirects: req.redirect ? undefined : 0,
+  });
+
+  return fromNode(
+    {
+      headers: convertHeaders(res.headers),
+      request: {
+        href: req.url,
+      },
+      statusCode: res.status,
+      statusMessage: res.statusText,
+      url: res.config.url,
     },
-    (err, ans, body) => {
-      if (err) {
-        callback(err);
-      } else {
-        callback(undefined, fromNode(ans, body, req.injector));
-      }
-    },
+    res.data,
+    req.injector,
   );
 }

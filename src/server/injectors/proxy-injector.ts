@@ -225,28 +225,22 @@ export default class ProxyInjector implements KrasInjector {
 
     if (target) {
       const headers = this.makeHeaders(req, 'http');
-
-      return new Promise<KrasAnswer>((resolve) =>
-        proxyRequest(
-          {
-            headers,
-            url: target.address + req.url,
-            method: req.method,
-            body: req.content,
-            agentOptions: this.config.agentOptions,
-            proxy: this.config.proxy,
-            injector: {
-              name: this.name,
-              host: target,
-            },
-            redirect: this.config.followRedirect,
-          },
-          (err, ans) => {
-            this.logError(err);
-            resolve(ans);
-          },
-        ),
-      );
+      return proxyRequest({
+        headers,
+        url: target.address + req.url,
+        method: req.method,
+        body: req.content,
+        agentOptions: this.config.agentOptions,
+        proxy: this.config.proxy,
+        injector: {
+          name: this.name,
+          host: target,
+        },
+        redirect: this.config.followRedirect,
+      }).catch((err) => {
+        this.logError(err);
+        return undefined;
+      });
     }
   }
 }

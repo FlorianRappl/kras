@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.16.0
+
+- Replaced `request` with `axios`
+- Updated dependencies
+
 ## 0.15.5
 
 - Fixed the `x-forwarded-host` header value
