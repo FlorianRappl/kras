@@ -13,14 +13,14 @@ export class JsonStore<T> {
 
   insert(item: T) {
     const file = this.file;
-    const items = asJson<Array<T>>(file) || [];
+    const items = asJson<Array<T>>(file, []);
     items.push(item);
     toFile(file, items);
   }
 
   delete(predicate?: (item: T) => boolean) {
     const file = this.file;
-    const items = asJson<Array<T>>(file);
+    const items = asJson<Array<T>>(file, undefined);
 
     if (items && items.length) {
       for (let i = items.length; i--; ) {
@@ -35,7 +35,7 @@ export class JsonStore<T> {
 
   select(predicate?: (item: T) => boolean) {
     const file = this.file;
-    const items = asJson<Array<T>>(file) || [];
+    const items = asJson<Array<T>>(file, []);
     return items.filter(predicate || all);
   }
 

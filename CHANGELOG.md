@@ -2,6 +2,7 @@
 
 ## 0.16.0
 
+- Fixed error handling with wrong JSON format (#65)
 - Replaced `request` with `axios`
 - Updated dependencies
 

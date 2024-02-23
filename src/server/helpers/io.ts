@@ -36,13 +36,17 @@ export function toAbsolute(directory: string) {
   return (file: string) => join(directory, file);
 }
 
-export function asJson<T = {}>(file: string): T {
+export function asJson<T = {}>(file: string, defaultValue: T): T {
   if (existsSync(file)) {
-    const content = readFileSync(file, 'utf8');
-    return JSON.parse(content);
+    try {
+      const content = readFileSync(file, 'utf8');
+      return JSON.parse(content);
+    } catch {
+      return defaultValue;
+    }
   }
 
-  return undefined;
+  return defaultValue;
 }
 
 export function asScript(file: string) {

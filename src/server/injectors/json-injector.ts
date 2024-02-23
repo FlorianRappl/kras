@@ -134,7 +134,7 @@ export default class JsonInjector implements KrasInjector {
   }
 
   private load(fileName: string, position: number) {
-    const content = asJson(fileName);
+    const content = asJson(fileName, []);
     const items = Array.isArray(content) ? content : [content];
 
     for (const item of items) {

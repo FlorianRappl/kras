@@ -188,7 +188,7 @@ export default class HarInjector implements KrasInjector {
   }
 
   private load(fileName: string, position: number) {
-    const content = asJson(fileName);
+    const content = asJson(fileName, undefined);
     const entries = findEntries(content);
     const files = entries.map((entry) => this.transformEntry(fileName, entry));
     this.unload(fileName);
