@@ -3,6 +3,7 @@
 ## 0.16.0
 
 - Fixed error handling with wrong JSON format (#65)
+- Removed support for Node.js below 16
 - Replaced `request` with `axios`
 - Updated dependencies
 

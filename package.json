@@ -28,7 +28,7 @@
     "build:server:decl": "dets --imports node express --files src/server/index.ts --types src/server/index.ts --out dist/server/index.d.ts",
     "build:server:code": "node build.js",
     "build:server": "npm run build:server:code && npm run build:server:decl",
-    "build:utility": "esbuild --bundle utils/index.ts --minify --target=node14 --platform=node --outdir=utils",
+    "build:utility": "esbuild --bundle utils/index.ts --external:fsevents --minify --target=node16 --platform=node --outdir=utils",
     "build:cli": "tsc --project tsconfig.cli.json",
     "build": "npm run build:cli && npm run build:utility && npm run build:server"
   },
@@ -74,7 +74,7 @@
     "chokidar": "^3.5.3",
     "cookie": "^0.4.2",
     "cross-env": "^7.0.3",
-    "dets": "^0.14.1",
+    "dets": "^0.14.2",
     "enzyme-to-json": "^3.6.2",
     "esbuild": "^0.20.0",
     "express": "^4.18.2",
