@@ -8,7 +8,7 @@ function convertHeaders(headers: RawAxiosResponseHeaders | AxiosResponseHeaders)
 
   Object.entries(headers).forEach(([name, value]) => {
     if (Array.isArray(value)) {
-      result[name] = value.map(n => `${n}`);
+      result[name] = value.map((n) => `${n}`);
     } else {
       result[name] = `${value}`;
     }
