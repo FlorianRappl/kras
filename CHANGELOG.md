@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.16.1
+
+- Fixed issue with proxy injector not returning response
+
 ## 0.16.0
 
 - Fixed error handling with wrong JSON format (#65)

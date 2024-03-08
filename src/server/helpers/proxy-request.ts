@@ -53,6 +53,7 @@ export async function proxyRequest(req: ProxyRequestOptions): Promise<KrasAnswer
     }),
     responseType: 'arraybuffer',
     method: req.method,
+    validateStatus: () => true,
     proxy: req.proxy,
     headers: req.headers,
     data: req.body,
