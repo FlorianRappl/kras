@@ -13,7 +13,7 @@ import {
   compareRequests,
   getFirst,
 } from '../helpers';
-import {
+import type {
   KrasInjectorConfig,
   KrasAnswer,
   KrasInjector,

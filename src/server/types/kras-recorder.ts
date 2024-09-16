@@ -1,6 +1,6 @@
-import { KrasRequest } from './kras-request';
-import { KrasAnswer } from './kras-injector';
-import { EventEmitter } from 'events';
+import type { KrasRequest } from './kras-request';
+import type { KrasAnswer } from './kras-injector';
+import type { EventEmitter } from 'events';
 
 export interface RecordedRequest {
   id: string;

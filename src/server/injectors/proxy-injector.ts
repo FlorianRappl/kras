@@ -1,7 +1,7 @@
 import WebSocket from 'ws';
-import { EventEmitter } from 'events';
 import { proxyRequest, defaultProxyHeaders, getPort, isEncrypted } from '../helpers';
-import {
+import type { EventEmitter } from 'events';
+import type {
   KrasInjector,
   KrasAnswer,
   KrasInjectorConfig,
@@ -229,7 +229,7 @@ export default class ProxyInjector implements KrasInjector {
         headers,
         url: target.address + req.url,
         method: req.method,
-        body: req.content,
+        body: req.rawContent,
         agentOptions: this.config.agentOptions,
         proxy: this.config.proxy,
         injector: {

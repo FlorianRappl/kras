@@ -1,12 +1,19 @@
 import FormData from 'form-data';
 import { existsSync } from 'fs';
 import { resolve, basename } from 'path';
-import { EventEmitter } from 'events';
-import { Request, Response } from 'express';
 import { parse } from 'url';
+import type { EventEmitter } from 'events';
+import type { Request, Response } from 'express';
 import { fromMissing, isEncrypted, getPort, deepMerge, getLast } from '../helpers';
 import { injectorDebug, injectorConfig, injectorMain } from '../info';
-import { KrasConfiguration, KrasServer, KrasAnswer, KrasInjector, KrasInjectorConfig, KrasRequest } from '../types';
+import type {
+  KrasConfiguration,
+  KrasServer,
+  KrasAnswer,
+  KrasInjector,
+  KrasInjectorConfig,
+  KrasRequest,
+} from '../types';
 
 import HarInjector from './har-injector';
 import JsonInjector from './json-injector';
@@ -74,10 +81,11 @@ function normalizeRequest(targets: Array<string>, req: Request): KrasRequest {
   const query: Record<string, string | Array<string>> = deepMerge({ ...req.query }, req.addedQuery);
   const method = typeof req.method === 'string' ? req.method : 'GET';
 
-  let content: any;
+  let content: string | FormData;
+  let formData: FormData;
 
   if (req.headers['content-type'] && req.headers['content-type'].search('multipart/form-data') !== -1) {
-    const formData = new FormData();
+    formData = new FormData();
     typeof req.body === 'object' &&
       Object.keys(req.body).map((field: any) => {
         return formData.append(field, req.body[field]);
@@ -113,6 +121,8 @@ function normalizeRequest(targets: Array<string>, req: Request): KrasRequest {
     method,
     headers,
     content,
+    rawContent: req.body,
+    formData,
   };
 }
 

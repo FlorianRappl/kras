@@ -1,3 +1,4 @@
+import type FormData from 'form-data';
 import {
   asJson,
   watch,
@@ -10,7 +11,7 @@ import {
   HarHeaders,
   compareRequests,
 } from '../helpers';
-import {
+import type {
   KrasInjector,
   KrasInjectorConfig,
   KrasRequest,
@@ -77,6 +78,8 @@ interface HarFileEntry {
     url: string;
     target: string;
     content: string;
+    rawContent: any;
+    formData?: FormData;
     headers: Headers;
     query: Headers;
   };
@@ -211,11 +214,13 @@ export default class HarInjector implements KrasInjector {
   private transformEntry(file: string, entry: HttpArchive) {
     const original = entry.request;
     const response = entry.response;
+    const content = (original.postData || {}).text || '';
     const request = {
       method: original.method,
       url: getUrl(original.url),
       target: original.target || this.findTarget(original.url),
-      content: (original.postData || {}).text || '',
+      content,
+      rawContent: content,
       headers: ato(original.headers),
       query: ato(original.queryString),
     };

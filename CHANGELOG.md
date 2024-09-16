@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.17.0
+
+- Fixed issue with type of `content` of `request`
+- Added `rawContent` and `formData` fields to `request` for more fine grained control
+
 ## 0.16.1
 
 - Fixed issue with proxy injector not returning response

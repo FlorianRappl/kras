@@ -1,6 +1,6 @@
-import { KrasRequest } from './kras-request';
-import { Headers, Dict } from './kras-basics';
-import { KrasInjectorOptions } from './kras-injector-options';
+import type { KrasRequest } from './kras-request';
+import type { Headers, Dict } from './kras-basics';
+import type { KrasInjectorOptions } from './kras-injector-options';
 
 export interface KrasAnswer {
   headers: Headers;

@@ -1,6 +1,6 @@
-import { EventEmitter } from 'events';
 import { asScript, watch, Watcher, editFileOption, editDirectoryOption, fromJson } from '../helpers';
-import {
+import type { EventEmitter } from 'events';
+import type {
   KrasRequest,
   KrasInjectorConfig,
   KrasInjector,
