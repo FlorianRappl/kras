@@ -37,7 +37,7 @@ export interface ProxyRequestOptions {
   url: string;
   method: string;
   headers: RawAxiosRequestHeaders;
-  body: string;
+  body: Buffer;
   agentOptions?: any;
   proxy?: any;
   injector?: KrasInjectorInfo;
