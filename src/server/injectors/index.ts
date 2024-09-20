@@ -83,6 +83,7 @@ function normalizeRequest(targets: Array<string>, req: Request): KrasRequest {
 
   let content: string | FormData;
   let formData: FormData;
+  let rawContent: Buffer;
 
   if (req.headers['content-type'] && req.headers['content-type'].search('multipart/form-data') !== -1) {
     formData = new FormData();
@@ -99,8 +100,18 @@ function normalizeRequest(targets: Array<string>, req: Request): KrasRequest {
       });
     headers['content-type'] = formData.getHeaders()['content-type'];
     content = formData;
+    rawContent = formData.getBuffer();
+  } else if (typeof req.body === 'string') {
+    content = req.body;
+    rawContent = Buffer.from(content);
   } else {
-    content = typeof req.body === 'string' ? req.body : '';
+    content = '';
+
+    try {
+      rawContent = Buffer.from(req.body);
+    } catch {
+      rawContent = Buffer.from('');
+    }
   }
 
   for (const name of req.removedHeaders) {
@@ -121,7 +132,7 @@ function normalizeRequest(targets: Array<string>, req: Request): KrasRequest {
     method,
     headers,
     content,
-    rawContent: req.body,
+    rawContent,
     formData,
   };
 }

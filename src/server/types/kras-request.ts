@@ -33,7 +33,7 @@ export interface BasicKrasRequest {
   /**
    * The raw content of the request.
    */
-  rawContent: any;
+  rawContent: Buffer;
   /**
    * The form data, in case a form was given.
    */
