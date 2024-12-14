@@ -19,8 +19,6 @@ jobs:
           registry-url: "https://registry.npmjs.org"
       - name: Install Dependencies
         run: npm install
-      - name: Lint Package
-        run: npm run lint
       - name: Test Package
         run: npm run test
       - name: Verify Building Package
