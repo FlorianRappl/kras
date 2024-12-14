@@ -19,7 +19,7 @@
     "url": "https://github.com/FlorianRappl/kras/issues"
   },
   "scripts": {
-    "test:unit": "cross-env NODE_ENV=test jest src",
+    "test:unit": "cross-env NODE_ENV=test vitest src",
     "test:watch": "npm run test:unit -- --watch",
     "test": "npm run test:unit",
     "start": "ts-node src/cli.ts",
@@ -58,14 +58,12 @@
     "@types/express": "^4",
     "@types/express-ws": "^3",
     "@types/faker": "^5",
-    "@types/jest": "^29",
     "@types/multer": "^1",
     "@types/send": "0.17.4",
     "@types/ws": "^8",
     "@types/yargs": "^17",
     "accept-language-parser": "^1",
     "axios": "^1",
-    "babel-jest": "^29",
     "body-parser": "^1",
     "chalk": "^5",
     "chokidar": "^4",
@@ -78,15 +76,14 @@
     "express-ws": "^4",
     "faker": "^5",
     "form-data": "^4",
-    "jest": "^29",
     "mixin-deep": "^2",
     "multer": "1.4.5-lts.1",
     "nodemon": "^3",
     "prettier": "^3",
     "send": "^1",
-    "ts-jest": "^29",
     "ts-node": "^10",
     "typescript": "^5",
+    "vitest": "^2",
     "ws": "^8"
   }
 }

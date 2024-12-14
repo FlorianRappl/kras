@@ -2,12 +2,8 @@ docs/
 test/
 .editorconfig
 .gitignore
-.travis.yml
-tsconfig.client.json
+build.js
 tsconfig.cli.json
 tsconfig.json
-jest.config.js
-webpack.config.js
 prettier.config.js
-tslint.json
 *.tgz

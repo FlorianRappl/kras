@@ -1,25 +1,27 @@
+import { vi, it, describe, expect } from 'vitest';
 import * as io from './io';
 import * as chokidar from 'chokidar';
 import { resolve } from 'path';
 
-jest.mock('./io', () => ({
-  ...jest.requireActual('./io'),
-  mk: jest.fn(),
+vi.mock('./io', async () => ({
+  ...(await vi.importActual('./io')),
+  mk: vi.fn(),
 }));
 
-jest.mock('fs', () => ({
-  readdirSync: jest.fn(() => []),
-  existsSync: jest.fn(() => true),
-  mkdirSync: jest.fn(),
+vi.mock('fs', () => ({
+  readdirSync: vi.fn(() => []),
+  existsSync: vi.fn(() => true),
+  mkdirSync: vi.fn(),
 }));
 
-jest.mock('chokidar', () => ({
-  watch: jest.fn(),
+vi.mock('chokidar', () => ({
+  watch: vi.fn(),
 }));
 
 describe('io helpers', () => {
   it('watch should work against a single directory', () => {
     const found: Array<string> = [];
+    // @ts-ignore
     chokidar.watch.mockImplementation(() => ({
       on() {
         return this;
@@ -34,6 +36,7 @@ describe('io helpers', () => {
 
   it('watch should find some files in the directory', () => {
     const found: Array<string> = [];
+    // @ts-ignore
     chokidar.watch.mockImplementation(() => ({
       on(type: string, cb: (file: string) => void) {
         if (type === 'add') {
@@ -51,6 +54,7 @@ describe('io helpers', () => {
 
   it('watch should work against multiple directories', () => {
     const found: Array<string> = [];
+    // @ts-ignore
     chokidar.watch.mockImplementation(() => ({
       on() {
         return this;

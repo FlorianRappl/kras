@@ -1,8 +1,9 @@
+import { vi, it, describe, expect } from 'vitest';
 import { readSsl } from './readSsl';
 import * as fs from 'fs';
 
-jest.mock('fs', () => ({
-  readFileSync: jest.fn().mockImplementation((name) => `${name}_content`),
+vi.mock('fs', () => ({
+  readFileSync: vi.fn().mockImplementation((name) => `${name}_content`),
 }));
 
 describe('readSsl', () => {

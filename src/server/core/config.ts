@@ -1,4 +1,4 @@
-import * as chalk from 'chalk';
+import chalk from 'chalk';
 import { resolve, dirname } from 'path';
 import { existsSync, readFileSync } from 'fs';
 import { name, version, currentDir, rootDir } from '../info';

@@ -1,7 +1,9 @@
+import { describe, it, expect } from 'vitest';
 import { broadcastAt } from './broadcast';
 
 describe('Management API - Broadcast', () => {
   it('broadcastAt should return a function', () => {
+    // @ts-ignore
     const handler = broadcastAt(undefined);
     expect(typeof handler).toBe('function');
   });

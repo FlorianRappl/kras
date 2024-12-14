@@ -1,9 +1,10 @@
+import { vi, it, describe, expect } from 'vitest';
 import ScriptInjector from './script-injector';
 import * as io from '../helpers/io';
 import { EventEmitter } from 'events';
 
-jest.mock('../helpers/io', () => ({
-  watch: jest.fn(),
+vi.mock('../helpers/io', () => ({
+  watch: vi.fn(),
 }));
 
 describe('ScriptInjector', () => {

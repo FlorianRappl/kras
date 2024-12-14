@@ -1,3 +1,4 @@
+import { vi, it, describe, expect } from 'vitest';
 import { Recorder } from './recorder';
 
 describe('Recorder', () => {
@@ -6,8 +7,11 @@ describe('Recorder', () => {
     const A: any = {};
     const B: any = {};
     const C: any = {};
+    // @ts-ignore
     recorder.hit(new Date(), new Date(), A, undefined);
+    // @ts-ignore
     recorder.hit(new Date(), new Date(), B, undefined);
+    // @ts-ignore
     recorder.hit(new Date(), new Date(), C, undefined);
     expect(recorder.requests.length).toBe(2);
     expect(recorder.requests[0].request).toBe(B);
@@ -19,7 +23,9 @@ describe('Recorder', () => {
     const A: any = {};
     const B: any = {};
     const C: any = {};
+    // @ts-ignore
     recorder.hit(new Date(), new Date(), A, undefined);
+    // @ts-ignore
     recorder.hit(new Date(), new Date(), B, undefined);
     recorder.miss(new Date(), new Date(), C);
     expect(recorder.requests.length).toBe(2);
@@ -37,6 +43,7 @@ describe('Recorder', () => {
       count = recorder.requests.length;
       expect(item.request).toBe(A);
     });
+    // @ts-ignore
     recorder.hit(new Date(), new Date(), A, undefined);
     expect(count).toBe(1);
   });

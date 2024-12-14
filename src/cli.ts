@@ -35,44 +35,48 @@ const argv = yargs
   .help('h')
   .alias('h', 'help')
   .describe('h', 'Shows the argument descriptions')
-  .epilog(`Copyright (c) 2018 - 2022 ${author}`).argv;
+  .epilog(`Copyright (c) 2018 - 2024 ${author}`).argv;
 
-runFromCli(
-  {
-    port: argv.p,
-    host: argv.host,
-    name: argv.n,
-    logs: argv.l as LogLevel,
-    cert: argv.cert,
-    key: argv.key,
-    dir: argv.d,
-    skipApi: argv['skip-api'],
-    initial: {
-      map: argv.map,
-      injectorDirs: [argv.d, process.cwd()],
-      injectors: {
-        script: {
-          active: true,
-        },
-        har: {
-          active: true,
-          delay: false,
-        },
-        json: {
-          active: true,
-          randomize: true,
-        },
-        proxy: {
-          active: true,
-        },
-        store: {
-          active: false,
+Promise.resolve(argv)
+  .then((args) =>
+    runFromCli(
+      {
+        port: args.p,
+        host: args.host,
+        name: args.n,
+        logs: args.l as LogLevel,
+        cert: args.cert,
+        key: args.key,
+        dir: args.d,
+        skipApi: args['skip-api'],
+        initial: {
+          map: args.map,
+          injectorDirs: [args.d, process.cwd()],
+          injectors: {
+            script: {
+              active: true,
+            },
+            har: {
+              active: true,
+              delay: false,
+            },
+            json: {
+              active: true,
+              randomize: true,
+            },
+            proxy: {
+              active: true,
+            },
+            store: {
+              active: false,
+            },
+          },
         },
       },
-    },
-  },
-  argv.c,
-).catch((err) => {
-  console.error(err);
-  process.exit(1);
-});
+      args.c,
+    ),
+  )
+  .catch((err) => {
+    console.error(err);
+    process.exit(1);
+  });

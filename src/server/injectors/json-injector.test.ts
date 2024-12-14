@@ -1,8 +1,9 @@
+import { vi, it, describe, expect } from 'vitest';
 import JsonInjector from './json-injector';
 import * as io from '../helpers/io';
 
-jest.mock('../helpers/io', () => ({
-  watch: jest.fn(),
+vi.mock('../helpers/io', () => ({
+  watch: vi.fn(),
 }));
 
 describe('JsonInjector', () => {

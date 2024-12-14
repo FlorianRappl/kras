@@ -1,3 +1,4 @@
+import { describe, it, expect } from 'vitest';
 import { fromHar, fromJson, fromNode, fromMissing } from './build-response';
 
 describe('Build Response', () => {

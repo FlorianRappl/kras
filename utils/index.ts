@@ -21,7 +21,10 @@ export {
   compareRequests,
   JsonStore,
   open,
-  ProxyCallback,
   proxyRequest,
   ProxyRequestOptions,
+  proxyWebSocket,
+  ProxyWebSocketOptions,
+  integrateXfwd,
+  ProxyRequestInfo,
 } from '../src/server/helpers';

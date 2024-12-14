@@ -38,13 +38,12 @@ export interface ScriptFileEntry {
   active: boolean;
   error?: string;
   handler?: {
-    (
-      ctx: ScriptContextData,
-      req: KrasRequest,
-      builder: ScriptResponseBuilder,
-    ): KrasAnswer | Promise<KrasAnswer> | undefined;
-    connected?(e: KrasWebSocketEvent): void;
-    disconnected?(e: KrasWebSocketEvent): void;
+    (ctx: ScriptContextData, req: KrasRequest, builder: ScriptResponseBuilder):
+      | KrasAnswer
+      | Promise<KrasAnswer>
+      | undefined;
+    connected?(ctx: ScriptContextData, e: KrasWebSocketEvent): void;
+    disconnected?(ctx: ScriptContextData, e: KrasWebSocketEvent): void;
   };
 }
 
@@ -93,7 +92,8 @@ export default class ScriptInjector implements KrasInjector {
     core.on('user-connected', (e: KrasWebSocketEvent) => {
       for (const { handler } of this.files) {
         if (handler && typeof handler.connected === 'function') {
-          handler.connected(e);
+          const ctx = this.getContext();
+          handler.connected(ctx, e);
         }
       }
     });
@@ -101,10 +101,21 @@ export default class ScriptInjector implements KrasInjector {
     core.on('user-disconnected', (e: KrasWebSocketEvent) => {
       for (const { handler } of this.files) {
         if (handler && typeof handler.disconnected === 'function') {
-          handler.disconnected(e);
+          const ctx = this.getContext();
+          handler.disconnected(ctx, e);
         }
       }
     });
+  }
+
+  private getContext(): ScriptContextData {
+    const extended = this.config.extended || {};
+    return {
+      $server: this.core,
+      $options: this.config,
+      $config: this.krasConfig,
+      ...extended,
+    };
   }
 
   getOptions(): KrasInjectorOptions {
@@ -184,13 +195,7 @@ export default class ScriptInjector implements KrasInjector {
               name: file,
             },
           });
-        const extended = this.config.extended || {};
-        const ctx = {
-          $server: this.core,
-          $options: this.config,
-          $config: this.krasConfig,
-          ...extended,
-        };
+        const ctx = this.getContext();
         const res = handler(ctx, req, builder);
 
         if (res) {

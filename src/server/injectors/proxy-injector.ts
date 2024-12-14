@@ -1,6 +1,14 @@
-import WebSocket from 'ws';
-import { proxyRequest, defaultProxyHeaders, getPort, isEncrypted } from '../helpers';
 import type { EventEmitter } from 'events';
+import {
+  proxyRequest,
+  defaultProxyHeaders,
+  getPort,
+  isEncrypted,
+  proxyWebSocket,
+  WebSocketDisposer,
+  ProxyRequestInfo,
+  integrateXfwd,
+} from '../helpers';
 import type {
   KrasInjector,
   KrasAnswer,
@@ -31,44 +39,7 @@ function normalizeHeader(header: string) {
 }
 
 interface WebSocketSessions {
-  [id: string]: WebSocket;
-}
-
-interface BufferEntry {
-  time: number;
-  data: WebSocket.Data;
-}
-
-function releaseFrom(buffer: Array<BufferEntry>, ws: WebSocket) {
-  const item = buffer.shift();
-  ws.send(item.data);
-
-  if (buffer.length) {
-    const diff = buffer[0].time - item.time;
-    setTimeout(() => releaseFrom(buffer, ws), diff);
-  }
-}
-
-interface ProxyRequestInfo {
-  remoteAddress: string;
-  port: string;
-  encrypted: boolean;
-  headers: Record<string, string | Array<string>>;
-}
-
-function integrateXfwd(headers: Record<string, string | Array<string>>, protocol: string, req: ProxyRequestInfo) {
-  const values: Record<string, string> = {
-    for: req.remoteAddress,
-    port: req.port,
-    proto: req.encrypted ? `${protocol}s` : protocol,
-  };
-
-  Object.keys(values).forEach((key) => {
-    const forwardKey = `x-forwarded-${key}`;
-    const forward = headers[forwardKey] || '';
-    const sep = forward ? ',' : '';
-    headers[forwardKey] = forward + sep + values[key];
-  });
+  [id: string]: WebSocketDisposer;
 }
 
 export default class ProxyInjector implements KrasInjector {
@@ -95,57 +66,28 @@ export default class ProxyInjector implements KrasInjector {
       const [target] = this.connectors.filter((m) => m.target === e.target);
 
       if (target) {
-        let open = false;
+        const { id, ws, req } = e;
         const url = target.address + e.url;
-        const req = e.req;
         const details = {
           headers: req.headers,
           remoteAddress: req.connection.remoteAddress || req.socket.remoteAddress,
           port: getPort(req),
           encrypted: isEncrypted(req),
         };
-        const buffer: Array<BufferEntry> = [];
         const headers = this.makeHeaders(details, 'ws');
-
-        const ws = new WebSocket(url, e.ws.protocol, {
-          rejectUnauthorized: false,
+        this.sessions[e.id] = proxyWebSocket({
+          id,
+          ws,
           headers,
+          url,
+          core,
         });
-        ws.on('error', (err) => this.logError(err));
-        ws.on('open', () => {
-          open = true;
-
-          if (buffer.length) {
-            releaseFrom(buffer, ws);
-          }
-        });
-        ws.on('close', (e) => {
-          open = false;
-          core.emit('ws-closed', { reason: e });
-        });
-        ws.on('message', (data) => {
-          core.emit('message', { content: data, from: url, to: e.id, remote: true });
-          e.ws.send(data, (err) => this.logError(err));
-        });
-        e.ws.on('message', (data: WebSocket.Data) => {
-          core.emit('message', { content: data, to: url, from: e.id, remote: false });
-
-          if (open) {
-            ws.send(data, (err) => this.logError(err));
-          } else {
-            buffer.push({
-              time: Date.now(),
-              data,
-            });
-          }
-        });
-        this.sessions[e.id] = ws;
       }
     });
 
     core.on('user-disconnected', (e: KrasWebSocketEvent) => {
-      const ws = this.sessions[e.id];
-      ws && ws.close();
+      const dispose = this.sessions[e.id];
+      dispose?.();
       delete this.sessions[e.id];
     });
   }

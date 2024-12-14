@@ -1,8 +1,9 @@
+import { vi, it, describe, expect } from 'vitest';
 import StoreInjector from './store-injector';
 import * as jsonStore from '../helpers/json-store';
 
-jest.mock('../helpers/json-store', () => ({
-  open: jest.fn(),
+vi.mock('../helpers/json-store', () => ({
+  open: vi.fn(),
 }));
 
 describe('StoreInjector', () => {
