@@ -183,7 +183,7 @@ export default class ProxyInjector implements KrasInjector {
           host: target,
         },
         redirect: this.config.followRedirect,
-      }).catch((err) => {
+      }).catch((err: Error): undefined => {
         this.logError(err);
         return undefined;
       });
