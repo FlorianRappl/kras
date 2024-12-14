@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.0
+
+- Updated script injector to support `connected` and `disconnected` events
+- Updated Node.js constraint to 18.17
+
 ## 0.17.0
 
 - Fixed issue with type of `content` of `request`

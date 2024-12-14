@@ -1,5 +1,6 @@
-import { Request, Response, NextFunction } from 'express';
-import { EventEmitter } from 'events';
+import type { Request, Response, NextFunction } from 'express';
+import type { EventEmitter } from 'events';
+import type { Data } from 'ws';
 
 declare global {
   namespace Express {
@@ -27,10 +28,19 @@ export interface KrasServerHandler {
 }
 
 export type KrasWebSocket = EventEmitter & {
-  send(msg: string): void;
+  protocol: string;
+  send(msg: Data, onError?: (err: Error) => void): void;
   close(): void;
 };
 
 export interface KrasServerConnector {
   (ws: KrasWebSocket, req: Request): void;
+}
+
+export interface KrasWebSocketEvent {
+  id: string;
+  ws: KrasWebSocket;
+  target: string;
+  url: string;
+  req: Request;
 }

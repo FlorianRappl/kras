@@ -8,6 +8,7 @@ import type {
   KrasInjectorOptions,
   ScriptResponseBuilder,
   KrasConfiguration,
+  KrasWebSocketEvent,
 } from '../types';
 
 function errorHandler(): undefined {
@@ -36,11 +37,15 @@ export interface ScriptFileEntry {
   file: string;
   active: boolean;
   error?: string;
-  handler?(
-    ctx: ScriptContextData,
-    req: KrasRequest,
-    builder: ScriptResponseBuilder,
-  ): KrasAnswer | Promise<KrasAnswer> | undefined;
+  handler?: {
+    (
+      ctx: ScriptContextData,
+      req: KrasRequest,
+      builder: ScriptResponseBuilder,
+    ): KrasAnswer | Promise<KrasAnswer> | undefined;
+    connected?(e: KrasWebSocketEvent): void;
+    disconnected?(e: KrasWebSocketEvent): void;
+  };
 }
 
 type ScriptFiles = Array<ScriptFileEntry>;
@@ -82,6 +87,22 @@ export default class ScriptInjector implements KrasInjector {
           return this.load(fileName, position);
         case 'delete':
           return this.unload(fileName);
+      }
+    });
+
+    core.on('user-connected', (e: KrasWebSocketEvent) => {
+      for (const { handler } of this.files) {
+        if (handler && typeof handler.connected === 'function') {
+          handler.connected(e);
+        }
+      }
+    });
+
+    core.on('user-disconnected', (e: KrasWebSocketEvent) => {
+      for (const { handler } of this.files) {
+        if (handler && typeof handler.disconnected === 'function') {
+          handler.disconnected(e);
+        }
       }
     });
   }

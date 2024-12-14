@@ -1,4 +1,4 @@
-import { Dict } from './kras-basics';
+import type { Dict } from './kras-basics';
 
 export interface KrasInjectorStringOption {
   type: 'text';

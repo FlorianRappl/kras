@@ -1,5 +1,5 @@
-import { KrasAnswer } from './kras-injector';
-import { Headers } from './kras-basics';
+import type { KrasAnswer } from './kras-injector';
+import type { Headers } from './kras-basics';
 
 export interface ScriptResponseBuilderData {
   statusCode?: number;

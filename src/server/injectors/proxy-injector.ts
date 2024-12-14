@@ -8,6 +8,7 @@ import type {
   KrasConfiguration,
   KrasRequest,
   KrasInjectorOptions,
+  KrasWebSocketEvent,
 } from '../types';
 
 export interface ProxyInjectorConfig {
@@ -90,7 +91,7 @@ export default class ProxyInjector implements KrasInjector {
       }));
     this.core = core;
 
-    core.on('user-connected', (e) => {
+    core.on('user-connected', (e: KrasWebSocketEvent) => {
       const [target] = this.connectors.filter((m) => m.target === e.target);
 
       if (target) {
@@ -124,7 +125,7 @@ export default class ProxyInjector implements KrasInjector {
         });
         ws.on('message', (data) => {
           core.emit('message', { content: data, from: url, to: e.id, remote: true });
-          e.ws.send(data, (err: Error) => this.logError(err));
+          e.ws.send(data, (err) => this.logError(err));
         });
         e.ws.on('message', (data: WebSocket.Data) => {
           core.emit('message', { content: data, to: url, from: e.id, remote: false });
@@ -142,7 +143,7 @@ export default class ProxyInjector implements KrasInjector {
       }
     });
 
-    core.on('user-disconnected', (e) => {
+    core.on('user-disconnected', (e: KrasWebSocketEvent) => {
       const ws = this.sessions[e.id];
       ws && ws.close();
       delete this.sessions[e.id];
@@ -196,15 +197,18 @@ export default class ProxyInjector implements KrasInjector {
       ...permitHeaders,
       ...Object.keys(injectHeaders),
     ];
-    const headers = headerNames.reduce((headers, header) => {
-      const value = injectHeaders[header] ?? req.headers[header];
+    const headers = headerNames.reduce(
+      (headers, header) => {
+        const value = injectHeaders[header] ?? req.headers[header];
 
-      if (value !== undefined) {
-        headers[header] = value;
-      }
+        if (value !== undefined) {
+          headers[header] = value;
+        }
 
-      return headers;
-    }, {} as Record<string, string | Array<string>>);
+        return headers;
+      },
+      {} as Record<string, string | Array<string>>,
+    );
 
     if (this.config.xfwd) {
       integrateXfwd(headers, protocol, req);

@@ -1,4 +1,4 @@
-import { KrasServerHandler } from './kras-express';
+import type { KrasServerHandler } from './kras-express';
 
 export interface KrasMiddleware {
   source: string;

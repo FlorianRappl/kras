@@ -1,4 +1,4 @@
-import { v4 } from 'uuid';
+import { randomUUID } from 'crypto';
 import { UserCredentials } from '../types';
 
 const activeTokens: Array<string> = [];
@@ -13,7 +13,7 @@ export interface SimpleAuthProviderOptions {
 }
 
 function newToken() {
-  const token = v4().replace(/\-/g, '');
+  const token = randomUUID().replace(/\-/g, '');
   activeTokens[tokenIndex++] = token;
 
   if (tokenIndex === maxTokens) {

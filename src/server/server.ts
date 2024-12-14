@@ -17,6 +17,7 @@ import {
   KrasRunner,
   KrasMiddleware,
   KrasHandlerConfiguration,
+  KrasWebSocketEvent,
 } from './types';
 
 function info(message: string) {
@@ -149,13 +150,13 @@ export function connectToCli(server: MockServer, canManage = true) {
     console.log(`Connection to server closed.`);
   });
 
-  server.on('user-connected', (msg) => {
+  server.on('user-connected', (msg: KrasWebSocketEvent) => {
     if (isDebug(server.logLevel)) {
       console.log(`${chalk.green('WS')} + ${chalk.white(info(msg.id))}`);
     }
   });
 
-  server.on('user-disconnected', (msg) => {
+  server.on('user-disconnected', (msg: KrasWebSocketEvent) => {
     if (isDebug(server.logLevel)) {
       console.log(`${chalk.green('WS')} - ${chalk.white(info(msg.id))}`);
     }

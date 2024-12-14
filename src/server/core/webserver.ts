@@ -3,6 +3,7 @@ import expressWs from 'express-ws';
 import multer from 'multer';
 import type { Server as WebSocketServer } from 'ws';
 import type { Application, Request, Response } from 'express';
+import { randomUUID } from 'crypto';
 import { createServer as createHttpServer, Server as HttpServer } from 'http';
 import { createServer as createHttpsServer, Server as HttpsServer } from 'https';
 import { text } from 'body-parser';
@@ -17,6 +18,7 @@ import {
   KrasServerHandler,
   KrasServerConnector,
   Dict,
+  KrasWebSocketEvent,
 } from '../types';
 
 type Server = HttpServer | HttpsServer;
@@ -124,24 +126,15 @@ export class WebServer extends EventEmitter implements BaseKrasServer {
     );
     this.targets.forEach((target) =>
       this.app.ws(`${target}/*`, (ws, req) => {
-        const url = req.url.replace('/.websocket', '').substr(target.length);
-        const id = Date.now() % 100000000;
-        this.emit('user-connected', {
-          id,
+        const ev: KrasWebSocketEvent = {
+          id: randomUUID(),
           ws,
           target,
-          url,
+          url: req.url.replace('/.websocket', '').substring(target.length),
           req,
-        });
-        ws.on('close', () =>
-          this.emit('user-disconnected', {
-            id,
-            ws,
-            target,
-            url,
-            req,
-          }),
-        );
+        };
+        this.emit('user-connected', ev);
+        ws.on('close', () => this.emit('user-disconnected', ev));
       }),
     );
   }

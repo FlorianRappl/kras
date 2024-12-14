@@ -1,4 +1,4 @@
-import { v4 } from 'uuid';
+import { randomUUID } from 'crypto';
 import { EventEmitter } from 'events';
 import {
   KrasRecorder,
@@ -29,7 +29,7 @@ export class Recorder extends EventEmitter implements KrasRecorder {
   hit(start: Date, end: Date, request: KrasRequest, response: KrasAnswer) {
     if (this.enabled) {
       const requests = this.requests;
-      const id = v4();
+      const id = randomUUID();
       const item = {
         id,
         start,
@@ -49,7 +49,7 @@ export class Recorder extends EventEmitter implements KrasRecorder {
 
   message(time: Date, data: WebSocketMessage) {
     if (this.enabled) {
-      const id = v4();
+      const id = randomUUID();
       const item = {
         id,
         time,
@@ -63,7 +63,7 @@ export class Recorder extends EventEmitter implements KrasRecorder {
 
   miss(start: Date, end: Date, request: KrasRequest) {
     if (this.enabled) {
-      const id = v4();
+      const id = randomUUID();
       const item = {
         id,
         start,

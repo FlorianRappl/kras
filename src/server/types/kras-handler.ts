@@ -1,5 +1,5 @@
-import { KrasServerMethods } from './kras-server';
-import { KrasServerHandler } from './kras-express';
+import type { KrasServerMethods } from './kras-server';
+import type { KrasServerHandler } from './kras-express';
 
 export interface KrasHandlerConfiguration {
   handlers?: {

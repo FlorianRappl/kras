@@ -34,7 +34,9 @@ export async function withManagement(server: KrasServer, config: KrasConfigurati
 
     protect(server.at(api, 'data', 'error', ':id')).get(errorDetails(server));
 
-    protect(server.at(api, 'file', ':name')).get(readFile(server)).put(saveFile(server));
+    protect(server.at(api, 'file', ':name'))
+      .get(readFile(server))
+      .put(saveFile(server));
 
     protect(server.at(api, 'settings')).get(readSettings(server)).put(saveSettings(server));
 
@@ -42,6 +44,8 @@ export async function withManagement(server: KrasServer, config: KrasConfigurati
 
     protect(server.at(api, 'injector')).get(readInjectorsSettings(server));
 
-    protect(server.at(api, 'injector', ':name')).get(readInjectorSettings(server)).put(saveInjectorSettings(server));
+    protect(server.at(api, 'injector', ':name'))
+      .get(readInjectorSettings(server))
+      .put(saveInjectorSettings(server));
   }
 }

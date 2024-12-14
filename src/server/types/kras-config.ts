@@ -1,6 +1,6 @@
-import { SslConfiguration, LogLevel, Dict } from './kras-basics';
-import { KrasInjectorConfig } from './kras-injector';
-import { KrasMiddlewareDefinition } from './kras-middleware';
+import type { SslConfiguration, LogLevel, Dict } from './kras-basics';
+import type { KrasInjectorConfig } from './kras-injector';
+import type { KrasMiddlewareDefinition } from './kras-middleware';
 
 export interface AppConfiguration {
   logLevel: LogLevel;
