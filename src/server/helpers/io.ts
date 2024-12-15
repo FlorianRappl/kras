@@ -49,11 +49,17 @@ export function asJson<T = {}>(file: string, defaultValue: T): T {
   return defaultValue;
 }
 
-export function asScript(file: string) {
+export async function asScript(file: string) {
   if (existsSync(file)) {
     const key = require.resolve(file);
     delete require.cache[key];
-    return require(file);
+
+    if (key.endsWith('.mjs')) {
+      const result = await import(key);
+      return result.default || result;
+    } else {
+      return require(file);
+    }
   }
 
   return () => {};
@@ -87,14 +93,17 @@ export function isInDirectory(fn: string, dir: string) {
 
 function installWatcher(
   directory: string,
-  pattern: string,
+  extensions: Array<string>,
   loadFile: WatchEvent,
   updateFile: WatchEvent,
   deleteFile: WatchEvent,
 ) {
   mk(directory);
   return chokidar
-    .watch(pattern, { cwd: directory })
+    .watch('.', {
+      cwd: directory,
+      ignored: (path, stats) => stats?.isFile() && extensions.every((extension) => !path.endsWith(extension)),
+    })
     .on('change', updateFile)
     .on('add', loadFile)
     .on('unlink', deleteFile);
@@ -102,7 +111,7 @@ function installWatcher(
 
 function watchSingle(
   directory: string,
-  pattern: string,
+  extensions: Array<string>,
   callback: (type: string, file: string, position: number) => void,
   watched: Array<string>,
 ): SingleWatcher {
@@ -142,7 +151,7 @@ function watchSingle(
     const fn = resolve(directory, file);
     callback('create', fn, getPosition(fn));
   };
-  const w = installWatcher(directory, pattern, loadFile, updateFile, deleteFile);
+  const w = installWatcher(directory, extensions, loadFile, updateFile, deleteFile);
   return {
     directory,
     close() {
@@ -164,12 +173,12 @@ function watchSingle(
 
 export function watch(
   directory: string | Array<string>,
-  pattern: string,
+  extensions: Array<string>,
   callback: (type: string, file: string, position: number) => void,
   watched: Array<string> = [],
 ): Watcher {
   if (Array.isArray(directory)) {
-    const ws = directory.map((dir) => watchSingle(dir, pattern, callback, watched));
+    const ws = directory.map((dir) => watchSingle(dir, extensions, callback, watched));
 
     return {
       get directories() {
@@ -206,7 +215,7 @@ export function watch(
           }
 
           if (add) {
-            added.push(watchSingle(v, pattern, callback, watched));
+            added.push(watchSingle(v, extensions, callback, watched));
           }
         }
 
@@ -217,6 +226,6 @@ export function watch(
       },
     };
   } else if (typeof directory === 'string') {
-    return watch([directory], pattern, callback, watched);
+    return watch([directory], extensions, callback, watched);
   }
 }

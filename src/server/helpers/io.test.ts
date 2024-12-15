@@ -27,7 +27,7 @@ describe('io helpers', () => {
         return this;
       },
     }));
-    const w = io.watch('foo', '*.jpg', (_, file) => {
+    const w = io.watch('foo', ['.jpg'], (_, file) => {
       found.push(file);
     });
     expect(w.directories).toEqual(['foo']);
@@ -45,7 +45,7 @@ describe('io helpers', () => {
         return this;
       },
     }));
-    const w = io.watch('foo', '*.jpg', (_, file) => {
+    const w = io.watch('foo', ['.jpg'], (_, file) => {
       found.push(file);
     });
     expect(w.directories).toEqual(['foo']);
@@ -60,7 +60,7 @@ describe('io helpers', () => {
         return this;
       },
     }));
-    const w = io.watch(['foo', 'bar'], '*.jpg', (_, file) => {
+    const w = io.watch(['foo', 'bar'], ['.jpg'], (_, file) => {
       found.push(file);
     });
     expect(w.directories).toEqual(['foo', 'bar']);

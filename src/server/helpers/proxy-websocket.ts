@@ -17,6 +17,58 @@ function releaseFrom(buffer: Array<BufferEntry>, ws: WebSocket) {
   }
 }
 
+interface CurrentWebSocket {
+  open: boolean;
+  ws: KrasWebSocket | undefined;
+  buffer: Array<BufferEntry>;
+  signal: AbortSignal;
+  log(err: Error): void;
+}
+
+function connect(current: CurrentWebSocket, options: ProxyWebSocketOptions) {
+  const { url, core } = options;
+  const protocol = options.ws.protocol || undefined;
+
+  const ws = new WebSocket(url, protocol, {
+    rejectUnauthorized: false,
+    headers: options.headers,
+  });
+
+  ws.on('error', current.log);
+
+  ws.on('open', () => {
+    current.open = true;
+
+    if (current.buffer.length) {
+      releaseFrom(current.buffer, ws);
+    }
+  });
+
+  ws.on('close', (e) => {
+    const retry = !current.signal.aborted;
+    current.open = false;
+    core.emit('ws-closed', { reason: e, retry });
+
+    if (retry) {
+      core.emit('info', `WebSocket connection interrupted. Retrying in 5s.`);
+
+      setTimeout(() => {
+        if (!current.signal.aborted) {
+          connect(current, options);
+        }
+      }, 5_000);
+    }
+  });
+
+  ws.on('message', (data) => {
+    core.emit('message', { content: data, from: url, to: options.id, remote: true });
+    options.ws.send(data, current.log);
+  });
+
+  current.signal.onabort = () => ws.close();
+  current.ws = ws;
+}
+
 export interface ProxyWebSocketOptions {
   id: string;
   ws: KrasWebSocket;
@@ -29,43 +81,27 @@ export interface WebSocketDisposer {
   (): void;
 }
 
-export function proxyWebSocket(options: ProxyWebSocketOptions): WebSocketDisposer {
-  let open = false;
-  const buffer: Array<BufferEntry> = [];
-  const { url, core } = options;
+export function proxyWebSocket(client: ProxyWebSocketOptions): WebSocketDisposer {
+  const ac = new AbortController();
+  const server: CurrentWebSocket = {
+    open: false,
+    ws: undefined,
+    buffer: [],
+    signal: ac.signal,
+    log(err) {
+      err && client.core.emit('error', err);
+    },
+  };
 
-  const ws = new WebSocket(url, options.ws.protocol, {
-    rejectUnauthorized: false,
-    headers: options.headers,
-  });
+  connect(server, client);
 
-  ws.on('error', (err) => this.logError(err));
+  client.ws.on('message', (data: WebSocket.Data) => {
+    client.core.emit('message', { content: data, to: client.url, from: client.id, remote: false });
 
-  ws.on('open', () => {
-    open = true;
-
-    if (buffer.length) {
-      releaseFrom(buffer, ws);
-    }
-  });
-
-  ws.on('close', (e) => {
-    open = false;
-    core.emit('ws-closed', { reason: e });
-  });
-
-  ws.on('message', (data) => {
-    core.emit('message', { content: data, from: url, to: options.id, remote: true });
-    options.ws.send(data, (err) => this.logError(err));
-  });
-
-  options.ws.on('message', (data: WebSocket.Data) => {
-    core.emit('message', { content: data, to: url, from: options.id, remote: false });
-
-    if (open) {
-      ws.send(data, (err) => this.logError(err));
+    if (server.open) {
+      server.ws.send(data, server.log);
     } else {
-      buffer.push({
+      server.buffer.push({
         time: Date.now(),
         data,
       });
@@ -73,6 +109,6 @@ export function proxyWebSocket(options: ProxyWebSocketOptions): WebSocketDispose
   });
 
   return () => {
-    ws.close();
+    ac.abort();
   };
 }

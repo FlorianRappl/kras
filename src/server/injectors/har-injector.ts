@@ -125,7 +125,7 @@ export default class HarInjector implements KrasInjector {
         address: config.map[target] as string,
       }));
 
-    this.watcher = watch(directory, '**/*.har', (ev, fileName, position) => {
+    this.watcher = watch(directory, ['.har'], (ev, fileName, position) => {
       switch (ev) {
         case 'create':
         case 'update':

@@ -49,9 +49,9 @@ export interface ScriptFileEntry {
 
 type ScriptFiles = Array<ScriptFileEntry>;
 
-export function tryEvaluate(script: ScriptFileEntry) {
+export async function tryEvaluate(script: ScriptFileEntry) {
   try {
-    const handler = asScript(script.file);
+    const handler = await asScript(script.file);
 
     if (typeof handler !== 'function') {
       throw new Error('Does not export a function - it will be ignored.');
@@ -79,7 +79,7 @@ export default class ScriptInjector implements KrasInjector {
     this.core = core;
     this.krasConfig = config;
 
-    this.watcher = watch(directory, '**/*.js', (ev, fileName, position) => {
+    this.watcher = watch(directory, ['.js', '.mjs', '.cjs'], (ev, fileName, position) => {
       switch (ev) {
         case 'create':
         case 'update':
@@ -93,7 +93,12 @@ export default class ScriptInjector implements KrasInjector {
       for (const { handler } of this.files) {
         if (handler && typeof handler.connected === 'function') {
           const ctx = this.getContext();
-          handler.connected(ctx, e);
+
+          try {
+            handler.connected(ctx, e);
+          } catch (err) {
+            core.emit('error', err);
+          }
         }
       }
     });
@@ -102,7 +107,12 @@ export default class ScriptInjector implements KrasInjector {
       for (const { handler } of this.files) {
         if (handler && typeof handler.disconnected === 'function') {
           const ctx = this.getContext();
-          handler.disconnected(ctx, e);
+
+          try {
+            handler.disconnected(ctx, e);
+          } catch (err) {
+            core.emit('error', err);
+          }
         }
       }
     });
@@ -164,12 +174,12 @@ export default class ScriptInjector implements KrasInjector {
     }
   }
 
-  private load(fileName: string, position: number) {
+  private async load(fileName: string, position: number) {
     const file = this.files.find(({ file }) => file === fileName);
     const active = file?.active ?? true;
     const script: ScriptFileEntry = { file: fileName, active };
 
-    tryEvaluate(script);
+    await tryEvaluate(script);
 
     if (script.error) {
       this.core.emit('error', script.error);
@@ -196,10 +206,15 @@ export default class ScriptInjector implements KrasInjector {
             },
           });
         const ctx = this.getContext();
-        const res = handler(ctx, req, builder);
 
-        if (res) {
-          return res;
+        try {
+          const res = handler(ctx, req, builder);
+
+          if (res) {
+            return res;
+          }
+        } catch (err) {
+          this.core.emit('error', err);
         }
       }
     }

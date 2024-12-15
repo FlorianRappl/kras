@@ -7,6 +7,7 @@
 - Updated Node.js constraint to 18.17
 - Updated dependencies
 - Added `proxyWebSocket` to exported utilities
+- Added support for ESM-based scripts
 
 ## 0.17.0
 
