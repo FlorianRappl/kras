@@ -3,7 +3,8 @@
 ## 1.0.0
 
 - Replaced Jest with vitest
-- Updated script injector to support `connected` and `disconnected` events
+- Updated script injector to support `connected` and `disconnected` events in scripts
+- Updated script injector scripts to use `setup` and `teardown` lifecycle
 - Updated Node.js constraint to 18.17
 - Updated dependencies
 - Added `proxyWebSocket` to exported utilities

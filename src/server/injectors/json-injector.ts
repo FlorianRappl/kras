@@ -32,7 +32,7 @@ function find(response: KrasAnswer | Array<KrasAnswer>, randomize: boolean) {
 }
 
 interface JsonFileItem {
-  file: string;
+  path: string;
   active: boolean;
   request: KrasRequest;
   response: KrasAnswer | Array<KrasAnswer>;
@@ -68,11 +68,11 @@ export default class JsonInjector implements KrasInjector {
     const directory = options.directory || config.sources || config.directory;
     this.config = options;
 
-    this.watcher = watch(directory, ['.json'], (ev, fileName, position) => {
+    this.watcher = watch(directory, ['.json'], (ev, fileName) => {
       switch (ev) {
         case 'create':
         case 'update':
-          return this.load(fileName, position);
+          return this.load(fileName);
         case 'delete':
           return this.unload(fileName);
       }
@@ -96,7 +96,7 @@ export default class JsonInjector implements KrasInjector {
     this.config.randomize = options.randomize;
 
     for (const { name, entries } of options.files) {
-      const files = this.files.find((m) => m[0].file === name);
+      const files = this.files.find((m) => m[0].path === name);
 
       if (entries) {
         for (let i = 0; i < entries.length; i++) {
@@ -126,14 +126,14 @@ export default class JsonInjector implements KrasInjector {
   }
 
   private unload(fileName: string) {
-    const index = this.files.findIndex((m) => m[0].file === fileName);
+    const index = this.files.findIndex((m) => m[0].path === fileName);
 
     if (index !== -1) {
       this.files.splice(index, 1);
     }
   }
 
-  private load(fileName: string, position: number) {
+  private load(fileName: string) {
     const content = asJson(fileName, []);
     const items = Array.isArray(content) ? content : [content];
 
@@ -153,7 +153,7 @@ export default class JsonInjector implements KrasInjector {
     this.unload(fileName);
 
     if (items.length > 0) {
-      this.files.splice(position, 0, items);
+      this.files.push(items);
     }
   }
 
@@ -198,7 +198,7 @@ export default class JsonInjector implements KrasInjector {
     let i = 0;
 
     for (const files of this.files) {
-      for (const { file, active, request, response } of files) {
+      for (const { path, active, request, response } of files) {
         if (active) {
           if (compareRequests(request, req)) {
             const rand = this.config.randomize;
@@ -209,7 +209,7 @@ export default class JsonInjector implements KrasInjector {
             return fromJson(request.url, res.status.code, res.status.text, res.headers, content, {
               name,
               file: {
-                name: file,
+                name: path,
                 entry: i,
               },
             });

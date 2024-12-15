@@ -33,28 +33,37 @@ export interface DynamicScriptInjectorConfig {
   }>;
 }
 
+export interface ScriptExports {
+  (
+    ctx: ScriptContextData,
+    req: KrasRequest,
+    builder: ScriptResponseBuilder,
+  ): KrasAnswer | Promise<KrasAnswer> | undefined;
+  setup?(ctx: ScriptContextData): void;
+  teardown?(ctx: ScriptContextData): void;
+  connected?(ctx: ScriptContextData, e: KrasWebSocketEvent): void;
+  disconnected?(ctx: ScriptContextData, e: KrasWebSocketEvent): void;
+}
+
 export interface ScriptFileEntry {
-  file: string;
+  path: string;
   active: boolean;
   error?: string;
-  handler?: {
-    (ctx: ScriptContextData, req: KrasRequest, builder: ScriptResponseBuilder):
-      | KrasAnswer
-      | Promise<KrasAnswer>
-      | undefined;
-    connected?(ctx: ScriptContextData, e: KrasWebSocketEvent): void;
-    disconnected?(ctx: ScriptContextData, e: KrasWebSocketEvent): void;
-  };
+  handler?: ScriptExports;
 }
 
 type ScriptFiles = Array<ScriptFileEntry>;
 
-export async function tryEvaluate(script: ScriptFileEntry) {
+export async function tryEvaluate(script: ScriptFileEntry, ctx: ScriptContextData) {
   try {
-    const handler = await asScript(script.file);
+    const handler = await asScript(script.path);
 
     if (typeof handler !== 'function') {
       throw new Error('Does not export a function - it will be ignored.');
+    }
+
+    if (typeof handler?.setup === 'function') {
+      handler.setup(ctx);
     }
 
     script.error = undefined;
@@ -79,11 +88,11 @@ export default class ScriptInjector implements KrasInjector {
     this.core = core;
     this.krasConfig = config;
 
-    this.watcher = watch(directory, ['.js', '.mjs', '.cjs'], (ev, fileName, position) => {
+    this.watcher = watch(directory, ['.js', '.mjs', '.cjs'], (ev, fileName) => {
       switch (ev) {
         case 'create':
         case 'update':
-          return this.load(fileName, position);
+          return this.load(fileName);
         case 'delete':
           return this.unload(fileName);
       }
@@ -143,7 +152,7 @@ export default class ScriptInjector implements KrasInjector {
 
   setOptions(options: DynamicScriptInjectorConfig): void {
     for (const { name, active } of options.files) {
-      const script = this.files.find((f) => f.file === name);
+      const script = this.files.find((f) => f.path === name);
 
       if (script && typeof active === 'boolean') {
         script.active = active;
@@ -167,26 +176,43 @@ export default class ScriptInjector implements KrasInjector {
   }
 
   private unload(fileName: string) {
-    const index = this.files.findIndex(({ file }) => file === fileName);
+    const index = this.files.findIndex(({ path }) => path === fileName);
 
     if (index !== -1) {
+      const file = this.files[index];
+      const handler = file.handler;
+
+      if (typeof handler?.teardown === 'function') {
+        const ctx = this.getContext();
+
+        try {
+          handler.teardown(ctx);
+        } catch (err) {
+          this.core.emit('error', err);
+        }
+      }
+
       this.files.splice(index, 1);
     }
   }
 
-  private async load(fileName: string, position: number) {
-    const file = this.files.find(({ file }) => file === fileName);
+  private async load(fileName: string) {
+    const file = this.files.find(({ path }) => path === fileName);
     const active = file?.active ?? true;
-    const script: ScriptFileEntry = { file: fileName, active };
+    const script: ScriptFileEntry = { path: fileName, active };
+    const ctx = this.getContext();
 
-    await tryEvaluate(script);
+    if (file) {
+      this.unload(fileName);
+    }
+
+    await tryEvaluate(script, ctx);
 
     if (script.error) {
       this.core.emit('error', script.error);
+    } else {
+      this.files.push(script);
     }
-
-    this.unload(fileName);
-    this.files.splice(position, 0, script);
   }
 
   dispose() {
@@ -194,7 +220,7 @@ export default class ScriptInjector implements KrasInjector {
   }
 
   handle(req: KrasRequest): Promise<KrasAnswer> | KrasAnswer {
-    for (const { file, active, handler } of this.files) {
+    for (const { path, active, handler } of this.files) {
       const name = this.name;
 
       if (active) {
@@ -202,7 +228,7 @@ export default class ScriptInjector implements KrasInjector {
           fromJson(req.url, statusCode, statusText, headers, content, {
             name,
             file: {
-              name: file,
+              name: path,
             },
           });
         const ctx = this.getContext();

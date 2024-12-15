@@ -112,44 +112,22 @@ function installWatcher(
 function watchSingle(
   directory: string,
   extensions: Array<string>,
-  callback: (type: string, file: string, position: number) => void,
+  callback: (type: string, file: string) => void,
   watched: Array<string>,
 ): SingleWatcher {
-  const getPosition = (fn: string) => {
-    const idx = watched.indexOf(fn);
-
-    if (idx === -1) {
-      let i = 0;
-
-      while (i < watched.length) {
-        const w = watched[i];
-
-        if (w.localeCompare(fn) > 0) {
-          break;
-        }
-
-        i++;
-      }
-
-      watched.splice(i, 0, fn);
-      return i;
-    }
-
-    return idx;
-  };
   const updateFile = (file: string) => {
     const fn = resolve(directory, file);
-    callback('update', fn, getPosition(fn));
+    callback('update', fn);
   };
   const deleteFile = (file: string) => {
     const fn = resolve(directory, file);
     const idx = watched.indexOf(fn);
     idx !== -1 && watched.splice(idx, 1);
-    callback('delete', fn, -1);
+    callback('delete', fn);
   };
   const loadFile = (file: string) => {
     const fn = resolve(directory, file);
-    callback('create', fn, getPosition(fn));
+    callback('create', fn);
   };
   const w = installWatcher(directory, extensions, loadFile, updateFile, deleteFile);
   return {
@@ -162,7 +140,7 @@ function watchSingle(
           const fn = resolve(directory, dir, file);
           const idx = watched.indexOf(fn);
           idx !== -1 && watched.splice(idx, 1);
-          callback('delete', fn, -1);
+          callback('delete', fn);
         }
       }
 
@@ -174,7 +152,7 @@ function watchSingle(
 export function watch(
   directory: string | Array<string>,
   extensions: Array<string>,
-  callback: (type: string, file: string, position: number) => void,
+  callback: (type: string, file: string) => void,
   watched: Array<string> = [],
 ): Watcher {
   if (Array.isArray(directory)) {

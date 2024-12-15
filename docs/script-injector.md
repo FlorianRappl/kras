@@ -71,6 +71,8 @@ interface Script {
     | KrasAnswer
     | Promise<KrasAnswer>
     | undefined;
+  setup?(ctx: ScriptContextData): void;
+  teardown?(ctx: ScriptContextData): void;
   connected?(ctx: ScriptContextData, e: KrasWebSocketEvent): void;
   disconnected?(ctx: ScriptContextData, e: KrasWebSocketEvent): void;
 }
@@ -207,3 +209,5 @@ export interface KrasAnswer {
 ```
 
 This allows also specifying `connected` and `disconnected` functions to handle WebSocket connections.
+
+The `setup` and `teardown` functions are used to properly initialize or dispose relevant resources. They are called when the script is first discovered or removed / replaced, e.g., in case of a file change.

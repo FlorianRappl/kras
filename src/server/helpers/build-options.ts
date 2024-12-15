@@ -2,7 +2,7 @@ import { basename } from 'path';
 import { KrasInjectorOption } from '../types';
 
 export interface FileInfo {
-  file: string;
+  path: string;
   active: boolean;
   error?: string;
 }
@@ -12,7 +12,7 @@ export interface DescribeEntry<T> {
 }
 
 function getFile(fileInfo: FileInfo) {
-  const fileName = fileInfo.file;
+  const fileName = fileInfo.path;
   return {
     id: Buffer.from(fileName).toString('base64'),
     name: fileName,
@@ -23,7 +23,7 @@ function getFile(fileInfo: FileInfo) {
 }
 
 function getEntry<T extends FileInfo>(fileInfos: Array<T>, desc: DescribeEntry<T>) {
-  const fileName = fileInfos[0].file;
+  const fileName = fileInfos[0].path;
   return {
     id: Buffer.from(fileName).toString('base64'),
     name: fileName,

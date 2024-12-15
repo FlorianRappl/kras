@@ -71,7 +71,7 @@ interface HttpArchive {
 }
 
 interface HarFileEntry {
-  file: string;
+  path: string;
   active: boolean;
   request: {
     method: string;
@@ -125,11 +125,11 @@ export default class HarInjector implements KrasInjector {
         address: config.map[target] as string,
       }));
 
-    this.watcher = watch(directory, ['.har'], (ev, fileName, position) => {
+    this.watcher = watch(directory, ['.har'], (ev, fileName) => {
       switch (ev) {
         case 'create':
         case 'update':
-          return this.load(fileName, position);
+          return this.load(fileName);
         case 'delete':
           return this.unload(fileName);
       }
@@ -153,7 +153,7 @@ export default class HarInjector implements KrasInjector {
     this.config.delay = options.delay;
 
     for (const { name, entries } of options.files) {
-      const files = this.files.find((m) => m[0].file === name);
+      const files = this.files.find((m) => m[0].path === name);
 
       if (entries) {
         for (let i = 0; i < entries.length; i++) {
@@ -183,21 +183,21 @@ export default class HarInjector implements KrasInjector {
   }
 
   private unload(fileName: string) {
-    const index = this.files.findIndex((m) => m[0].file === fileName);
+    const index = this.files.findIndex((m) => m[0].path === fileName);
 
     if (index !== -1) {
       this.files.splice(index, 1);
     }
   }
 
-  private load(fileName: string, position: number) {
+  private load(fileName: string) {
     const content = asJson(fileName, undefined);
     const entries = findEntries(content);
     const files = entries.map((entry) => this.transformEntry(fileName, entry));
     this.unload(fileName);
 
     if (files.length > 0) {
-      this.files.splice(position, 0, files);
+      this.files.push(files);
     }
   }
 
@@ -211,7 +211,7 @@ export default class HarInjector implements KrasInjector {
     return undefined;
   }
 
-  private transformEntry(file: string, entry: HttpArchive) {
+  private transformEntry(path: string, entry: HttpArchive) {
     const original = entry.request;
     const response = entry.response;
     const content = (original.postData || {}).text || '';
@@ -228,7 +228,7 @@ export default class HarInjector implements KrasInjector {
     delete request.headers._;
 
     return {
-      file,
+      path,
       active: true,
       time: entry.time,
       request,
@@ -244,7 +244,7 @@ export default class HarInjector implements KrasInjector {
     let i = 0;
 
     for (const files of this.files) {
-      for (const { file, active, time, request, response } of files) {
+      for (const { path, active, time, request, response } of files) {
         if (active) {
           const name = this.name;
 
@@ -253,7 +253,7 @@ export default class HarInjector implements KrasInjector {
               fromHar(request.url, response, {
                 name,
                 file: {
-                  name: file,
+                  name: path,
                   entry: i,
                 },
               }),
