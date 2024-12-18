@@ -63,25 +63,27 @@ export default class ProxyInjector implements KrasInjector {
     this.core = core;
 
     core.on('user-connected', (e: KrasWebSocketEvent) => {
-      const [target] = this.connectors.filter((m) => m.target === e.target);
+      if (!e.handled) {
+        const [target] = this.connectors.filter((m) => m.target === e.target);
 
-      if (target) {
-        const { id, ws, req } = e;
-        const url = target.address + e.url;
-        const details = {
-          headers: req.headers,
-          remoteAddress: req.connection.remoteAddress || req.socket.remoteAddress,
-          port: getPort(req),
-          encrypted: isEncrypted(req),
-        };
-        const headers = this.makeHeaders(details, 'ws');
-        this.sessions[e.id] = proxyWebSocket({
-          id,
-          ws,
-          headers,
-          url,
-          core,
-        });
+        if (target) {
+          const { id, ws, req } = e;
+          const url = target.address + e.url;
+          const details = {
+            headers: req.headers,
+            remoteAddress: req.connection.remoteAddress || req.socket.remoteAddress,
+            port: getPort(req),
+            encrypted: isEncrypted(req),
+          };
+          const headers = this.makeHeaders(details, 'ws');
+          this.sessions[e.id] = proxyWebSocket({
+            id,
+            ws,
+            headers,
+            url,
+            core,
+          });
+        }
       }
     });
 

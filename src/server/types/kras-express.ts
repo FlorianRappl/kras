@@ -43,4 +43,5 @@ export interface KrasWebSocketEvent {
   target: string;
   url: string;
   req: Request;
+  handled?: boolean;
 }

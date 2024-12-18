@@ -41,7 +41,7 @@ export interface ScriptExports {
   ): KrasAnswer | Promise<KrasAnswer> | undefined;
   setup?(ctx: ScriptContextData): void;
   teardown?(ctx: ScriptContextData): void;
-  connected?(ctx: ScriptContextData, e: KrasWebSocketEvent): void;
+  connected?(ctx: ScriptContextData, e: KrasWebSocketEvent): void | boolean;
   disconnected?(ctx: ScriptContextData, e: KrasWebSocketEvent): void;
 }
 
@@ -99,14 +99,19 @@ export default class ScriptInjector implements KrasInjector {
     });
 
     core.on('user-connected', (e: KrasWebSocketEvent) => {
-      for (const { handler } of this.files) {
-        if (handler && typeof handler.connected === 'function') {
-          const ctx = this.getContext();
+      if (!e.handled) {
+        for (const { handler } of this.files) {
+          if (handler && typeof handler.connected === 'function') {
+            const ctx = this.getContext();
 
-          try {
-            handler.connected(ctx, e);
-          } catch (err) {
-            core.emit('error', err);
+            try {
+              if (handler.connected(ctx, e)) {
+                e.handled = true;
+                break;
+              }
+            } catch (err) {
+              core.emit('error', err);
+            }
           }
         }
       }
