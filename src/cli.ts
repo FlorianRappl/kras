@@ -35,7 +35,7 @@ const argv = yargs
   .help('h')
   .alias('h', 'help')
   .describe('h', 'Shows the argument descriptions')
-  .epilog(`Copyright (c) 2018 - 2024 ${author}`).argv;
+  .epilog(`Copyright (c) 2018 - 2025 ${author}`).argv;
 
 Promise.resolve(argv)
   .then((args) =>
