@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.1
+
+- Fixed CLI issue
+- Updated the default certificate to be compatible with Node 24.5+ (#66)
+
 ## 1.0.0
 
 - Replaced Jest with vitest
