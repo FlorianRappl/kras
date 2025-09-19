@@ -4,6 +4,7 @@
     "jsx": "preserve",
     "sourceMap": false,
     "outDir": "dist",
+    "module": "commonjs",
     "declaration": false
   },
   "include": [
